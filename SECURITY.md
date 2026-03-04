@@ -72,5 +72,5 @@ You must NOT:
 - Disclose any vulnerabilities in the ONS systems or services to 3rd parties or the public, prior to the ONS confirming
     that those vulnerabilities have been mitigated or rectified. However, this is not intended to stop you notifying a
     vulnerability to 3rd parties for whom the vulnerability is directly relevant. An example would be where the
-    vulnerability being reported is in a 3rd party software library or framework. Details of the specific vulnerability as
-    it applies to the ONS must not be referenced in such reports.
+    vulnerability being reported is in a 3rd party software library or framework.
+    Details of the specific vulnerability as it applies to the ONS must not be referenced in such reports.
