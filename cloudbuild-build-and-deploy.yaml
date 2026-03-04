@@ -1,0 +1,32 @@
+steps:
+  - name: node:$_NODE_VERSION
+    entrypoint: npm
+    args:
+      - install
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '-t'
+      - ${_IMAGE_NAME}:$SHORT_SHA
+      - '-t'
+      - ${_IMAGE_NAME}:latest
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_IMAGE_NAME}
+      - '--all-tags'
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - eq-cims-management-ui
+      - '--image'
+      - ${_IMAGE_NAME}:$SHORT_SHA
+      - '--region'
+      - europe-west2
+      - '--platform'
+      - managed
+options:
+  logging: CLOUD_LOGGING_ONLY
