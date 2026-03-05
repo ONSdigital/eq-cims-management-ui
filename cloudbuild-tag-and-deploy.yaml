@@ -13,11 +13,11 @@ steps:
       - run
       - deploy
       - eq-cims-management-ui
-      - '--image'
+      - "--image"
       - ${_IMAGE_NAME}:$TAG_NAME
-      - '--region'
+      - "--region"
       - europe-west2
-      - '--platform'
+      - "--platform"
       - managed
 options:
   logging: CLOUD_LOGGING_ONLY
