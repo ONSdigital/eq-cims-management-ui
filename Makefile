@@ -25,7 +25,7 @@ format:  ## Format the code.
 lint:  ## Run all linters (black/ruff/pylint/mypy).
 	poetry run black --check .
 	poetry run ruff check .
-	poetry run pylint -j 0 eq_cir_management_ui tests --reports=n --output-format=colorized
+	poetry run pylint -j 0 eq_cims_management_ui tests --reports=n --output-format=colorized
 	make mypy
 
 .PHONY: run
@@ -38,11 +38,11 @@ gunicorn:  ## Run the app with Gunicorn.
 
 .PHONY: test
 test:  ## Run the tests and check coverage.
-	poetry run pytest -n auto --cov=eq_cir_management_ui --cov-report term-missing --cov-fail-under=100
+	poetry run pytest -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
 
 .PHONY: mypy
 mypy:  ## Run mypy.
-	poetry run mypy eq_cir_management_ui
+	poetry run mypy eq_cims_management_ui
 
 .PHONY: install
 install:  ## Install the dependencies excluding dev.

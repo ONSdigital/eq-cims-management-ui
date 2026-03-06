@@ -1,16 +1,16 @@
-# eq-cir-management-ui
+# eq-cims-management-ui
 
-[![Build Status](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/ci.yml)
-[![Build Status](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/mega-linter.yml)
-[![Build Status](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/codeql.yml/badge.svg)](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/codeql.yml)
+[![Build Status](https://github.com/ONSdigital/eq-cims-management-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/ci.yml)
+[![Build Status](https://github.com/ONSdigital/eq-cims-management-ui/actions/workflows/mega-linter.yml/badge.svg)](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/mega-linter.yml)
+[![Build Status](https://github.com/ONSdigital/eq-cims-management-ui/actions/workflows/codeql.yml/badge.svg)](https://github.com/ONSdigital/eq-cir-management-ui/actions/workflows/codeql.yml)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linting: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 [![poetry-managed](https://img.shields.io/badge/poetry-managed-blue)](https://python-poetry.org/)
-[![License - MIT](https://img.shields.io/badge/licence%20-MIT-1ac403.svg)](https://github.com/ONSdigital/eq-cir-management-ui/blob/main/LICENSE)
+[![License - MIT](https://img.shields.io/badge/licence%20-MIT-1ac403.svg)](https://github.com/ONSdigital/eq-cims-management-ui/blob/main/LICENSE)
 
-eq-cir-management-ui
+eq-cims-management-ui
 
 ---
 
@@ -50,7 +50,7 @@ Ensure you have the following installed:
 1. Clone the repository and install the required dependencies.
 
     ```bash
-    git clone https://github.com/ONSdigital/eq-cir-management-ui.git
+    git clone https://github.com/ONSdigital/eq-cims-management-ui.git
     ```
 
 2. Install dependencies

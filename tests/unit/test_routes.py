@@ -2,8 +2,8 @@
 
 import pytest
 
-from eq_cir_management_ui import create_app
-from eq_cir_management_ui.config import config
+from eq_cims_management_ui import create_app
+from eq_cims_management_ui.config import config
 
 
 @pytest.fixture(name="test_client")

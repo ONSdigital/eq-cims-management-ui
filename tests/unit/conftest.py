@@ -6,8 +6,8 @@ These fixtures provide a test client and an application instance for unit tests.
 
 import pytest
 
-from eq_cir_management_ui import create_app
-from eq_cir_management_ui.config.config import DefaultConfig
+from eq_cims_management_ui import create_app
+from eq_cims_management_ui.config.config import DefaultConfig
 
 
 @pytest.fixture

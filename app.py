@@ -4,8 +4,8 @@ import os
 
 from dotenv import load_dotenv
 
-from eq_cir_management_ui import create_app
-from eq_cir_management_ui.config.config import DefaultConfig
+from eq_cims_management_ui import create_app
+from eq_cims_management_ui.config.config import DefaultConfig
 
 # Load .env file
 load_dotenv()

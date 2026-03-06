@@ -1,8 +1,8 @@
-"""Unit tests for the configuration module of eq_cir_management_ui."""
+"""Unit tests for the configuration module of eq_cims_management_ui."""
 
 import pytest
 
-from eq_cir_management_ui.config.config import (
+from eq_cims_management_ui.config.config import (
     DefaultConfig,
     DeployedConfig,
     ProdConfig,
