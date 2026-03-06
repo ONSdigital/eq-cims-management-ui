@@ -1,6 +1,6 @@
 FROM python:3.12-slim-bookworm
 
-WORKDIR /eq_cir_management_ui
+WORKDIR /eq_cims_management_ui
 
 COPY pyproject.toml poetry.lock ./
 

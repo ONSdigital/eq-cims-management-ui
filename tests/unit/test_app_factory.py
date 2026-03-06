@@ -6,8 +6,8 @@ design system configuration, and secure headers.
 import json
 import os
 
-from eq_cir_management_ui import create_app, design_system_config, env_override
-from eq_cir_management_ui.config.config import DefaultConfig
+from eq_cims_management_ui import create_app, design_system_config, env_override
+from eq_cims_management_ui.config.config import DefaultConfig
 
 
 class TestConfig(DefaultConfig):  # pylint: disable=too-few-public-methods

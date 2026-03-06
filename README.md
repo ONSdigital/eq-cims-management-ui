@@ -50,7 +50,7 @@ Ensure you have the following installed:
 1. Clone the repository and install the required dependencies.
 
     ```bash
-    git clone https://github.com/ONSdigital/eq-cir-management-ui.git
+    git clone https://github.com/ONSdigital/eq-cims-management-ui.git
     ```
 
 2. Install dependencies
