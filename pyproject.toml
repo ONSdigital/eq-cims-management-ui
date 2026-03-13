@@ -20,7 +20,7 @@ python-dotenv = "^1.1.1"
 # :TODO: Remove pylint when ruff supports all pylint rules
 # :TODO: Remove black when ruff supports all black rules
 pylint = "^4.0.5"
-black = "^26.3.0"
+black = "^26.3.1"
 pytest = "^9.0.2"
 pytest-xdist = "^3.8.0"
 ruff = "^0.15.5"
