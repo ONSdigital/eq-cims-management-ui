@@ -1,38 +1,43 @@
 {%- extends 'layout/_template.njk' -%}
 
-{# To update the version, alter the package.json file #}
-{% set design_system_version = ( "72.9.0" | env_override("DESIGN_SYSTEM_VERSION") ) %}
-{%
-  set pageConfig = {
-      "title": 'Collection Instrument Migration Service (CIMS)',
-      "cdn": {
-          "url": "https://cdn.ons.gov.uk/sdc/design-system/",
-          "version": design_system_version
-      },
-      "wide": true,
-  }
-%}
+{# Version set below is a fallback only, if the derived environment variable is not set #}
+{%- set release_version = ( "72.10.0"| env_override("DESIGN_SYSTEM_VERSION") ) -%}
 
-{% block header %}
-  {% from "components/header/_macro.njk" import onsHeader %}
+{% if page_title %}
+  {% set page_title_value = page_title + ' - Collection Instrument Migration Service (CIMS)' %}
+{% else %}
+  {% set page_title_value = 'Collection Instrument Migration Service (CIMS)' %}
+{% endif %}
+
+{%-
+  set pageConfig = {
+    "title": page_title_value,
+    "cdn": {
+      "url": "https://cdn.ons.gov.uk/sdc/design-system/"
+    },
+    "wide": true,
+    "cspNonce": cspNonce,
+  }
+-%}
+
+{%- block header -%}
+  {%- from "components/header/_macro.njk" import onsHeader -%}
   {{
     onsHeader({
-        "title": "CIMS Management",
-        "wide": true,
-        "mastheadlogoUrl": "/",
-        "variants": 'internal',
+      "title": "CIMS Management",
+      "wide": true,
+      "mastheadlogoUrl": "/",
+      "variants": 'internal',
     })
   }}
-{% endblock header %}
+{%- endblock header -%}
 
-{% block footer %}
-
-  {% from "components/footer/_macro.njk" import onsFooter %}
-
+{%- block footer -%}
+  {%- from "components/footer/_macro.njk" import onsFooter -%}
 
   {{
     onsFooter({
-        "wide": true,
+      "wide": true,
     })
   }}
-{% endblock footer %}
+{%- endblock footer -%}

@@ -1,23 +1,28 @@
 FROM python:3.12-slim-bookworm
 
-WORKDIR /eq_cir_management_ui
+WORKDIR /eq_cims_management_ui
 
-COPY pyproject.toml poetry.lock /eq_cir_management_ui/
+COPY pyproject.toml poetry.lock ./
 
-RUN groupadd -r appuser && useradd -r -g appuser -u 999 appuser && chown -R appuser:appuser .
+ENV WEB_SERVER_WORKERS=3
+ENV WEB_SERVER_THREADS=10
+ENV HTTP_KEEP_ALIVE=2
+ENV GUNICORN_CMD_ARGS="-c gunicorn_config.py"
+ENV LOG_LEVEL=info
 
 RUN pip install --no-cache-dir poetry==2.1.2 && \
     poetry config virtualenvs.create false && \
     poetry install --without dev
 
-COPY eq_cir_management_ui eq_cir_management_ui
+COPY . .
 
-ENV LOG_LEVEL=INFO
+RUN groupadd -r appuser && useradd -r -g appuser -u 999 appuser && \
+    chown -R appuser:appuser .
 
 USER appuser
 
 EXPOSE 5100
 
-HEALTHCHECK CMD curl --fail http://localhost:5100 || exit 1 
+HEALTHCHECK CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5100/status')" || exit 1
 
-CMD ["python", "eq_cir_management_ui.app:app", "--host", "0.0.0.0", "--port", "5100"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5100", "app:app"]

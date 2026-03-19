@@ -1,0 +1,25 @@
+{%- extends 'base.html' -%}
+{%- from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs -%}
+
+{%- block preMain -%}
+  {{
+    onsBreadcrumbs({
+        "ariaLabel": 'Breadcrumbs',
+        "itemsList": [
+            {
+                "url": '/',
+                "text": 'Home'
+            }
+        ]
+    })
+  }}
+{%- endblock preMain -%}
+
+{%- set page_title = error_content.title | default('Error') -%}
+
+{%- block main -%}
+  <h1 class="ons-u-mb-xl">{{ error_content.heading -}}</h1>
+  {%- for paragraph in error_content.message %}
+    <p>{{ paragraph | safe -}}</p>
+  {% endfor %}
+{%- endblock main -%}

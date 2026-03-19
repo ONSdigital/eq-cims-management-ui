@@ -25,20 +25,24 @@ format:  ## Format the code.
 lint:  ## Run all linters (black/ruff/pylint/mypy).
 	poetry run black --check .
 	poetry run ruff check .
-	poetry run pylint -j 0 eq_cir_management_ui tests --reports=n --output-format=colorized
+	poetry run pylint -j 0 eq_cims_management_ui tests --reports=n --output-format=colorized
 	make mypy
 
 .PHONY: run
 run:  ## Run flask on port 5100.
 	poetry run flask --app app run --port 5100
 
+.PHONY: gunicorn
+gunicorn:  ## Run the app with Gunicorn.
+	poetry run gunicorn --bind 0.0.0.0:5100 app:app
+
 .PHONY: test
 test:  ## Run the tests and check coverage.
-	poetry run pytest -n auto --cov=eq_cir_management_ui --cov-report term-missing --cov-fail-under=100
+	poetry run pytest -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
 
 .PHONY: mypy
 mypy:  ## Run mypy.
-	poetry run mypy eq_cir_management_ui
+	poetry run mypy eq_cims_management_ui
 
 .PHONY: install
 install:  ## Install the dependencies excluding dev.
@@ -53,4 +57,4 @@ megalint:  ## Run the mega-linter.
 	docker run --platform linux/amd64 --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock:rw \
 		-v $(shell pwd):/tmp/lint:rw \
-		oxsecurity/megalinter-python:v8.6.0
+		ghcr.io/oxsecurity/megalinter-python:v9.4.0

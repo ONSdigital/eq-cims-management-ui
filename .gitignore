@@ -172,3 +172,6 @@ copier_scripts/
 
 # Node Modules
 node_modules/
+
+# VSCode
+.vscode/

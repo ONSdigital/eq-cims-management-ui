@@ -1,0 +1,15 @@
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - eq-cims-management-ui
+      - "--image"
+      - ${_IMAGE_NAME}:$TAG_NAME
+      - "--region"
+      - europe-west2
+      - "--platform"
+      - managed
+options:
+  logging: CLOUD_LOGGING_ONLY
