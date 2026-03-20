@@ -1,0 +1,13 @@
+{% from "components/button/_macro.njk" import onsButton %}
+
+{%- block main -%}
+  <h1 class="ons-u-mb-xl">CI migration process</h1>
+  <p class="ons-u-mb-xl">This is a simple web application to manage the migration of CI.</p>
+
+  {{
+    onsButton({
+        "id": "create-session-btn",
+        "text": "Create session",
+    })
+  }}
+{%- endblock main -%}
