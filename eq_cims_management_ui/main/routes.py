@@ -1,11 +1,14 @@
 """Routes for the EQ CIR Management UI."""
 
 import logging
+import time
 
 from flask import (
     Blueprint,
     render_template,
     request,
+    redirect,
+    url_for
 )
 
 main_blueprint = Blueprint("main", __name__)
@@ -21,13 +24,54 @@ def before_request_func() -> None:
         logger.info(message)
 
 
-@main_blueprint.route("/", methods=["GET"])
-def index() -> str:
-    """UI index.
+@main_blueprint.route("/", methods=["GET", "POST"])
+def index():
+    """Common URL defaults.
 
-    :return: 200 index page.
+    :return: 301 redirect to start page.
     """
-    return render_template("index.html")
+
+    if request.method == "GET":
+        return render_template("index.html")
+
+    else:
+        # to be replaced by CIR and DB session calls
+        time.sleep(3)
+
+        return redirect(
+                        url_for(
+                            "main.view_session"
+                        )
+                    )
+    
+
+@main_blueprint.route("/view-session", methods=["GET", "POST"])
+def view_session():
+    """Common URL defaults.
+
+    :return: 301 redirect to start page.
+    """
+
+    if request.method == "GET":
+        return render_template("view-session.html")
+
+    else:
+
+        return redirect(
+                        url_for(
+                            "main.migrating"
+                        )
+                    )
+
+
+@main_blueprint.route("/migrating", methods=["GET", "POST"])
+def migrating():
+    """Common URL defaults.
+
+    :return: 301 redirect to start page.
+    """
+
+    return render_template("migrating.html")
 
 
 @main_blueprint.route("/status", methods=["GET"])

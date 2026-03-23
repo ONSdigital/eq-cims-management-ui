@@ -32,6 +32,10 @@ lint:  ## Run all linters (black/ruff/pylint/mypy).
 run:  ## Run flask on port 5100.
 	poetry run flask --app app run --port 5100
 
+.PHONY: run-dev
+run-dev:  ## Run flask on port 5100.
+	poetry run flask --app app --debug run --port 5100
+
 .PHONY: gunicorn
 gunicorn:  ## Run the app with Gunicorn.
 	poetry run gunicorn --bind 0.0.0.0:5100 app:app

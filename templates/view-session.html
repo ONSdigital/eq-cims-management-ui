@@ -1,36 +1,22 @@
 {%- extends 'base.html' -%}
 
-{%- from "components/input/_macro.njk" import onsInput -%}
 {%- from "components/button/_macro.njk" import onsButton -%}
 {%- from "components/table/_macro.njk" import onsTable -%}
-{%- from "partials/error_panel.html" import errorPanel -%}
 
 {%- block main -%}
 
-    {{ errorPanel(create_error_panel_data(form.errors)) }}
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
 
     <form method="post">
         {{ form.csrf_token }}
-      {{
-          onsInput({
-              "name": "validation_version",
-              "label": {
-                  "text": "Validator version",
-                  "description": "Enter a specific version to migrate to"
-              },
-              "width": 6,
-              "error": get_field_error(form.validation_version.id, form.errors),
-          })
-      }}
-      {{
-          onsButton({
-            "type": 'submit',
-            "text": 'Start migration',
-            "variants": 'small',
-            "classes": "ons-u-mt-m ons-u-mb-m"
-          })
-      }}
+        {{
+            onsButton({
+                "type": 'submit',
+                "text": 'Republish',
+                "variants": 'small',
+                "classes": "ons-u-mt-m ons-u-mb-m"
+            })
+        }}
     </form>
 
     {{

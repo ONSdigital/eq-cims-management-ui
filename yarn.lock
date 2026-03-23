@@ -2,14 +2,20 @@
 # yarn lockfile v1
 
 
-"@ons/design-system@72.9.0":
-  version "72.9.0"
-  resolved "https://registry.yarnpkg.com/@ons/design-system/-/design-system-72.9.0.tgz#e52b26c9f7fb5c4514f810a8dee2cc0d104aa09d"
-  integrity sha512-T/4M0qTUiXq3nMjW+Gndj/q6ykf0PpfaBnBLrTREnZu5aHF7BaiOKbsTHBRxImcV/GgWlxc6LDhyCEr3rZQI8g==
+"@ons/design-system@72.10.0":
+  version "72.10.0"
+  resolved "https://registry.npmjs.org/@ons/design-system/-/design-system-72.10.0.tgz"
+  integrity sha512-5Ihr9GSICCqv4a57bOuOrm7dlDABekbnLExII2Eo4WxxgKcaLgPTYVsJWioEVvditvKFSwUl2DyqwIA5PXTLkw==
   dependencies:
     highcharts "^12.1.2"
 
 highcharts@^12.1.2:
   version "12.2.0"
-  resolved "https://registry.yarnpkg.com/highcharts/-/highcharts-12.2.0.tgz#264633af7e815f0f6291c0d570b1da12e323e9de"
+  resolved "https://registry.npmjs.org/highcharts/-/highcharts-12.2.0.tgz"
   integrity sha512-UUN+osTP3aeGc4KmoMuWAjzpKif8GYHFozzYI4O8h1ILGof25M/ZGBpXLvgqf1z0LVh7N9eG7i0HnzMfjcR4nA==
+
+prettier-plugin-jinja-template@^2.1.0:
+  version "2.1.0"
+
+prettier@^3.0.0:
+  version "3.5.3"

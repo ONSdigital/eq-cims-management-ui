@@ -1,16 +1,83 @@
 {%- extends 'base.html' -%}
 
-{%- from "components/input/_macro.njk" import onsInput -%}
 {%- from "components/button/_macro.njk" import onsButton -%}
 {%- from "components/table/_macro.njk" import onsTable -%}
-{% from "partials/error_panel.html" import errorPanel %}
+{%- from "components/description-list/_macro.njk" import onsDescriptionList -%}
 
 {%- block main -%}
 
 
   <h1 class="ons-u-mb-xl">Migration in progress</h1>
 
+    <form method="post">
+        {{ form.csrf_token }}
+        {{
+            onsButton({
+                "type": 'submit',
+                "text": 'Republish',
+                "variants": ['small', 'disabled'],
+                "classes": "ons-u-mt-m ons-u-mb-m"
+            })
+        }}
+    </form>
 
+    {{
+        onsDescriptionList({
+            "classes": "ons-u-mb-no ons-u-mb-l",
+            "termCol": "2",
+            "descriptionCol": "10",
+            "itemsList": [
+                {
+                    "term": "Total CIs:",
+                    "descriptions": [
+                        {
+                            "description": "25"
+                        }
+                    ]
+                },
+                {
+                    "term": "Processed:",
+                    "descriptions": [
+                        {
+                            "description": "5 (20%)"
+                        }
+                    ]
+                },
+                {
+                    "term": "In progress:",
+                    "descriptions": [
+                        {
+                            "description": "5 (20%)"
+                        }
+                    ]
+                },
+                {
+                    "term": "Waiting:",
+                    "descriptions": [
+                        {
+                            "description": "10 (40%)"
+                        }
+                    ]
+                },
+                {
+                    "term": "Successful:",
+                    "descriptions": [
+                        {
+                            "description": "4 (16%)"
+                        }
+                    ]
+                },
+                {
+                    "term": "Failed:",
+                    "descriptions": [
+                        {
+                            "description": "1 (4%)"
+                        }
+                    ]
+                }
+            ]
+        })
+    }}
 
 
     {{
@@ -58,7 +125,7 @@
                           "value": "8.0.0"
                       },
                       {
-                          "value": "<span class='ons-status ons-status--dead'>Not started</span>",
+                          "value": "<span class='ons-status ons-status--success'>Migrated</span>",
                           "dataSort": "0"
                       }
                   ]
@@ -81,7 +148,7 @@
                           "value": "8.0.0"
                       },
                       {
-                          "value": "<span class='ons-status ons-status--dead'>Not started</span>",
+                          "value": "<span class='ons-status ons-status--success'>Migrated</span>",
                           "dataSort": "1"
                       }
                   ]
@@ -104,7 +171,7 @@
                           "value": "8.0.0"
                       },
                       {
-                          "value": "<span class='ons-status ons-status--dead'>Not started</span>",
+                          "value": "<span class='ons-status ons-status--error'>Failed</span>",
                           "dataSort": "2"
                       }
                   ]
@@ -127,7 +194,7 @@
                           "value": "8.0.0"
                       },
                       {
-                          "value": "<span class='ons-status ons-status--dead'>Not started</span>",
+                          "value": "<span class='ons-status ons-status--pending'>In progress</span>",
                           "dataSort": "3"
                       }
                   ]
