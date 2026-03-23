@@ -1,5 +1,17 @@
 {%- extends 'base.html' -%}
+{% from "components/button/_macro.njk" import onsButton %}
 
 {%- block main -%}
-  {% include "home.html" %}
+  <h1 class="ons-u-mb-xl">CI migration process</h1>
+  <p class="ons-u-mb-xl">This is a simple web application to manage the migration of CI.</p>
+  <p>{{ text }}</p>
+
+  <form action="/create-session" method="post">
+    {{
+      onsButton({
+          "id": "create-session-btn",
+          "text": "Create session",
+      })
+    }}
+  </form>
 {%- endblock main -%}

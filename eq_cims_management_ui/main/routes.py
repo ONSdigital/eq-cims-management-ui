@@ -29,6 +29,12 @@ def index() -> str:
     """
     return render_template("index.html")
 
+@main_blueprint.route("/create-session", methods=["POST"])
+def create_session() -> str:
+    # TODO: Add docstrings
+    return render_template("index.html", text="Session created")
+
+
 
 @main_blueprint.route("/status", methods=["GET"])
 def status() -> tuple[str, int]:
