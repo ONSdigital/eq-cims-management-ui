@@ -7,8 +7,10 @@ from pathlib import Path
 
 from flask import Flask
 from flask_talisman import Talisman
+from google.cloud import firestore
 from jinja2 import ChainableUndefined, FileSystemLoader
 from semver.version import Version
+from uuid import uuid4
 
 from eq_cims_management_ui.config.config import DefaultConfig
 from eq_cims_management_ui.errors.routes import errors_blueprint
@@ -38,6 +40,35 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     configure_secure_headers(app)
 
     return app
+
+# Firestore code is temporary test code
+db = firestore.Client()
+sessions = db.collection("sessions")
+
+@firestore.transactional
+def get_session_data(transaction, session_id):
+    """ Looks up (or creates) the session with the given session_id.
+        Creates a random session_id if none is provided. Increments
+        the number of views in this session. Updates are done in a
+        transaction to make sure no saved increments are overwritten.
+    """
+    if session_id is None:
+        session_id = str(uuid4())
+
+    doc_ref = sessions.document(document_id=session_id)
+    doc = doc_ref.get(transaction=transaction)
+    if doc.exists:
+        session = doc.to_dict()
+    else:
+        session = {
+            "greeting": "Hello world",
+        }
+
+    transaction.set(doc_ref, session)
+
+    session["session_id"] = session_id
+    return session
+
 
 
 def env_override(value: str, key: str) -> str:
