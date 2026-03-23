@@ -47,10 +47,6 @@ def index():
 
 @main_blueprint.route("/view-session", methods=["GET", "POST"])
 def view_session():
-    """Common URL defaults.
-
-    :return: 301 redirect to start page.
-    """
 
     if request.method == "GET":
         return render_template("view-session.html")
@@ -66,12 +62,14 @@ def view_session():
 
 @main_blueprint.route("/migrating", methods=["GET", "POST"])
 def migrating():
-    """Common URL defaults.
-
-    :return: 301 redirect to start page.
-    """
 
     return render_template("migrating.html")
+
+
+@main_blueprint.route("/ci-status/<guid>", methods=["GET"])
+def ci_status(guid):
+
+    return render_template("ci-status.html", guid=guid)
 
 
 @main_blueprint.route("/status", methods=["GET"])

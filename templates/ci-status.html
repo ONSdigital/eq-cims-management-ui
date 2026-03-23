@@ -1,0 +1,32 @@
+{%- extends 'base.html' -%}
+{%- from "components/description-list/_macro.njk" import onsDescriptionList -%}
+
+{%- block main -%}
+  <h1 class="ons-u-mb-xl">Status {{ guid }}</h1>
+
+  {{
+    onsDescriptionList({
+        "classes": "ons-u-mb-no ons-u-mb-l",
+        "termCol": "2",
+        "descriptionCol": "10",
+        "itemsList": [
+            {
+                "term": "Status:",
+                "descriptions": [
+                    {
+                        "description": "Failure"
+                    }
+                ]
+            },
+            {
+                "term": "Error message:",
+                "descriptions": [
+                    {
+                        "description": "An error occurred during processing."
+                    }
+                ]
+            }
+        ]
+    })
+  }}
+{%- endblock main -%}
