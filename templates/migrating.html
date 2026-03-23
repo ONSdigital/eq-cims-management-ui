@@ -4,6 +4,74 @@
 {%- from "components/table/_macro.njk" import onsTable -%}
 {%- from "components/description-list/_macro.njk" import onsDescriptionList -%}
 
+
+{#-- Data for table rows --#}
+{% set data = [
+    {
+        "survey_id": "023",
+        "form_type": "0001",
+        "cir_id": "a8e6ea88-4206-4eb2-b7ba-3995892bb3da",
+        "cir_version": "2",
+        "validator_version": "8.0.0",
+        "status": "success",
+        "data_sort": "0"
+    },
+    {
+        "survey_id": "023",
+        "form_type": "0001",
+        "cir_id": "31c4ef3c-6546-409e-b872-31c7658f1bb9",
+        "cir_version": "1",
+        "validator_version": "8.0.0",
+        "status": "success",
+        "data_sort": "1"
+    },
+    {
+        "survey_id": "023",
+        "form_type": "0002",
+        "cir_id": "6f6f0a18-94ab-427b-bb4a-6a0c51a4c3f1",
+        "cir_version": "1",
+        "validator_version": "8.0.0",
+        "status": "error",
+        "data_sort": "2"
+    },
+    {
+        "survey_id": "654",
+        "form_type": "0001",
+        "cir_id": "7479a196-b09b-4c91-b0d9-a51fc283ca30",
+        "cir_version": "1",
+        "validator_version": "8.0.0",
+        "status": "pending",
+        "data_sort": "3"
+    },
+    {
+        "survey_id": "765",
+        "form_type": "0001",
+        "cir_id": "5548e189-8185-42d4-b135-6baba503e067",
+        "cir_version": "1",
+        "validator_version": "8.0.0",
+        "status": "dead",
+        "data_sort": "0"
+    }
+] %}
+
+{#-- Build table rows as a list of dicts, compatible with onsTable --#}
+{% set trs = [] %}
+{% for row in data %}
+    {% set _ = trs.append({
+        "tds": [
+            {"value": row.survey_id},
+            {"value": row.form_type},
+            {"value": row.cir_id},
+            {"value": row.cir_version},
+            {"value": row.validator_version},
+            {
+                "value": "<span class='ons-status ons-status--" ~ row.status ~ "'><a href='" ~ url_for('main.ci_status', guid=row.cir_id) ~ "'>" ~ (row.status|capitalize if row.status != 'dead' else 'Not started') ~ "</a></span>",
+                "dataSort": row.data_sort
+            }
+        ]
+    }) %}
+{% endfor %}
+
 {%- block main -%}
 
 
@@ -106,123 +174,7 @@
                   "value": "Status"
               }
           ],
-          "trs": [
-              {
-                  "tds": [
-                      {
-                          "value": "023"
-                      },
-                      {
-                          "value": "0001"
-                      },
-                      {
-                          "value": "a8e6ea88-4206-4eb2-b7ba-3995892bb3da"
-                      },
-                      {
-                          "value": "2"
-                      },
-                      {
-                          "value": "8.0.0"
-                      },
-                      {
-                          "value": "<span class='ons-status ons-status--success'><a href=" + url_for('main.ci_status', guid='a8e6ea88-4206-4eb2-b7ba-3995892bb3da') + ">Success</a></span>",
-                          "dataSort": "0"
-                      }
-                  ]
-              },
-              {
-                  "tds": [
-                      {
-                          "value": "023"
-                      },
-                      {
-                          "value": "0001"
-                      },
-                      {
-                          "value": "31c4ef3c-6546-409e-b872-31c7658f1bb9"
-                      },
-                      {
-                          "value": "1"
-                      },
-                      {
-                          "value": "8.0.0"
-                      },
-                      {
-                          "value": "<span class='ons-status ons-status--success'><a href=" + url_for('main.ci_status', guid='31c4ef3c-6546-409e-b872-31c7658f1bb9') + ">Success</a></span>",
-                          "dataSort": "1"
-                      }
-                  ]
-              },
-              {
-                  "tds": [
-                      {
-                          "value": "023"
-                      },
-                      {
-                          "value": "0002"
-                      },
-                      {
-                          "value": "6f6f0a18-94ab-427b-bb4a-6a0c51a4c3f1"
-                      },
-                      {
-                          "value": "1"
-                      },
-                      {
-                          "value": "8.0.0",
-                      },
-                      {
-                          "value": "<span class='ons-status ons-status--error'><a href=" + url_for('main.ci_status', guid='6f6f0a18-94ab-427b-bb4a-6a0c51a4c3f1') + ">Failure</a></span>",
-                          "dataSort": "2"
-                      }
-                  ]
-              },
-              {
-                  "tds": [
-                      {
-                          "value": "654"
-                      },
-                      {
-                          "value": "0001"
-                      },
-                      {
-                          "value": "7479a196-b09b-4c91-b0d9-a51fc283ca30"
-                      },
-                      {
-                          "value": "1"
-                      },
-                      {
-                          "value": "8.0.0"
-                      },
-                      {
-                          "value": "<span class='ons-status ons-status--pending'><a href=" + url_for('main.ci_status', guid='7479a196-b09b-4c91-b0d9-a51fc283ca30') + ">Started</a></span>",
-                          "dataSort": "3"
-                      }
-                  ]
-              },
-              {
-                  "tds": [
-                      {
-                          "value": "765"
-                      },
-                      {
-                          "value": "0001"
-                      },
-                      {
-                          "value": "5548e189-8185-42d4-b135-6baba503e067"
-                      },
-                      {
-                          "value": "1"
-                      },
-                      {
-                          "value": "8.0.0"
-                      },
-                      {
-                          "value": "<span class='ons-status ons-status--dead'><a href=" + url_for('main.ci_status', guid='5548e189-8185-42d4-b135-6baba503e067') + ">Not started</a></span>",
-                          "dataSort": "0"
-                      }
-                  ]
-              }
-          ]
+          "trs": trs
       })
     }}
 
