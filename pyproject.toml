@@ -16,6 +16,7 @@ semver = "^3.0.4"
 gunicorn = "^25.1.0"
 python-dotenv = "^1.1.1"
 google-cloud-firestore = "^2.25.0"
+mock = "^5.2.0"
 
 [tool.poetry.group.dev.dependencies]
 # :TODO: Remove pylint when ruff supports all pylint rules

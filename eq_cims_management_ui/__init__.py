@@ -17,6 +17,8 @@ from eq_cims_management_ui.errors.routes import errors_blueprint
 from eq_cims_management_ui.main.routes import main_blueprint
 from eq_cims_management_ui.utils.routes import utils_blueprint
 
+from eq_cims_management_ui.utils.database.firestore import FirestoreClient
+
 logger = logging.getLogger()
 
 talisman = Talisman()
@@ -38,38 +40,11 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     jinja_config(app)
     design_system_config()
     configure_secure_headers(app)
+    
+    firestore_client = FirestoreClient()
+    firestore_client.create_session()
 
     return app
-
-# Firestore code is temporary test code
-db = firestore.Client()
-sessions = db.collection("sessions")
-
-@firestore.transactional
-def get_session_data(transaction, session_id):
-    """ Looks up (or creates) the session with the given session_id.
-        Creates a random session_id if none is provided. Increments
-        the number of views in this session. Updates are done in a
-        transaction to make sure no saved increments are overwritten.
-    """
-    if session_id is None:
-        session_id = str(uuid4())
-
-    doc_ref = sessions.document(document_id=session_id)
-    doc = doc_ref.get(transaction=transaction)
-    if doc.exists:
-        session = doc.to_dict()
-    else:
-        session = {
-            "greeting": "Hello world",
-        }
-
-    transaction.set(doc_ref, session)
-
-    session["session_id"] = session_id
-    return session
-
-
 
 def env_override(value: str, key: str) -> str:
     """Jinja filter to override a value with an environment variable if it exists.
