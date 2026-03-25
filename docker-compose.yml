@@ -10,16 +10,3 @@ services:
       - ./eq_cims_management_ui/devtools/firebase-emulator:/firebase
       - ./eq_cims_management_ui/devtools/firebase-emulator:/firebase/baseline-data
     container_name: firestore-cims
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 5100:5100
-    environment:
-      - PORT=5100
-      - FIRESTORE_EMULATOR_HOST=firestore:8080
-    restart: on-failure
-    depends_on:
-      - firestore
-    container_name: cims-ui

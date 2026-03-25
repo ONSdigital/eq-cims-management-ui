@@ -40,9 +40,6 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     jinja_config(app)
     design_system_config()
     configure_secure_headers(app)
-    
-    firestore_client = FirestoreClient()
-    firestore_client.create_session()
 
     return app
 
