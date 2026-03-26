@@ -1,9 +1,7 @@
 import os
 
-import mock
 from google.cloud import firestore
 from datetime import datetime
-import google.auth.credentials
 import uuid
 
 # TODO: Temporary - will be removed once implemented using live data
