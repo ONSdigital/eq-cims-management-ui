@@ -2,6 +2,7 @@ import os
 
 import mock
 from google.cloud import firestore
+from datetime import datetime
 import google.auth.credentials
 import uuid
 
@@ -15,8 +16,24 @@ class FirestoreClient: ## Might need to rename this as it's also named after Goo
         print("Firestore client created")
 
     def create_session(self):
-        document = self.client.collection("sessions").document(self.session_id)
-        document.set({"session_id": self.session_id})
+        sessions_document = self.client.collection("sessions").document(self.session_id)
+        cis_collection = sessions_document.collection("cis")
+        
+        sessions_document.set({
+            "created_at": str(datetime.now()),
+            "status": "Not started",
+        })
+        
+        cis_collection.document("list_of_cis").set({
+            "guid": str(uuid.uuid4()), 
+            "ci_version": 1,
+            "validator_version": "1.0.0",
+            "survey_id": "123",
+            "form_type": "1234",
+            "publish_date": str(datetime.now()),
+            "status": "Not started",
+            "error_message": None
+            })
         print("Added data to firestore")
     
     # Temporary method    
@@ -27,7 +44,10 @@ class FirestoreClient: ## Might need to rename this as it's also named after Goo
             print(f"{session.id} => {session.to_dict()}")
 
     def get_session(self):
-        document = self.client.collection("sessions").document(self.session_id)
-        print(document.get().to_dict())
-        return document.get().to_dict()
+        sessions_document = self.client.collection("sessions").document(self.session_id)
+        cis_document = sessions_document.collection("cis").document("list_of_cis")
+        
+        print(sessions_document.get().to_dict())
+        print(cis_document.get().to_dict())
+        return sessions_document.get().to_dict()
 
