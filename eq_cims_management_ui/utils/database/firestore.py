@@ -12,9 +12,9 @@ mock_ci_guid = str(uuid.uuid4())
 class FirestoreHandler:
     def __init__(self):
         os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
-        credentials = mock.Mock(spec=google.auth.credentials.Credentials)
+        
         self.session_id = str(uuid.uuid4())
-        self.client = firestore.Client(credentials=credentials)
+        self.client = firestore.Client()
         print("Firestore client created")
 
     def create_session(self):
