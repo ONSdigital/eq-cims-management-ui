@@ -9,7 +9,7 @@ import uuid
 # Temporary - will be removed once implemented using live data
 mock_ci_guid = str(uuid.uuid4())
 
-class FirestoreClient: ## Might need to rename this as it's also named after Google Library
+class FirestoreHandler:
     def __init__(self):
         os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
         credentials = mock.Mock(spec=google.auth.credentials.Credentials)

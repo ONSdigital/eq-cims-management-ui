@@ -17,7 +17,7 @@ from eq_cims_management_ui.errors.routes import errors_blueprint
 from eq_cims_management_ui.main.routes import main_blueprint
 from eq_cims_management_ui.utils.routes import utils_blueprint
 
-from eq_cims_management_ui.utils.database.firestore import FirestoreClient
+from eq_cims_management_ui.utils.database.firestore import FirestoreHandler
 
 logger = logging.getLogger()
 

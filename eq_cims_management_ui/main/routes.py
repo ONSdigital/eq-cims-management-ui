@@ -8,7 +8,7 @@ from flask import (
     request,
 )
 
-from eq_cims_management_ui.utils.database.firestore import FirestoreClient
+from eq_cims_management_ui.utils.database.firestore import FirestoreHandler
 
 main_blueprint = Blueprint("main", __name__)
 
@@ -34,7 +34,7 @@ def index() -> str:
 @main_blueprint.route("/create-session", methods=["POST"])
 def create_session() -> str:
     # TODO: Add docstrings
-    firestore_client = FirestoreClient()
+    firestore_client = FirestoreHandler()
     firestore_client.create_session()
     firestore_client.get_session()
     return render_template("index.html", text="Session created")
