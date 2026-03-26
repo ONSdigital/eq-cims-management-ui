@@ -14,6 +14,8 @@ main_blueprint = Blueprint("main", __name__)
 
 logger = logging.getLogger(__name__)
 
+firestore_handler = FirestoreHandler()
+
 
 @main_blueprint.before_request
 def before_request_func() -> None:
@@ -34,9 +36,8 @@ def index() -> str:
 @main_blueprint.route("/create-session", methods=["POST"])
 def create_session() -> str:
     # TODO: Add docstrings
-    firestore_client = FirestoreHandler()
-    firestore_client.create_session()
-    firestore_client.get_session()
+    firestore_handler.create_session()
+    firestore_handler.read_latest_session()
     return render_template("index.html", text="Session created")
 
 
