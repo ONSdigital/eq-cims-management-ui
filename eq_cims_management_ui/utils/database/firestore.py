@@ -6,8 +6,10 @@ from datetime import datetime
 import google.auth.credentials
 import uuid
 
-class FirestoreClient: ## Might need to rename this as it's also named after Google Library
+# Temporary - will be removed once implemented using live data
+mock_ci_guid = str(uuid.uuid4())
 
+class FirestoreClient: ## Might need to rename this as it's also named after Google Library
     def __init__(self):
         os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
         credentials = mock.Mock(spec=google.auth.credentials.Credentials)
@@ -24,8 +26,9 @@ class FirestoreClient: ## Might need to rename this as it's also named after Goo
             "status": "Not started",
         })
         
-        cis_collection.document("list_of_cis").set({
-            "guid": str(uuid.uuid4()), 
+        # Temporary mock data - will be removed once implemented using live data
+        cis_collection.document(mock_ci_guid).set({
+            "guid": mock_ci_guid, 
             "ci_version": 1,
             "validator_version": "1.0.0",
             "survey_id": "123",
@@ -45,9 +48,12 @@ class FirestoreClient: ## Might need to rename this as it's also named after Goo
 
     def get_session(self):
         sessions_document = self.client.collection("sessions").document(self.session_id)
-        cis_document = sessions_document.collection("cis").document("list_of_cis")
+        
+        # Mock data - will be removed once implemented using live data
+        all_cis_docs = sessions_document.collection("cis").stream()
+        for ci in all_cis_docs:
+            print(f"{ci.id} => {ci.to_dict()}")
         
         print(sessions_document.get().to_dict())
-        print(cis_document.get().to_dict())
         return sessions_document.get().to_dict()
 
