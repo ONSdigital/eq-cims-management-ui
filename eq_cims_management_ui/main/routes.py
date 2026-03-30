@@ -35,7 +35,12 @@ def index() -> str:
 
 @main_blueprint.route("/create-session", methods=["POST"])
 def create_session() -> str:
-    # TODO: Add docstrings
+    """Creates a new session in the Firestore databases and returns a list of CIs to render on the page.
+
+    Returns:
+        str: A rendered HTML page with a message indicating that the session was created. Note: To be updated to
+        return a rendered page with a list of CIs.
+    """
     firestore_handler.create_session()
     firestore_handler.read_latest_session()
     return render_template("index.html", text="Session created")
