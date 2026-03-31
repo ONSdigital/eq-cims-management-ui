@@ -21,27 +21,34 @@ class FirestoreHandler:
     def __init__(self):
         os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
         self.client = firestore.Client()
+        self.latest_session_document = None
 
     def create_session(self):
         """Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
         particularly the time of creation and status of the session.
         """
         session_id = str(uuid.uuid4())
-        sessions_document = self.client.collection("sessions").document(session_id)
+        latest_session_document = self.client.collection("sessions").document(session_id)
         
-        sessions_document.set({
+        latest_session_document.set({
             "created_at": str(datetime.now()),
             "status": "Not started",
         })        
             
-        return sessions_document
+        self.latest_session_document = latest_session_document
 
-    def read_latest_session(self, sessions_document):
+    def read_latest_session(self):
         """Reads the latest session from the Firestore database, retrieving all the CIs alongside the relevant data.
         
         Returns:
             dict: The list of CIs from the database.
         """
-        print(sessions_document.get().to_dict())
-        return sessions_document.get().to_dict()
+        # TODO: Remove commented code (unused)
+        # all_sessions_docs = self.client.collection("sessions").stream()
+        # for session in all_sessions_docs:
+        #     print(f"{session.id} => {session.to_dict()}")
+        
+        print(self.latest_session_document.get().to_dict())
+        
+        return self.latest_session_document.get().to_dict()
 

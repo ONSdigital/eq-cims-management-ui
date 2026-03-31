@@ -41,8 +41,8 @@ def create_session() -> str:
         str: A rendered HTML page with a message indicating that the session was created. Note: To be updated to
         return a rendered page with a list of CIs.
     """
-    created_session = firestore_handler.create_session()
-    firestore_handler.read_latest_session(created_session)
+    firestore_handler.create_session()
+    firestore_handler.read_latest_session()
     return render_template("index.html", text="Session created")
 
 
