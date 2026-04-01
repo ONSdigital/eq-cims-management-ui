@@ -25,7 +25,7 @@ pytest = "^9.0.2"
 pytest-xdist = "^3.8.0"
 ruff = "^0.15.8"
 pytest-cov = "^7.1.0"
-mypy = "^1.18.2"
+mypy = "^1.20.0"
 
 [tool.black]
 line-length = 120
