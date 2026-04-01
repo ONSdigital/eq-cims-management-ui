@@ -43,12 +43,13 @@ class FirestoreHandler:
         Returns:
             dict: The list of CIs from the database.
         """
-        # TODO: Remove commented code (unused)
-        # all_sessions_docs = self.client.collection("sessions").stream()
-        # for session in all_sessions_docs:
-        #     print(f"{session.id} => {session.to_dict()}")
+        # TODO: Remove these three lines code (unused, outputs every session when only the latest session needs to be read)
+        all_sessions_docs = self.client.collection("sessions").stream()
+        for session in all_sessions_docs:
+            print(f"{session.id} => {session.to_dict()}")
         
-        print(self.latest_session_document.get().to_dict())
+        # TODO: Uncomment this line
+        # print(self.latest_session_document.get().to_dict())
         
         return self.latest_session_document.get().to_dict()
 
