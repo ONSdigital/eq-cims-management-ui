@@ -15,9 +15,9 @@ def test_create_session(monkeypatch):
 
     firestore_handler = FirestoreHandler()
 
-    document = firestore_handler.create()
+    firestore_handler.create_session()
 
-    assert document.get().to_dict() == {"created_at": "2020-01-01", "status": "Not started"}
+    assert firestore_handler.latest_session_document.get().to_dict() == {"created_at": "2020-01-01", "status": "Not started"}
 
 
 

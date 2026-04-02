@@ -35,7 +35,7 @@ class FirestoreHandler:
             "status": "Not started",
         })
 
-        return latest_session_document
+        self.latest_session_document = latest_session_document
 
     def read_latest_session(self):
         """Reads the latest session from the Firestore database, retrieving all the CIs alongside the relevant data.
