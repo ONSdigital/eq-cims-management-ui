@@ -7,17 +7,13 @@ from pathlib import Path
 
 from flask import Flask
 from flask_talisman import Talisman
-from google.cloud import firestore
 from jinja2 import ChainableUndefined, FileSystemLoader
 from semver.version import Version
-from uuid import uuid4
 
 from eq_cims_management_ui.config.config import DefaultConfig
 from eq_cims_management_ui.errors.routes import errors_blueprint
 from eq_cims_management_ui.main.routes import main_blueprint
 from eq_cims_management_ui.utils.routes import utils_blueprint
-
-from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 
 logger = logging.getLogger()
 
@@ -42,6 +38,7 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     configure_secure_headers(app)
 
     return app
+
 
 def env_override(value: str, key: str) -> str:
     """Jinja filter to override a value with an environment variable if it exists.

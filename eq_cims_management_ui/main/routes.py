@@ -8,13 +8,11 @@ from flask import (
     request,
 )
 
-from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
+from eq_cims_management_ui.utils.database.firestore_logic import create_session
 
 main_blueprint = Blueprint("main", __name__)
 
 logger = logging.getLogger(__name__)
-
-from eq_cims_management_ui.utils.database.firestore_logic import create_session
 
 
 @main_blueprint.before_request
@@ -33,6 +31,7 @@ def index() -> str:
     """
     return render_template("index.html")
 
+
 @main_blueprint.route("/session", methods=["POST"])
 def create_and_view_session() -> str:
     """Creates a new session in the Firestore databases and returns a list of CIs to render on the page.
@@ -41,7 +40,6 @@ def create_and_view_session() -> str:
         str: A rendered HTML page with a message indicating that the session was created. Note: To be updated to
         return a rendered page with a list of CIs.
     """
-    # TODO: Add functionality for "view session"
     create_session()
     return render_template("index.html", text="Session created")
 
