@@ -58,3 +58,11 @@ megalint:  ## Run the mega-linter.
 		-v /var/run/docker.sock:/var/run/docker.sock:rw \
 		-v $(shell pwd):/tmp/lint:rw \
 		ghcr.io/oxsecurity/megalinter-python:v9.4.0
+
+.PHONY: dev-compose-up
+dev-compose-up:
+	docker compose -f docker-compose-dev.yml up -d
+
+.PHONY: dev-compose-down
+dev-compose-down:
+	docker compose -f docker-compose-dev.yml down
