@@ -7,7 +7,9 @@ from flask import (
     render_template,
     request,
 )
+from google.api_core.exceptions import RetryError
 
+from eq_cims_management_ui.errors.routes import error_content_500
 from eq_cims_management_ui.utils.database.firestore_logic import create_session
 
 main_blueprint = Blueprint("main", __name__)
@@ -40,8 +42,11 @@ def create_and_view_session() -> str:
         str: A rendered HTML page with a message indicating that the session was created. Note: To be updated to
         return a rendered page with a list of CIs.
     """
-    create_session()
-    return render_template("index.html", text="Session created")
+    try:
+        create_session()
+        return render_template("index.html", text="Session created")
+    except RetryError:
+        return render_template("error.html", error_content=error_content_500)
 
 
 @main_blueprint.route("/status", methods=["GET"])
