@@ -12,6 +12,6 @@ def mock_firestore_client(monkeypatch):
     mock_client.collection.return_value = mock_collection
     mock_collection.document.return_value = mock_document
 
-    mock_document.get.return_value = MagicMock(to_dict=lambda: {"created_at": "2020-01-01", "status": "Not started"})
+    mock_document.get.return_value = MagicMock(to_dict=lambda: {'status': 'Not started', 'created_at': '2026-04-02 12:17:04.1775128624'})
 
     monkeypatch.setattr("google.cloud.firestore.Client", lambda: mock_client)

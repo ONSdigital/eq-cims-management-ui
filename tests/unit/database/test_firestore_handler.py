@@ -10,6 +10,6 @@ def test_create_session():
     firestore_handler.create_session()
 
     assert firestore_handler.latest_session_document.get().to_dict() == {
-        "created_at": "2020-01-01",
+        "created_at": "2026-04-02 12:17:04.1775128624",
         "status": "Not started",
     }
