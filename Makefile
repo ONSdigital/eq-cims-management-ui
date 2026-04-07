@@ -40,6 +40,10 @@ gunicorn:  ## Run the app with Gunicorn.
 test:  ## Run the tests and check coverage.
 	poetry run pytest -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
 
+.PHONY: test-functional
+test-functional:  ## Run the functional tests.
+	npx playwright test
+
 .PHONY: mypy
 mypy:  ## Run mypy.
 	poetry run mypy eq_cims_management_ui
