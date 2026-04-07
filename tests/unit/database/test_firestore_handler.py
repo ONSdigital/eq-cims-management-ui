@@ -1,4 +1,5 @@
 import pytest
+from google.api_core.exceptions import RetryError
 
 from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 
@@ -7,9 +8,19 @@ from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHand
 def test_create_session():
     firestore_handler = FirestoreHandler()
 
-    firestore_handler.create_session()
+    session_document = firestore_handler.create_session()
 
-    assert firestore_handler.latest_session_document.get().to_dict() == {
+    assert session_document.get().to_dict() == {
         "created_at": "2026-04-02 12:17:04.1775128624",
         "status": "Not started",
     }
+
+@pytest.mark.usefixtures("mock_erroneous_firestore_client")
+def test_create_session_fails(monkeypatch):
+    firestore_handler = FirestoreHandler()
+
+    with pytest.raises(RetryError):
+        session_document = firestore_handler.create_session()
+        assert session_document is None
+
+
