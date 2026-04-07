@@ -9,6 +9,8 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from google.api_core.exceptions import RetryError
+from google.api_core.retry import Retry
 from google.cloud import firestore
 
 
@@ -23,7 +25,6 @@ class FirestoreHandler:
     def __init__(self):
         os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
         self.client = firestore.Client()
-        self.latest_session_document = None
 
     def create_session(self):
         """Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
@@ -32,14 +33,18 @@ class FirestoreHandler:
         session_id = str(uuid.uuid4())
         latest_session_document = self.client.collection("sessions").document(session_id)
 
-        latest_session_document.set(
-            {
-                "created_at": str(datetime.now(ZoneInfo("Europe/London")).strftime("%Y-%m-%d %H:%M:%S.%s")),
-                "status": "Not started",
-            },
-        )
+        try:
+            latest_session_document.set(
+                {
+                    "created_at": str(datetime.now(ZoneInfo("Europe/London")).strftime("%Y-%m-%d %H:%M:%S.%s")),
+                    "status": "Not started",
+                },
+                retry=Retry(timeout=15),
+            )
+        except RetryError as error:
+            raise RetryError(cause=error, message="Failed to create session in Firestore database.")
 
-        self.latest_session_document = latest_session_document
+        return latest_session_document
 
     def read_latest_session(self):
         """Reads the latest session from the Firestore database, retrieving all the CIs alongside the relevant data.

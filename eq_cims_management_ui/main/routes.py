@@ -42,11 +42,11 @@ def create_and_view_session() -> str:
         str: A rendered HTML page with a message indicating that the session was created. Note: To be updated to
         return a rendered page with a list of CIs.
     """
-    try:
-        create_session()
+
+    session = create_session()
+    if session:
         return render_template("index.html", text="Session created")
-    except RetryError:
-        return render_template("error.html", error_content=error_content_500)
+    return render_template("error.html", error_content=error_content_500)
 
 
 @main_blueprint.route("/status", methods=["GET"])

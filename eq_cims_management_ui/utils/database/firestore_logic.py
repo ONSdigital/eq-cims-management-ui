@@ -2,6 +2,8 @@ from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHand
 
 def create_session():
     firestore_handler = FirestoreHandler()
-    firestore_handler.create_session()
+    session = firestore_handler.create_session()
+
+    return session
 
 
