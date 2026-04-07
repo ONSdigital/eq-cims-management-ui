@@ -5,5 +5,3 @@ def create_session():
     session = firestore_handler.create_session()
 
     return session
-
-

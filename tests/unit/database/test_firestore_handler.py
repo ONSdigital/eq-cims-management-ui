@@ -16,7 +16,7 @@ def test_create_session():
     }
 
 @pytest.mark.usefixtures("mock_erroneous_firestore_client")
-def test_create_session_fails(monkeypatch):
+def test_create_session_fails():
     firestore_handler = FirestoreHandler()
 
     with pytest.raises(RetryError):
