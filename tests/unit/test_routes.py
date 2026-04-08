@@ -4,6 +4,7 @@ import pytest
 
 from eq_cims_management_ui import create_app
 from eq_cims_management_ui.config import config
+from eq_cims_management_ui.utils.database.firestore_logic import create_session
 
 
 @pytest.fixture(name="test_client")
@@ -62,3 +63,16 @@ def test_favicon(test_client):
     assert response.status_code == 200
     assert response.mimetype == "image/vnd.microsoft.icon"
     assert response.data  # Make sure it's not empty
+
+
+@pytest.mark.usefixtures("mock_firestore_client")
+def test_create_session(test_client):
+    response = test_client.post("/session")
+    assert response.status_code == 200
+    assert response.data  # Ensure it's not empty
+
+
+@pytest.mark.usefixtures("mock_erroneous_firestore_client")
+def test_create_session_fails(test_client):
+    response = test_client.post("/session")
+    assert response.status_code == 500
