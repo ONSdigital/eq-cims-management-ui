@@ -26,7 +26,7 @@ class FirestoreHandler:
         os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
         self.client = firestore.Client()
 
-    def create_session(self):
+    def create_new_session(self):
         """Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
         particularly the time of creation and status of the session.
         """
@@ -45,12 +45,3 @@ class FirestoreHandler:
             raise RetryError(cause=error, message="Failed to create session in Firestore database.")
 
         return latest_session_document
-
-    def read_latest_session(self):
-        """Reads the latest session from the Firestore database, retrieving all the CIs alongside the relevant data.
-
-        Returns:
-            dict: The list of CIs from the database.
-        """
-        print(self.latest_session_document.get().to_dict())
-        return self.latest_session_document.get().to_dict()
