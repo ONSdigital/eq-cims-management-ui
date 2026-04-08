@@ -11,8 +11,5 @@
   "dependencies": {
     "@ons/design-system": "72.10.0",
     "prettier-plugin-jinja-template": "^2.1.0"
-  },
-  "devDependencies": {
-    "@playwright/test": "1.59.1"
   }
 }
