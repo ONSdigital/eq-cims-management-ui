@@ -42,7 +42,11 @@ test:  ## Run the tests and check coverage.
 
 .PHONY: test-functional
 test-functional:  ## Run the functional tests.
-	npx playwright test
+	poetry run pytest tests/functional/**
+
+.PHONY: test-functional
+test-unit:  ## Run the unit tests.
+	poetry run pytest tests/unit/** -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
 
 .PHONY: mypy
 mypy:  ## Run mypy.
