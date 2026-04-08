@@ -35,18 +35,18 @@ def index() -> str:
 
 
 @main_blueprint.route("/session", methods=["POST"])
-def create_and_view_session() -> str:
+def create_and_view_session() -> str | tuple[str, int]:
     """Creates a new session in the Firestore databases and returns a list of CIs to render on the page.
 
     Returns:
         str: A rendered HTML page with a message indicating that the session was created. Note: To be updated to
         return a rendered page with a list of CIs.
     """
-
-    session = create_session()
-    if session:
-        return render_template("index.html", text="Session created")
-    return render_template("error.html", error_content=error_content_500)
+    try:
+        create_session()
+        return render_template("index.html", text="Session Created")
+    except RetryError:
+        return render_template("error.html", error_content=error_content_500), 500
 
 
 @main_blueprint.route("/status", methods=["GET"])
