@@ -44,7 +44,7 @@ def create_and_view_session() -> str | tuple[str, int]:
     """
     try:
         create_session()
-        return render_template("index.html", text="Session Created")
+        return render_template("index.html", text="Session created")
     except RetryError:
         return render_template("error.html", error_content=error_content_500), 500
 
