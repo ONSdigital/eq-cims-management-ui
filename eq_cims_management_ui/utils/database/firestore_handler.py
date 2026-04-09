@@ -23,7 +23,7 @@ class FirestoreHandler:
         read_latest_session
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         os.getenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
         self.client = firestore.Client()
 
