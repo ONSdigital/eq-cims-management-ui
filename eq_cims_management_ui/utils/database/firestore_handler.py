@@ -24,7 +24,7 @@ class FirestoreHandler:
     """
 
     def __init__(self) -> None:
-        os.getenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
+        os.getenv("FIRESTORE_EMULATOR_HOST")
         self.client = firestore.Client()
 
     def create_new_session(self) -> BaseDocumentReference:
