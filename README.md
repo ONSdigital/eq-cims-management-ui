@@ -24,7 +24,9 @@ eq-cims-management-ui
     - [Pre-requisites](#pre-requisites)
     - [Installation](#installation)
 - [Development](#development)
-    - [Run Tests with Coverage](#run-tests-with-coverage)
+    - [Run All Tests](#run-all-tests)
+    - [Run Tests with Coverage](#run-unit-tests-with-coverage)
+    - [Run Functional Tests](#run-functional-tests)
     - [Linting and Formatting](#linting-and-formatting)
 - [Contributing](#contributing)
 - [License](#license)
@@ -125,13 +127,38 @@ The `@ons/design-system` package is then automatically added to the jinja config
 The used design system version is pulled directly from the version in package.json.
 A fallback version is set in `templates/base.html`.
 
-### Run Tests with Coverage
+### Run All Tests
+
+To run all functional and unit tests, run the following commands (*Note: Functional tests require an instance
+of the Firestore Emulator to be running*):
+
+```bash
+make dev-compose-up
+```
+```bash
+make test
+```
+
+### Run Unit Tests with Coverage
 
 The unit tests are written using the [pytest](https://docs.pytest.org/en/stable/) framework. To run the tests and check
 coverage, run:
 
 ```bash
-make test
+make test-unit
+```
+
+### Run Functional Tests
+
+The functional tests are written in Python using the Playwright framework. Functional tests require a running
+instance of the Firestore Emulator. To run the functional tests, use the following commands:
+
+```bash
+make dev-compose-up
+```
+
+```bash
+make test-functional
 ```
 
 ### Linting and Formatting
