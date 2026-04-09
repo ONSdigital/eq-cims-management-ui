@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
 from google.cloud import firestore
+from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 
 class FirestoreHandler:
@@ -26,7 +27,7 @@ class FirestoreHandler:
         os.getenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
         self.client = firestore.Client()
 
-    def create_new_session(self):
+    def create_new_session(self) -> BaseDocumentReference:
         """Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
         particularly the time of creation and status of the session.
         """
