@@ -41,11 +41,11 @@ jobs:
       - name: Unit Tests
         run: make test
 
-      - name: Docker compose up
-        run: make dev-compose-up
+      - name: Docker compose
+        run: docker compose up --build -d
 
       - name: Functional Tests
         run: make test-functional
 
       - name: Docker compose shutdown
-        run: make dev-compose-down
+        run: docker compose kill
