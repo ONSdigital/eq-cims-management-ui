@@ -4,7 +4,6 @@ import pytest
 
 from eq_cims_management_ui import create_app
 from eq_cims_management_ui.config import config
-from eq_cims_management_ui.utils.database.firestore_logic import create_session
 
 
 @pytest.fixture(name="test_client")
@@ -67,6 +66,9 @@ def test_favicon(test_client):
 
 @pytest.mark.usefixtures("mock_firestore_client")
 def test_create_session(test_client):
+    """GIVEN a call to the session endpoint.
+    THEN 200 is returned.
+    """
     response = test_client.post("/session")
     assert response.status_code == 200
     assert response.data  # Ensure it's not empty
@@ -74,5 +76,8 @@ def test_create_session(test_client):
 
 @pytest.mark.usefixtures("mock_erroneous_firestore_client")
 def test_create_session_fails(test_client):
+    """GIVEN a call to the session endpoint where the database instance isn't present.
+    THEN 500 is returned.
+    """
     response = test_client.post("/session")
     assert response.status_code == 500

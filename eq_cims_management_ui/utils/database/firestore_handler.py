@@ -23,7 +23,7 @@ class FirestoreHandler:
     """
 
     def __init__(self):
-        os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
+        os.getenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
         self.client = firestore.Client()
 
     def create_new_session(self):
@@ -42,6 +42,6 @@ class FirestoreHandler:
                 retry=Retry(timeout=15),
             )
         except RetryError as error:
-            raise RetryError(cause=error, message="Failed to create session in Firestore database.")
+            raise RetryError(cause=error, message="Failed to create session in Firestore database.") from error
 
         return latest_session_document

@@ -1,3 +1,5 @@
+"""This module contains tests for the firestore_logic module to ensure business logic is working as expected."""
+
 import pytest
 
 from eq_cims_management_ui.utils.database.firestore_logic import create_session

@@ -3,6 +3,7 @@
 """Fixtures for testing the EQ CIR Management UI application.
 These fixtures provide a test client and an application instance for unit tests.
 """
+
 from unittest.mock import MagicMock
 
 import pytest
@@ -43,6 +44,13 @@ def client(app):
 
 @pytest.fixture
 def mock_firestore_client(monkeypatch):
+    """Fixture to mock the Firestore client and all interactions with the database
+    for testing purposes. Sets the value returned by the get method of the document
+    reference to a predefined output of session data.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the firestore client.
+    """
     mock_client = MagicMock()
     mock_collection = MagicMock()
     mock_document = MagicMock()
@@ -50,13 +58,23 @@ def mock_firestore_client(monkeypatch):
     mock_client.collection.return_value = mock_collection
     mock_collection.document.return_value = mock_document
 
-    mock_document.get.return_value = MagicMock(to_dict=lambda: {'status': 'Not started', 'created_at': '2026-04-02 12:17:04.1775128624'})
+    mock_document.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Not started", "created_at": "2026-04-02 12:17:04.1775128624"},
+    )
 
     monkeypatch.setattr("google.cloud.firestore.Client", lambda: mock_client)
 
 
 @pytest.fixture
 def mock_erroneous_firestore_client(monkeypatch):
+    """Fixture to mock an erroneous/missing Firestore client and all interactions with
+    the database for testing purposes. Mocks the set method of the document reference to
+    raise a RetryError when called. This simulates an error when trying to create a session with
+    an erroneous database instance.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the firestore client.
+    """
     mock_client = MagicMock()
     mock_collection = MagicMock()
     mock_document = MagicMock()
