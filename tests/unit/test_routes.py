@@ -65,19 +65,20 @@ def test_favicon(test_client):
 
 
 @pytest.mark.usefixtures("mock_firestore_client")
-def test_create_session(test_client):
-    """GIVEN a call to the session endpoint.
+def test_view_session(test_client):
+    """GIVEN a call to the view-session endpoint.
     THEN 200 is returned.
     """
-    response = test_client.post("/session")
+    response = test_client.get("/view-session")
+    
     assert response.status_code == 200
     assert response.data  # Ensure it's not empty
 
 
 @pytest.mark.usefixtures("mock_erroneous_firestore_client")
 def test_create_session_fails(test_client):
-    """GIVEN a call to the session endpoint where the database instance isn't present.
+    """GIVEN a call to the create_session function where the database instance isn't present.
     THEN 500 is returned.
     """
-    response = test_client.post("/session")
+    response = test_client.post("/")
     assert response.status_code == 500
