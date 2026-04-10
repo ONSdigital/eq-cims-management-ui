@@ -25,6 +25,7 @@ def test_confirmation_text_displayed_on_session_creation(page: Page):
     create_session_button.click()
     
     expect(page.get_by_role("heading", name=re.compile(r"Collection instruments"))).to_be_visible()
+    expect(page.get_by_test_id("republish-btn")).to_be_visible()
     
     expect(page.get_by_role("table")).to_be_visible()
     
