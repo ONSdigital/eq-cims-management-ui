@@ -24,6 +24,7 @@ eq-cims-management-ui
     - [Pre-requisites](#pre-requisites)
     - [Installation](#installation)
 - [Development](#development)
+    - [Run Application with Database](#run-application-with-database)
     - [Run All Tests](#run-all-tests)
     - [Run Tests with Coverage](#run-unit-tests-with-coverage)
     - [Run Functional Tests](#run-functional-tests)
@@ -126,6 +127,31 @@ The `@ons/design-system` package is then automatically added to the jinja config
 
 The used design system version is pulled directly from the version in package.json.
 A fallback version is set in `templates/base.html`.
+
+
+### Run Application with Database
+
+To run the application with a local database, you will need to complete the following steps:
+
+- Create or update a `.env` file to contain the following environment variable:
+
+```text
+FIRESTORE_EMULATOR_HOST="localhost:8080"
+```
+
+- To run the application locally with a Firestore emulator, use the following commands:
+
+```bash
+make dev-compose-up
+make run
+```
+
+- Alternatively, you can use the following commands to run both the application and Firestore emulator with Docker:
+
+```bash
+docker-compose build
+docker-compose up -d
+```
 
 ### Run All Tests
 
