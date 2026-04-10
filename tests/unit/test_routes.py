@@ -23,7 +23,7 @@ def create_client():
         yield client
 
 
-def test_index_route(test_client):
+def test_index_route_get_method(test_client):
     """Test the index route of the application.
 
     This test sends a GET request to the root URL ("/") using the test client
@@ -35,14 +35,17 @@ def test_index_route(test_client):
     assert "CI migration process" in response.get_data(as_text=True)
 
 
-def test_index_route_post_method_not_allowed(test_client):
+@pytest.mark.usefixtures("mock_firestore_client")
+def test_index_route_post_method(test_client):
     """Test the index route with POST method.
 
     This test sends a POST request to the root URL ("/") using the test client
-    and verifies that the response has a status code of 405 (Method Not Allowed).
+    and verifies that the response navigates to the "/view-session" endpoint.
     """
-    response = test_client.post("/")
-    assert response.status_code == 405
+    response = test_client.post("/", follow_redirects=True)
+    
+    assert response.status_code == 200
+    assert response.request.path == "/view-session"
 
 
 def test_status_check(test_client):
