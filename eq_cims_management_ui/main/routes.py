@@ -33,9 +33,9 @@ def index() -> str | Response | tuple[str, int]:
     GET: Retrieve UI index.
     POST: Create a new session in the Firestore database.
 
-    return: 
+    Returns: 
         str (GET request): 200 index page.
-        Response (POST request): A rendered HTML page with a message indicating that the session was created.
+        Response (POST request): A redirect to the view-session page if the session is created successfully.
         tuple[str, int] (POST request): An error page with a 500 status code indicating that the session could not be created.
     """
     if request.method == "POST":
@@ -48,18 +48,13 @@ def index() -> str | Response | tuple[str, int]:
 
 
 @main_blueprint.route("/view-session", methods=["GET"])
-def create_and_view_session() -> str | tuple[str, int]:
-    """Creates a new session in the Firestore databases and returns a list of CIs to render on the page.
+def view_session() -> str | tuple[str, int]:
+    """Render a template for the view session page.
 
     Returns:
-        str: A rendered HTML page with a message indicating that the session was created. Note: To be updated to
-        return a rendered page with a list of CIs.
+        str: A rendered HTML page containing a table of sample CIs.
     """
-    try:
-        # create_session()
-        return render_template("view-session.html")
-    except RetryError:
-        return render_template("error.html", error_content=error_content_500), 500
+    return render_template("view-session.html")
 
 
 @main_blueprint.route("/status", methods=["GET"])
@@ -70,14 +65,3 @@ def status() -> tuple[str, int]:
     """
     logger.info("Status check hit")
     return "", 200
-
-
-# @main_blueprint.route("/view-session", methods=["GET"])
-# def view_session() -> str:
-#     """Outputs a table containing CIs in the latest session created.
-
-#     :return: 200 view-session page.
-#     """
-    
-#     return render_template("view-session.html")
-
