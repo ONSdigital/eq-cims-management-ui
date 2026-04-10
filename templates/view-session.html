@@ -1,4 +1,4 @@
-{%- extends 'base.html' -%}
+{%- extends "base.html" -%}
 
 {%- from "components/button/_macro.njk" import onsButton -%}
 {%- from "components/table/_macro.njk" import onsTable -%}
@@ -11,9 +11,9 @@
         {{ form.csrf_token }}
         {{
             onsButton({
-                "type": 'submit',
-                "text": 'Republish',
-                "variants": 'small',
+                "type": "submit",
+                "text": "Republish",
+                "variants": "small",
                 "classes": "ons-u-mt-m ons-u-mb-m"
             })
         }}
@@ -21,7 +21,7 @@
 
     {{
         onsTable({
-            "variants": 'sortable',
+            "variants": "sortable",
             "sortBy": "Sort by",
             "ariaAsc": "ascending",
             "ariaDesc": "descending",
