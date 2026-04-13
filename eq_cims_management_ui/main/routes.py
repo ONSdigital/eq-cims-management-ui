@@ -4,10 +4,10 @@ import logging
 
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    request,
     Response,
+    redirect,
+    render_template,
+    request,
 )
 from google.api_core.exceptions import RetryError
 
@@ -33,10 +33,10 @@ def index() -> str | Response | tuple[str, int]:
     GET: Retrieve UI index.
     POST: Create a new session in the Firestore database.
 
-    Returns: 
-        str (GET request): 200 index page.
-        Response (POST request): A redirect to the view-session page if the session is created successfully.
-        tuple[str, int] (POST request): An error page with a 500 status code indicating that the session could not be created.
+    Returns:
+        str (GET): 200 index page.
+        Response (POST): A redirect to the view-session page if the session is created successfully.
+        tuple[str, int] (POST): An error page with a 500 status code indicating that the session couldn't be created.
     """
     if request.method == "POST":
         try:

@@ -128,7 +128,6 @@ The `@ons/design-system` package is then automatically added to the jinja config
 The used design system version is pulled directly from the version in package.json.
 A fallback version is set in `templates/base.html`.
 
-
 ### Run Application with Database
 
 To run the application with a local database, you will need to complete the following steps:
@@ -161,6 +160,7 @@ of the Firestore Emulator to be running*):
 ```bash
 make dev-compose-up
 ```
+
 ```bash
 make test
 ```

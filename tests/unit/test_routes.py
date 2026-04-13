@@ -43,7 +43,7 @@ def test_index_route_post_method(test_client):
     and verifies that the response navigates to the "/view-session" endpoint.
     """
     response = test_client.post("/", follow_redirects=True)
-    
+
     assert response.status_code == 200
     assert response.request.path == "/view-session"
 
@@ -73,7 +73,7 @@ def test_view_session(test_client):
     THEN 200 is returned.
     """
     response = test_client.get("/view-session")
-    
+
     assert response.status_code == 200
     assert response.data  # Ensure it's not empty
 

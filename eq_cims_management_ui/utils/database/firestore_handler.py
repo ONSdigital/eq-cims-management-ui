@@ -2,6 +2,9 @@
 
 Classes:
     FirestoreHandler
+
+Raises:
+    RetryError
 """
 
 import os
@@ -15,6 +18,7 @@ from google.cloud import firestore
 from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 
+# pylint: disable=too-few-public-methods
 class FirestoreHandler:
     """Handles CRUD interactions with the Firestore database to allow CIs and user sessions to be managed.
 

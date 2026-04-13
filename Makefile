@@ -61,7 +61,7 @@ install-dev:  ## Install the dependencies including dev.
 	poetry install
 
 .PHONY: megalint
-megalint:  ## Run the mega-linter.
+megalint: clean ## Run the mega-linter.
 	docker run --platform linux/amd64 --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock:rw \
 		-v $(shell pwd):/tmp/lint:rw \
