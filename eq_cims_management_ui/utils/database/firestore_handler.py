@@ -26,7 +26,6 @@ class FirestoreHandler:
 
     Methods:
         create_session
-        read_latest_session
     """
 
     def __init__(self) -> None:
