@@ -1,4 +1,5 @@
-"""This module provides the FirestoreHandler class which is responsible for interacting with the Firestore database.
+"""
+This module provides the FirestoreHandler class which is responsible for interacting with the Firestore database.
 
 Classes:
     FirestoreHandler
@@ -12,15 +13,16 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+import google.cloud.firestore as firestore
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
-from google.cloud import firestore
 from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 
 # pylint: disable=too-few-public-methods
 class FirestoreHandler:
-    """Handles CRUD interactions with the Firestore database to allow CIs and user sessions to be managed.
+    """
+    Handles CRUD interactions with the Firestore database to allow CIs and user sessions to be managed.
 
     Methods:
         create_session
@@ -32,7 +34,8 @@ class FirestoreHandler:
         self.client = firestore.Client()
 
     def create_new_session(self) -> BaseDocumentReference:
-        """Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
+        """
+        Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
         particularly the time of creation and status of the session.
         """
         session_id = str(uuid.uuid4())

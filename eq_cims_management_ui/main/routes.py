@@ -4,12 +4,12 @@ import logging
 
 from flask import (
     Blueprint,
-    Response,
     redirect,
     render_template,
     request,
 )
 from google.api_core.exceptions import RetryError
+from werkzeug.wrappers.response import Response
 
 from eq_cims_management_ui.errors.routes import error_content_500
 from eq_cims_management_ui.utils.database.firestore_logic import create_session
@@ -30,8 +30,7 @@ def before_request_func() -> None:
 @main_blueprint.route("/", methods=["GET", "POST"])
 def index() -> str | Response | tuple[str, int]:
     """
-    GET: Retrieve UI index.
-    POST: Create a new session in the Firestore database.
+    GET: Retrieve UI index. POST: Create a new session in the Firestore database.
 
     Returns:
         str (GET): 200 index page.
@@ -49,7 +48,8 @@ def index() -> str | Response | tuple[str, int]:
 
 @main_blueprint.route("/view-session", methods=["GET"])
 def view_session() -> str | tuple[str, int]:
-    """Render a template for the view session page.
+    """
+    Render a template for the view session page.
 
     Returns:
         str: A rendered HTML page containing a table of sample CIs.
@@ -59,7 +59,8 @@ def view_session() -> str | tuple[str, int]:
 
 @main_blueprint.route("/status", methods=["GET"])
 def status() -> tuple[str, int]:
-    """Status check endpoint.
+    """
+    Status check endpoint.
 
     :return: Empty 200 response.
     """

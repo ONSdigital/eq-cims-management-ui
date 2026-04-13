@@ -8,7 +8,8 @@ from eq_cims_management_ui.config import config
 
 @pytest.fixture(name="test_client")
 def create_client():
-    """Creates and configures a test client for the application.
+    """
+    Creates and configures a test client for the application.
 
     This function initializes the application in testing mode and provides
     a test client that can be used to simulate HTTP requests during unit tests.
@@ -24,7 +25,8 @@ def create_client():
 
 
 def test_index_route_get_method(test_client):
-    """Test the index route of the application.
+    """
+    Test the index route of the application.
 
     This test sends a GET request to the root URL ("/") using the test client
     and verifies that the response has a status code of 200 and contains
@@ -37,7 +39,8 @@ def test_index_route_get_method(test_client):
 
 @pytest.mark.usefixtures("mock_firestore_client")
 def test_index_route_post_method(test_client):
-    """Test the index route with POST method.
+    """
+    Test the index route with POST method.
 
     This test sends a POST request to the root URL ("/") using the test client
     and verifies that the response navigates to the "/view-session" endpoint.
@@ -49,7 +52,8 @@ def test_index_route_post_method(test_client):
 
 
 def test_status_check(test_client):
-    """GIVEN a call to the status check.
+    """
+    GIVEN a call to the status check.
     THEN 200 is returned.
     """
     response = test_client.get("/status")
@@ -58,7 +62,8 @@ def test_status_check(test_client):
 
 
 def test_favicon(test_client):
-    """GIVEN a call to the favicon.
+    """
+    GIVEN a call to the favicon.
     THEN 200 is returned.
     """
     response = test_client.get("/favicon.ico")
@@ -69,7 +74,8 @@ def test_favicon(test_client):
 
 @pytest.mark.usefixtures("mock_firestore_client")
 def test_view_session(test_client):
-    """GIVEN a call to the view-session endpoint.
+    """
+    GIVEN a call to the view-session endpoint.
     THEN 200 is returned.
     """
     response = test_client.get("/view-session")
@@ -80,7 +86,8 @@ def test_view_session(test_client):
 
 @pytest.mark.usefixtures("mock_erroneous_firestore_client")
 def test_create_session_fails(test_client):
-    """GIVEN a call to the create_session function where the database instance isn't present.
+    """
+    GIVEN a call to the create_session function where the database instance isn't present.
     THEN 500 is returned.
     """
     response = test_client.post("/")

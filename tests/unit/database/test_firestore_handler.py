@@ -1,4 +1,5 @@
-"""This module contains tests for the FirestoreHandler class to ensure interactions with Firestore instances
+"""
+This module contains tests for the FirestoreHandler class to ensure interactions with Firestore instances
 are working as expected.
 """
 
@@ -10,7 +11,8 @@ from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHand
 
 @pytest.mark.usefixtures("mock_firestore_client")
 def test_create_session():
-    """Test that a new session document is created in a mock Firestore instance with the expected
+    """
+    Test that a new session document is created in a mock Firestore instance with the expected
     data when the create_new_session method is called.
     """
     firestore_handler = FirestoreHandler()
@@ -25,7 +27,8 @@ def test_create_session():
 
 @pytest.mark.usefixtures("mock_erroneous_firestore_client")
 def test_create_session_fails():
-    """Test that an exception is raised when the create_new_session method fails to create a new
+    """
+    Test that an exception is raised when the create_new_session method fails to create a new
     session given an erroneous Firestore instance.
     """
     firestore_handler = FirestoreHandler()

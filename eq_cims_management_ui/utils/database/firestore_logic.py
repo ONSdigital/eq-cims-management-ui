@@ -1,4 +1,5 @@
-"""This module contains the business logic for interacting with the Firestore database.
+"""
+This module contains the business logic for interacting with the Firestore database.
 
 Functions:
     create_session
@@ -10,7 +11,8 @@ from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHand
 
 
 def create_session() -> BaseDocumentReference:
-    """Creates a new session in the Firestore database.
+    """
+    Creates a new session in the Firestore database.
 
     Returns:
         BaseDocumentReference: A reference to the created session document.
