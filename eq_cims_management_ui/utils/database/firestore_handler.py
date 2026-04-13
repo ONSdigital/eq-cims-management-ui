@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
-from google.cloud import firestore
+from google.cloud.firestore import Client
 from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 
@@ -31,7 +31,7 @@ class FirestoreHandler:
 
     def __init__(self) -> None:
         os.getenv("FIRESTORE_EMULATOR_HOST")
-        self.client = firestore.Client()
+        self.client = Client()
 
     def create_new_session(self) -> BaseDocumentReference:
         """
