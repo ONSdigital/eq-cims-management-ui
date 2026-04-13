@@ -13,9 +13,9 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-import google.cloud.firestore as firestore
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
+from google.cloud import firestore
 from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 
