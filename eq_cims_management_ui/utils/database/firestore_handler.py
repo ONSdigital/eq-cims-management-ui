@@ -25,7 +25,7 @@ class FirestoreHandler:
     Handles CRUD interactions with the Firestore database to allow CIs and user sessions to be managed.
 
     Methods:
-        create_session
+        create_new_session
     """
 
     def __init__(self) -> None:

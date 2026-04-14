@@ -10,7 +10,7 @@ from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHand
 
 
 @pytest.mark.usefixtures("mock_firestore_client")
-def test_create_session():
+def test_create_new_session():
     """
     Test that a new session document is created in a mock Firestore instance with the expected
     data when the create_new_session method is called.
