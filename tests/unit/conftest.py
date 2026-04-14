@@ -66,7 +66,7 @@ def mock_firestore_client(monkeypatch):
         to_dict=lambda: {"status": "Not started", "created_at": "2026-04-02 12:17:04.1775128624"},
     )
 
-    monkeypatch.setattr("google.cloud.firestore.Client", lambda: mock_client)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
 
 
 @pytest.fixture
@@ -89,4 +89,4 @@ def mock_erroneous_firestore_client(monkeypatch):
 
     mock_document.set.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception raise")
 
-    monkeypatch.setattr("google.cloud.firestore.Client", lambda: mock_client)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
