@@ -26,7 +26,7 @@ eq-cims-management-ui
 - [Development](#development)
     - [Run Application with Database](#run-application-with-database)
     - [Run All Tests](#run-all-tests)
-    - [Run Tests with Coverage](#run-unit-tests-with-coverage)
+    - [Run Unit Tests with Coverage](#run-unit-tests-with-coverage)
     - [Run Functional Tests](#run-functional-tests)
     - [Linting and Formatting](#linting-and-formatting)
 - [Contributing](#contributing)
