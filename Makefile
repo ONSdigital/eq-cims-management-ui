@@ -23,7 +23,7 @@ format:  ## Format the code.
 
 .PHONY: lint
 lint:  ## Run all linters (black/ruff/pylint/mypy).
-	poetry run black --check .
+	poetry run black --check --diff .
 	poetry run ruff check .
 	poetry run pylint -j 0 eq_cims_management_ui tests --reports=n --output-format=colorized
 	make mypy
