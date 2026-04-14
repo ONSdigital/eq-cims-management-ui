@@ -51,6 +51,17 @@ def test_index_route_post_method(test_client):
     assert response.request.path == "/view-session"
 
 
+@pytest.mark.usefixtures("mock_erroneous_firestore_client")
+def test_index_route_post_method_fails(test_client):
+    """
+    GIVEN a call to the create_session function where the database instance isn't present.
+    THEN 500 is returned.
+    """
+    response = test_client.post("/")
+    assert response.status_code == 500
+    assert response.data  # Ensure it's not empty
+
+
 def test_status_check(test_client):
     """
     GIVEN a call to the status check.
@@ -82,13 +93,3 @@ def test_view_session(test_client):
 
     assert response.status_code == 200
     assert response.data  # Ensure it's not empty
-
-
-@pytest.mark.usefixtures("mock_erroneous_firestore_client")
-def test_create_session_fails(test_client):
-    """
-    GIVEN a call to the create_session function where the database instance isn't present.
-    THEN 500 is returned.
-    """
-    response = test_client.post("/")
-    assert response.status_code == 500
