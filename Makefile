@@ -44,7 +44,7 @@ test:  ## Run the tests and check coverage.
 test-functional:  ## Run the functional tests.
 	poetry run pytest tests/functional/**
 
-.PHONY: test-functional
+.PHONY: test-unit
 test-unit:  ## Run the unit tests.
 	poetry run pytest tests/unit/** -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
 
