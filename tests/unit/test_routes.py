@@ -52,7 +52,7 @@ def test_index_route_post_method(test_client):
 
 
 @pytest.mark.usefixtures("mock_erroneous_firestore_client")
-def test_index_route_post_method_fails(test_client):
+def test_index_route_post_method_failure(test_client):
     """
     GIVEN a call to the create_session function where the database instance isn't present.
     THEN 500 is returned.
