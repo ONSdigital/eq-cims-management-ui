@@ -37,7 +37,7 @@ def test_index_route_get_method(test_client):
     assert "CI migration process" in response.get_data(as_text=True)
 
 
-@pytest.mark.usefixtures("mock_firestore_client")
+@pytest.mark.usefixtures("mock_firestore_session")
 def test_index_route_post_method(test_client):
     """
     Test the index route with POST method.
@@ -51,7 +51,7 @@ def test_index_route_post_method(test_client):
     assert response.request.path == "/view-session"
 
 
-@pytest.mark.usefixtures("mock_erroneous_firestore_client")
+@pytest.mark.usefixtures("mock_erroneous_firestore_session")
 def test_index_route_post_method_failure(test_client):
     """
     GIVEN a call to the create_session function where the database instance isn't present.
@@ -83,7 +83,7 @@ def test_favicon(test_client):
     assert response.data  # Make sure it's not empty
 
 
-@pytest.mark.usefixtures("mock_firestore_client")
+@pytest.mark.usefixtures("mock_firestore_session")
 def test_view_session(test_client):
     """
     GIVEN a call to the view-session endpoint.

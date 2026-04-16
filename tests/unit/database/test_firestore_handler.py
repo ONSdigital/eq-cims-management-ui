@@ -9,7 +9,7 @@ from google.api_core.exceptions import RetryError
 from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 
 
-@pytest.mark.usefixtures("mock_firestore_client")
+@pytest.mark.usefixtures("mock_firestore_session")
 def test_create_new_session():
     """
     Test that a new session document is created in a mock Firestore instance with the expected
@@ -25,7 +25,7 @@ def test_create_new_session():
     }
 
 
-@pytest.mark.usefixtures("mock_erroneous_firestore_client")
+@pytest.mark.usefixtures("mock_erroneous_firestore_session")
 def test_create_session_fails():
     """
     Test that an exception is raised when the create_new_session method fails to create a new

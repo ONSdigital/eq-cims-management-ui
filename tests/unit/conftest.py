@@ -5,6 +5,7 @@ Fixtures for testing the EQ CIR Management UI application.
 These fixtures provide a test client and an application instance for unit tests.
 """
 
+from unittest import mock
 from unittest.mock import MagicMock
 
 import pytest
@@ -46,7 +47,7 @@ def client(app):
 
 
 @pytest.fixture
-def mock_firestore_client(monkeypatch):
+def mock_firestore_session(monkeypatch):
     """
     Fixture to mock the Firestore client and all interactions with the database
     for testing purposes. Sets the value returned by the get method of the document
@@ -70,7 +71,7 @@ def mock_firestore_client(monkeypatch):
 
 
 @pytest.fixture
-def mock_erroneous_firestore_client(monkeypatch):
+def mock_erroneous_firestore_session(monkeypatch):
     """
     Fixture to mock an erroneous/missing Firestore client and all interactions with
     the database for testing purposes. Mocks the set method of the document reference to
@@ -90,3 +91,24 @@ def mock_erroneous_firestore_client(monkeypatch):
     mock_document.set.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception raise")
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+
+@pytest.fixture
+def mock_client():
+    """
+    Fixture to mock the Firestore Client class.
+
+    Yields:
+        - mock_client: A mock instance of the Firestore Client class.
+    """
+    with mock.patch("eq_cims_management_ui.utils.database.firestore_handler.Client") as mock_client:
+        yield mock_client
+
+
+@pytest.fixture
+def mock_create_new_session():
+    """Fixture to mock the create_new_session method."""
+    with mock.patch(
+        "eq_cims_management_ui.utils.database.firestore_logic.FirestoreHandler.create_new_session",
+    ) as mock_create_new_session:
+        yield mock_create_new_session
