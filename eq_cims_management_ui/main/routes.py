@@ -7,6 +7,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    url_for,
 )
 from google.api_core.exceptions import RetryError
 from werkzeug.wrappers.response import Response
@@ -15,6 +16,7 @@ from eq_cims_management_ui.errors.routes import error_content_500
 from eq_cims_management_ui.utils.database.firestore_logic import create_session
 
 main_blueprint = Blueprint("main", __name__)
+view_session_blueprint = Blueprint(name="view_session", import_name=__name__,)
 
 logger = logging.getLogger(__name__)
 
@@ -40,14 +42,14 @@ def index() -> str | Response | tuple[str, int]:
     if request.method == "POST":
         try:
             create_session()
-            return redirect("/view-session")
+            return redirect(url_for("view_session.get_view_session"))
         except RetryError:
             return render_template("error.html", error_content=error_content_500), 500
     return render_template("index.html")
 
 
-@main_blueprint.route("/view-session", methods=["GET"])
-def view_session() -> str | tuple[str, int]:
+@view_session_blueprint.route("/view-session", methods=["GET", "POST"])
+def get_view_session() -> str | tuple[str, int]:
     """
     Render a template for the view session page.
 

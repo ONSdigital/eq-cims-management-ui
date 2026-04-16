@@ -4,16 +4,17 @@
 {%- block main -%}
   <h1 class="ons-u-mb-xl">CI migration process</h1>
 
-  <form action="/" method="post">
-    {{
-      onsButton({
-          "id": "create-session-btn",
-          "text": "Create session",
-          "variants": "loader",
-          "attributes": {
-            "data-testid": "create-session-btn"
-          }
-      })
-    }}
-  </form>
+  <!-- <form action="/" method="post"> -->
+  {{
+    onsButton({
+        "id": "create-session-btn",
+        "text": "Create session",
+        "variants": "loader",
+        "url": url_for("view_session.get_view_session"),
+        "attributes": {
+          "data-testid": "create-session-btn"
+        }
+    })
+  }}
+  <!-- </form> -->
 {%- endblock main -%}
