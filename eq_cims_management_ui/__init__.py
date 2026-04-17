@@ -13,6 +13,7 @@ from semver.version import Version
 from eq_cims_management_ui.config.config import DefaultConfig
 from eq_cims_management_ui.errors.routes import errors_blueprint
 from eq_cims_management_ui.main.routes import main_blueprint
+from eq_cims_management_ui.main.routes import view_session_blueprint
 from eq_cims_management_ui.utils.routes import utils_blueprint
 
 logger = logging.getLogger()
@@ -32,6 +33,7 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(errors_blueprint)
+    app.register_blueprint(view_session_blueprint)
     app.register_blueprint(utils_blueprint)
 
     jinja_config(app)

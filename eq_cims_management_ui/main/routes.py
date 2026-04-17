@@ -39,16 +39,17 @@ def index() -> str | Response | tuple[str, int]:
         Response (POST): A redirect to the view-session page if the session is created successfully.
         tuple[str, int] (POST): An error page with a 500 status code indicating that the session couldn't be created.
     """
-    if request.method == "POST":
+    if request.method == "GET":
         try:
             create_session()
-            return redirect(url_for("view_session.get_view_session"))
+            # return redirect(url_for("view_session.get_view_session"))
         except RetryError:
             return render_template("error.html", error_content=error_content_500), 500
+        
     return render_template("index.html")
 
 
-@view_session_blueprint.route("/view-session", methods=["GET", "POST"])
+@view_session_blueprint.route("/view-session", methods=["GET"])
 def get_view_session() -> str | tuple[str, int]:
     """
     Render a template for the view session page.
