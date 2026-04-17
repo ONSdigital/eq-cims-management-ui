@@ -1,4 +1,15 @@
-"""Routes for the EQ CIR Management UI."""
+"""
+This module contains the routes for the EQ CIR Management UI.
+
+Functions:
+    index
+    create_session
+    status
+    get_view_session
+
+Raises:
+    RetryError
+"""
 
 import logging
 
@@ -32,35 +43,32 @@ def before_request_func() -> None:
 @main_blueprint.route("/", methods=["GET"])
 def index() -> str | Response | tuple[str, int]:
     """
-    GET: Retrieve UI index. POST: Create a new session in the Firestore database.
-
+    Retrieve UI index.
+    
     Returns:
-        str (GET): 200 index page.
-        Response (POST): A redirect to the view-session page if the session is created successfully.
-        tuple[str, int] (POST): An error page with a 500 status code indicating that the session couldn't be created.
+        str: 200 index page.
     """        
     return render_template("index.html")
 
 
 @main_blueprint.route("/create-session", methods=["GET"])
 def create_session():
+    """
+    Create a new session in the Firestore database and redirect to the view-session page.
+    
+    Returns:
+        Response: A redirect to the view-session page if the session is created successfully.
+        tuple[str, int]: An error page with a 500 status code indicating that the session couldn't be created.
+        
+    Raises:
+        RetryError: If there is an error while creating the session in the database, a RetryError is raised.
+    """
     if request.method == "GET":
         try:
             create_database_session()
             return redirect(url_for("view_session.get_view_session"))
         except RetryError:
             return render_template("error.html", error_content=error_content_500), 500
-
-
-@view_session_blueprint.route("/view-session", methods=["GET"])
-def get_view_session() -> str | tuple[str, int]:
-    """
-    Render a template for the view session page.
-
-    Returns:
-        str: A rendered HTML page containing a table of sample CIs.
-    """
-    return render_template("view-session.html")
 
 
 @main_blueprint.route("/status", methods=["GET"])
@@ -72,3 +80,14 @@ def status() -> tuple[str, int]:
     """
     logger.info("Status check hit")
     return "", 200
+
+
+@view_session_blueprint.route("/view-session", methods=["GET"])
+def get_view_session() -> str | tuple[str, int]:
+    """
+    Render a template for the view session page.
+
+    Returns:
+        str: A rendered HTML page containing a table of sample CIs.
+    """
+    return render_template("view-session.html")
