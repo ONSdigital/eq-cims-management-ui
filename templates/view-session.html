@@ -7,8 +7,6 @@
 
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
 
-    <form method="post">
-        {{ form.csrf_token }}
         {{
             onsButton({
                 "type": "submit",
@@ -20,7 +18,6 @@
                 }
             })
         }}
-    </form>
 
     {{
         onsTable({
