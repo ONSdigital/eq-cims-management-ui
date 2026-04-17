@@ -12,8 +12,7 @@ from semver.version import Version
 
 from eq_cims_management_ui.config.config import DefaultConfig
 from eq_cims_management_ui.errors.routes import errors_blueprint
-from eq_cims_management_ui.main.routes import main_blueprint
-from eq_cims_management_ui.main.routes import view_session_blueprint
+from eq_cims_management_ui.main.routes import main_blueprint, view_session_blueprint
 from eq_cims_management_ui.utils.routes import utils_blueprint
 
 logger = logging.getLogger()
@@ -92,8 +91,7 @@ def design_system_config() -> None:
             )
         elif not Version.is_valid(design_system_version):
             logger.exception(
-                "The '@ons/design-system' dependency version is invalid. "
-                "Please ensure it follows semantic versioning.",
+                "The '@ons/design-system' dependency version is invalid. Please ensure it follows semantic versioning.",
             )
         else:
             os.environ["DESIGN_SYSTEM_VERSION"] = design_system_version

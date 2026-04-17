@@ -55,7 +55,7 @@ def test_create_session_route(test_client):
 def test_create_session_route_failure(test_client):
     """
     Test the create session route when the database instance isn't present.
-    
+
     This test sends a GET request to the "/create-session" URL using the test client
     and verifies that a 500 status code is returned alongside an error page.
     """
