@@ -25,14 +25,14 @@ class FirestoreHandler:
     Handles CRUD interactions with the Firestore database to allow CIs and user sessions to be managed.
 
     Methods:
-        create_new_session
+        create_database_session
     """
 
     def __init__(self) -> None:
         os.getenv("FIRESTORE_EMULATOR_HOST")
         self.client = Client()
 
-    def create_new_session(self) -> BaseDocumentReference:
+    def create_database_session(self) -> BaseDocumentReference:
         """
         Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
         particularly the time of creation and status of the session.

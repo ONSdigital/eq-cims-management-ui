@@ -24,7 +24,7 @@ from google.api_core.exceptions import RetryError
 from werkzeug.wrappers.response import Response
 
 from eq_cims_management_ui.errors.routes import error_content_500
-from eq_cims_management_ui.utils.database.firestore_logic import create_database_session
+from eq_cims_management_ui.utils.database.firestore_logic import create_new_session
 
 main_blueprint = Blueprint("main", __name__)
 view_session_blueprint = Blueprint(
@@ -67,7 +67,7 @@ def create_session() -> Response | tuple[str, int]:
         RetryError: If there is an error while creating the session in the database, a RetryError is raised.
     """
     try:
-        create_database_session()
+        create_new_session()
         return redirect(url_for("view_session.get_view_session"))
     except RetryError:
         return render_template("error.html", error_content=error_content_500), 500
