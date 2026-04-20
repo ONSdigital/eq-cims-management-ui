@@ -106,9 +106,9 @@ def mock_client():
 
 
 @pytest.fixture
-def mock_create_new_session():
-    """Fixture to mock the create_new_session method."""
+def mock_create_database_session():
+    """Fixture to mock the create_database_session method."""
     with mock.patch(
-        "eq_cims_management_ui.utils.database.firestore_logic.FirestoreHandler.create_new_session",
-    ) as mock_create_new_session:
-        yield mock_create_new_session
+        "eq_cims_management_ui.utils.database.firestore_logic.FirestoreHandler.create_database_session",
+    ) as mock_create_database_session:
+        yield mock_create_database_session
