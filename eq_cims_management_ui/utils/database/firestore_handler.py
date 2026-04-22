@@ -49,6 +49,9 @@ class FirestoreHandler:
                 retry=Retry(timeout=15),
             )
         except RetryError as error:
-            raise RetryError(cause=error, message="Failed to create session in Firestore database.") from error
+            raise RetryError(
+                cause=error,
+                message="Failed to create session in Firestore database.",
+            ) from error  # type: ignore[no-untyped-call]
 
         return latest_session_document_ref
