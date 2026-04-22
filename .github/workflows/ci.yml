@@ -35,9 +35,6 @@ jobs:
       - name: Install dependencies
         run: make install-dev
 
-      - name: Initialise Playwright
-        run: poetry run playwright install
-
       - name: Lint Python
         run: make lint
 

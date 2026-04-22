@@ -59,6 +59,8 @@ install:  ## Install the dependencies excluding dev.
 .PHONY: install-dev
 install-dev:  ## Install the dependencies including dev.
 	poetry install
+#	Install browsers required for Playwright
+	poetry run playwright install
 
 .PHONY: megalint
 megalint: clean ## Run the mega-linter.
