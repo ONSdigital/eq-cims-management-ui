@@ -38,10 +38,10 @@ class FirestoreHandler:
         particularly the time of creation and status of the session.
         """
         session_id = str(uuid.uuid4())
-        latest_session_document = self.client.collection("sessions").document(session_id)
+        latest_session_document_ref = self.client.collection("sessions").document(session_id)
 
         try:
-            latest_session_document.set(
+            latest_session_document_ref.set(
                 {
                     "created_at": str(datetime.now(ZoneInfo("Europe/London")).strftime("%Y-%m-%d %H:%M:%S.%s")),
                     "status": "Not started",
@@ -51,4 +51,4 @@ class FirestoreHandler:
         except RetryError as error:
             raise RetryError(cause=error, message="Failed to create session in Firestore database.") from error
 
-        return latest_session_document
+        return latest_session_document_ref
