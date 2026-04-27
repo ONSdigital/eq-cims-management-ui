@@ -21,6 +21,7 @@ from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 logger = logging.getLogger(__name__)
 
+
 # pylint: disable=too-few-public-methods
 class FirestoreHandler:
     """
@@ -52,7 +53,7 @@ class FirestoreHandler:
                 retry=Retry(timeout=15),
             )
         except RetryError as error:
-            logger.error("Failed to create session in Firestore database.")
+            logger.exception("Failed to create session in Firestore database.")
             raise RetryError(
                 cause=error,
                 message="Failed to create session in Firestore database.",

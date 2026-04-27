@@ -68,7 +68,7 @@ def create_session() -> Response | tuple[str, int]:
     """
     try:
         session_id = create_new_session()
-        logger.info(f"Session created successfully: {session_id}")
+        logger.info("Session created successfully: %s", session_id)
         return redirect(url_for("view_session.get_view_session"))
     except RetryError:
         return render_template("error.html", error_content=error_content_500), 500
