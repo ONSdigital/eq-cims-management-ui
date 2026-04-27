@@ -8,6 +8,7 @@ Raises:
     RetryError
 """
 
+import logging
 import os
 import uuid
 from datetime import datetime
@@ -18,6 +19,7 @@ from google.api_core.retry import Retry
 from google.cloud.firestore import Client
 from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
+logger = logging.getLogger(__name__)
 
 # pylint: disable=too-few-public-methods
 class FirestoreHandler:
@@ -41,6 +43,7 @@ class FirestoreHandler:
         latest_session_document_ref = self.client.collection("sessions").document(session_id)
 
         try:
+            logger.info("Creating session in Firestore database...")
             latest_session_document_ref.set(
                 {
                     "created_at": str(datetime.now(ZoneInfo("Europe/London")).strftime("%Y-%m-%d %H:%M:%S.%s")),
@@ -49,6 +52,7 @@ class FirestoreHandler:
                 retry=Retry(timeout=15),
             )
         except RetryError as error:
+            logger.error("Failed to create session in Firestore database.")
             raise RetryError(
                 cause=error,
                 message="Failed to create session in Firestore database.",
