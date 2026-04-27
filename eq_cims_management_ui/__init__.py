@@ -12,7 +12,7 @@ from semver.version import Version
 
 from eq_cims_management_ui.config.config import DefaultConfig
 from eq_cims_management_ui.errors.routes import errors_blueprint
-from eq_cims_management_ui.main.routes import main_blueprint
+from eq_cims_management_ui.main.routes import main_blueprint, view_session_blueprint
 from eq_cims_management_ui.utils.routes import utils_blueprint
 
 logger = logging.getLogger()
@@ -21,7 +21,8 @@ talisman = Talisman()
 
 
 def create_app(app_config: type[DefaultConfig]) -> Flask:
-    """Flask application factory, used to isolate the instance of the Flask application.
+    """
+    Flask application factory, used to isolate the instance of the Flask application.
     See https://flask.palletsprojects.com/en/2.2.x/patterns/appfactories/ .
     """
     app = Flask(__name__)
@@ -31,6 +32,7 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(errors_blueprint)
+    app.register_blueprint(view_session_blueprint)
     app.register_blueprint(utils_blueprint)
 
     jinja_config(app)
@@ -41,7 +43,8 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
 
 
 def env_override(value: str, key: str) -> str:
-    """Jinja filter to override a value with an environment variable if it exists.
+    """
+    Jinja filter to override a value with an environment variable if it exists.
     :param value: The default value to use if the environment variable is not set.
     :param key: The name of the environment variable to check.
     :return: The value of the environment variable if it exists, otherwise the default value.
@@ -50,7 +53,8 @@ def env_override(value: str, key: str) -> str:
 
 
 def jinja_config(app: Flask) -> None:
-    """Configuration for the Flask Jinja2 component. Here we provide a custom loader,
+    """
+    Configuration for the Flask Jinja2 component. Here we provide a custom loader,
     so we can load from an array of sources.
 
     :param app: The Flask application.
@@ -68,7 +72,8 @@ def jinja_config(app: Flask) -> None:
 
 
 def design_system_config() -> None:
-    """Set the version of the design system to an environment variable and add an
+    """
+    Set the version of the design system to an environment variable and add an
     environment variable filter so environment variables can be read from within
     Jinja. This enables the design system version to be defined once within the
     package.json file and then reused throughout the application. Primarily to
@@ -86,15 +91,15 @@ def design_system_config() -> None:
             )
         elif not Version.is_valid(design_system_version):
             logger.exception(
-                "The '@ons/design-system' dependency version is invalid. "
-                "Please ensure it follows semantic versioning.",
+                "The '@ons/design-system' dependency version is invalid. Please ensure it follows semantic versioning.",
             )
         else:
             os.environ["DESIGN_SYSTEM_VERSION"] = design_system_version
 
 
 def configure_secure_headers(app: Flask) -> None:
-    """Use Flask-Talisman to configure secure headers for the application.
+    """
+    Use Flask-Talisman to configure secure headers for the application.
 
     :param app: The Flask application.
     """

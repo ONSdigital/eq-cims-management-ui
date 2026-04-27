@@ -24,7 +24,10 @@ eq-cims-management-ui
     - [Pre-requisites](#pre-requisites)
     - [Installation](#installation)
 - [Development](#development)
-    - [Run Tests with Coverage](#run-tests-with-coverage)
+    - [Run Application with Database](#run-application-with-database)
+    - [Run All Tests](#run-all-tests)
+    - [Run Unit Tests with Coverage](#run-unit-tests-with-coverage)
+    - [Run Functional Tests](#run-functional-tests)
     - [Linting and Formatting](#linting-and-formatting)
 - [Contributing](#contributing)
 - [License](#license)
@@ -125,13 +128,63 @@ The `@ons/design-system` package is then automatically added to the jinja config
 The used design system version is pulled directly from the version in package.json.
 A fallback version is set in `templates/base.html`.
 
-### Run Tests with Coverage
+### Run Application with Database
+
+To run the application with a local database, you will need to complete the following steps:
+
+- Create or update a `.env` file to contain the following environment variable:
+
+```text
+FIRESTORE_EMULATOR_HOST="localhost:8080"
+```
+
+- To run the application locally with a Firestore emulator, use the following commands:
+
+```bash
+make dev-compose-up
+make run
+```
+
+- Alternatively, you can use the following commands to run both the application and Firestore emulator with Docker:
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+### Run All Tests
+
+To run all functional and unit tests, run the following commands (*Note: Functional tests require an instance
+of the Firestore Emulator to be running*):
+
+```bash
+make dev-compose-up
+```
+
+```bash
+make test
+```
+
+### Run Unit Tests with Coverage
 
 The unit tests are written using the [pytest](https://docs.pytest.org/en/stable/) framework. To run the tests and check
 coverage, run:
 
 ```bash
-make test
+make test-unit
+```
+
+### Run Functional Tests
+
+The functional tests are written in Python using the Playwright framework. Functional tests require a running
+instance of the Firestore Emulator. To run the functional tests, use the following commands:
+
+```bash
+make dev-compose-up
+```
+
+```bash
+make test-functional
 ```
 
 ### Linting and Formatting

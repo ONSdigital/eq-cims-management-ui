@@ -23,14 +23,14 @@ format:  ## Format the code.
 
 .PHONY: lint
 lint:  ## Run all linters (black/ruff/pylint/mypy).
-	poetry run black --check .
+	poetry run black --check --diff .
 	poetry run ruff check .
 	poetry run pylint -j 0 eq_cims_management_ui tests --reports=n --output-format=colorized
 	make mypy
 
 .PHONY: run
 run:  ## Run flask on port 5100.
-	poetry run flask --app app run --port 5100
+	FLASK_DEBUG=1 poetry run flask --app app run --port 5100
 
 .PHONY: gunicorn
 gunicorn:  ## Run the app with Gunicorn.
@@ -39,6 +39,14 @@ gunicorn:  ## Run the app with Gunicorn.
 .PHONY: test
 test:  ## Run the tests and check coverage.
 	poetry run pytest -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
+
+.PHONY: test-functional
+test-functional:  ## Run the functional tests.
+	poetry run pytest tests/functional/**
+
+.PHONY: test-unit
+test-unit:  ## Run the unit tests.
+	poetry run pytest tests/unit/** -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
 
 .PHONY: mypy
 mypy:  ## Run mypy.
@@ -51,10 +59,20 @@ install:  ## Install the dependencies excluding dev.
 .PHONY: install-dev
 install-dev:  ## Install the dependencies including dev.
 	poetry install
+#	Install browsers required for Playwright
+	poetry run playwright install
 
 .PHONY: megalint
-megalint:  ## Run the mega-linter.
+megalint: clean ## Run the mega-linter.
 	docker run --platform linux/amd64 --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock:rw \
 		-v $(shell pwd):/tmp/lint:rw \
 		ghcr.io/oxsecurity/megalinter-python:v9.4.0
+
+.PHONY: dev-compose-up
+dev-compose-up:
+	docker compose -f docker-compose-dev.yml up -d
+
+.PHONY: dev-compose-down
+dev-compose-down:
+	docker compose -f docker-compose-dev.yml down

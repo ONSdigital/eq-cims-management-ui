@@ -1,4 +1,5 @@
-"""Unit tests for the application factory and configuration.
+"""
+Unit tests for the application factory and configuration.
 This module contains tests for the application factory, Jinja configuration,
 design system configuration, and secure headers.
 """

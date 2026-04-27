@@ -38,5 +38,14 @@ jobs:
       - name: Lint Python
         run: make lint
 
-      - name: Test
-        run: make test
+      - name: Unit Tests
+        run: make test-unit
+
+      - name: Docker compose
+        run: docker compose up --build -d
+
+      - name: Functional Tests
+        run: make test-functional
+
+      - name: Docker compose shutdown
+        run: docker compose kill
