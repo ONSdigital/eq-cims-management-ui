@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 import pytest
 from google.api_core.exceptions import RetryError
 
-from eq_cims_management_ui import create_app
+from app import create_app
 from eq_cims_management_ui.config.config import DefaultConfig
 
 

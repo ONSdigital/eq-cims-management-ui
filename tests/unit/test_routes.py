@@ -2,7 +2,7 @@
 
 import pytest
 
-from eq_cims_management_ui import create_app
+from app import create_app
 from eq_cims_management_ui.config import config
 
 
