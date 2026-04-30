@@ -10,8 +10,7 @@ Raises:
 
 import logging
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from datetime import datetime, timezone
 
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
@@ -45,7 +44,7 @@ class FirestoreHandler:
             logger.info("Creating session in Firestore database...")
             latest_session_document_ref.set(
                 {
-                    "created_at": str(datetime.now(ZoneInfo("Europe/London")).strftime("%Y-%m-%d %H:%M:%S.%s")),
+                    "created_at": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%s"),
                     "status": "Not started",
                 },
                 retry=Retry(timeout=15),
