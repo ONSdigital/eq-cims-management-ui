@@ -9,7 +9,6 @@ Raises:
 """
 
 import logging
-import os
 import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -32,7 +31,6 @@ class FirestoreHandler:
     """
 
     def __init__(self) -> None:
-        os.getenv("FIRESTORE_EMULATOR_HOST")
         self.client = Client()
 
     def create_database_session(self) -> BaseDocumentReference:
