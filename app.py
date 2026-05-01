@@ -1,4 +1,15 @@
-"""Flask application factory for the EQ CIR Management UI."""
+"""
+Flask application factory for the EQ CIR Management UI. Configures logging, Jinja, the Design System, etc.
+It also creates the Flask application and registers the blueprints.
+
+Functions:
+    create_app
+    env_override
+    jinja_config
+    design_system_config
+    configure_secure_headers
+    configure_logging
+"""
 
 import json
 import logging
