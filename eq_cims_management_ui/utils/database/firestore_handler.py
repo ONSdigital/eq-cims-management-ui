@@ -30,9 +30,10 @@ class FirestoreHandler:
     """
 
     def __init__(self) -> None:
-        self.client = Client()
+        self.client: Client = Client()
+        self.latest_session_document_ref: BaseDocumentReference | None = None
 
-    def create_database_session(self) -> BaseDocumentReference:
+    def create_database_session(self) -> None:
         """
         Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
         particularly the time of creation and status of the session.
@@ -56,4 +57,5 @@ class FirestoreHandler:
                 message="Failed to create session in Firestore database.",
             ) from error  # type: ignore[no-untyped-call]
 
-        return latest_session_document_ref
+        logger.info("Session created successfully: %s", session_id)
+        self.latest_session_document_ref = latest_session_document_ref

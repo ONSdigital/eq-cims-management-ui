@@ -17,9 +17,9 @@ def test_create_database_session():
     """
     firestore_handler = FirestoreHandler()
 
-    session_document = firestore_handler.create_database_session()
+    firestore_handler.create_database_session()
 
-    assert session_document.get().to_dict() == {
+    assert firestore_handler.latest_session_document_ref.get().to_dict() == {
         "created_at": "2026-04-02 12:17:04.1775128624",
         "status": "Not started",
     }
@@ -34,5 +34,5 @@ def test_create_session_fails():
     firestore_handler = FirestoreHandler()
 
     with pytest.raises(RetryError):
-        session_document = firestore_handler.create_database_session()
-        assert session_document is None
+        firestore_handler.create_database_session()
+        assert firestore_handler.latest_session_document_ref is None

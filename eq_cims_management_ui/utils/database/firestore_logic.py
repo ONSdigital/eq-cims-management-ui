@@ -5,18 +5,17 @@ Functions:
     create_new_session
 """
 
-from google.cloud.firestore_v1.base_document import BaseDocumentReference
+import logging
 
 from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 
+logger = logging.getLogger(__name__)
 
-def create_new_session() -> BaseDocumentReference:
+
+def create_new_session() -> None:
     """
-    Creates a new session in the Firestore database.
-
-    Returns:
-        BaseDocumentReference: A reference to the created session document.
+    Creates a new session in the Firestore database by calling the create_database_session
+    method of the FirestoreHandler class.
     """
     firestore_handler = FirestoreHandler()
-
-    return firestore_handler.create_database_session()
+    firestore_handler.create_database_session()
