@@ -64,7 +64,7 @@ def mock_firestore_session(monkeypatch):
     mock_collection.document.return_value = mock_document
 
     mock_document.get.return_value = MagicMock(
-        to_dict=lambda: {"status": "Not started", "created_at": "2026-04-02 12:17:04.1775128624"},
+        to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
     )
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)

@@ -11,6 +11,7 @@ Raises:
 import logging
 import uuid
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
@@ -45,11 +46,12 @@ class FirestoreHandler:
             logger.info("Creating session in Firestore database...")
             latest_session_document_ref.set(
                 {
-                    "created_at": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%s"),
+                    "created_at": datetime.now(ZoneInfo("Europe/London")).isoformat(),
                     "status": "Not started",
                 },
                 retry=Retry(timeout=15),
             )
+            print("TIME STUFF:", latest_session_document_ref.get().to_dict())
         except RetryError as error:
             logger.exception("Failed to create session in Firestore database.")
             raise RetryError(
