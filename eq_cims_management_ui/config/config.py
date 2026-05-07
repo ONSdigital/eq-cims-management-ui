@@ -16,7 +16,8 @@ class DefaultConfig:  # pylint: disable=too-few-public-methods
 
 
 class DeployedConfig(DefaultConfig):  # pylint: disable=too-few-public-methods
-    """Configuration for the STAGING environment.
+    """
+    Configuration for the STAGING environment.
 
     Extends DEFAULT Config.
     """
@@ -25,7 +26,8 @@ class DeployedConfig(DefaultConfig):  # pylint: disable=too-few-public-methods
 
 
 class ProdConfig(DeployedConfig):  # pylint: disable=too-few-public-methods
-    """Configuration for the UAT and PROD environment.
+    """
+    Configuration for the UAT and PROD environment.
 
     Extends DEPLOYED Config.
     Further configuration will be added when needed

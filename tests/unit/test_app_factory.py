@@ -1,4 +1,5 @@
-"""Unit tests for the application factory and configuration.
+"""
+Unit tests for the application factory and configuration.
 This module contains tests for the application factory, Jinja configuration,
 design system configuration, and secure headers.
 """
@@ -6,7 +7,7 @@ design system configuration, and secure headers.
 import json
 import os
 
-from eq_cims_management_ui import create_app, design_system_config, env_override
+from app import create_app, design_system_config, env_override
 from eq_cims_management_ui.config.config import DefaultConfig
 
 

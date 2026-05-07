@@ -54,7 +54,8 @@ def log_exception(exception: Exception, status_code: int) -> None:
 
 @errors_blueprint.app_errorhandler(400)
 def bad_request(exception: BadRequest) -> tuple[str, int]:
-    """400 page.
+    """
+    400 page.
     :return: Rendered HTML.
     This is deliberately returning the 500 page.
     """
@@ -64,7 +65,8 @@ def bad_request(exception: BadRequest) -> tuple[str, int]:
 
 @errors_blueprint.app_errorhandler(401)
 def unauthorized(exception: Unauthorized) -> tuple[str, int]:
-    """401 page.
+    """
+    401 page.
     :return: Rendered HTML.
     """
     log_exception(exception, 401)
@@ -73,7 +75,8 @@ def unauthorized(exception: Unauthorized) -> tuple[str, int]:
 
 @errors_blueprint.app_errorhandler(403)
 def forbidden(exception: Forbidden) -> tuple[str, int]:
-    """403 page.
+    """
+    403 page.
     :return: Rendered HTML.
     """
     log_exception(exception, 403)
@@ -82,7 +85,8 @@ def forbidden(exception: Forbidden) -> tuple[str, int]:
 
 @errors_blueprint.app_errorhandler(404)
 def page_not_found(exception: NotFound) -> tuple[str, int]:
-    """404 page.
+    """
+    404 page.
     :return: Rendered HTML.
     """
     log_exception(exception, 404)
@@ -91,7 +95,8 @@ def page_not_found(exception: NotFound) -> tuple[str, int]:
 
 @errors_blueprint.app_errorhandler(405)
 def method_not_allowed(exception: MethodNotAllowed) -> tuple[str, int]:
-    """405 page.
+    """
+    405 page.
     :return: Rendered HTML.
     This is deliberately returning the 404 page.
     """
@@ -101,7 +106,8 @@ def method_not_allowed(exception: MethodNotAllowed) -> tuple[str, int]:
 
 @errors_blueprint.app_errorhandler(500)
 def internal_server_error(exception: InternalServerError) -> tuple[str, int]:
-    """500 page.
+    """
+    500 page.
     :return: Rendered HTML.
     """
     log_exception(exception, 500)

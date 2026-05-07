@@ -15,6 +15,7 @@ flask-talisman = "^1.1.0"
 semver = "^3.0.4"
 gunicorn = "^25.3.0"
 python-dotenv = "^1.1.1"
+google-cloud-firestore = "^2.25.0"
 
 [tool.poetry.group.dev.dependencies]
 # :TODO: Remove pylint when ruff supports all pylint rules
@@ -26,6 +27,8 @@ pytest-xdist = "^3.8.0"
 ruff = "^0.15.10"
 pytest-cov = "^7.1.0"
 mypy = "^1.20.1"
+pytest-playwright = "^0.7.2"
+mock = "^5.2.0"
 
 [tool.black]
 line-length = 120
@@ -75,13 +78,14 @@ extend-select = [
     "SIM", # flake8-simplify
     "D",      # pydocstyle - Enforce existing docstrings only
     "C90",    # mccabe
+    "D213", # Multi-line docstring summary should start at the first line
 ]
 
 ignore = [
     # Conflicts with google docstring style
     "D205",
     # Allow missing docstring, remove to enforce docstrings across the board
-    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
+    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "D212",
     # indentation contains tabs
     "W191",
 ]

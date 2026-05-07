@@ -1,0 +1,8 @@
+services:
+  firestore:
+    image: spine3/firebase-emulator
+    ports:
+      - 8080:8080
+    volumes:
+      - ./eq_cims_management_ui/devtools/firebase-emulator:/firebase
+      - ./eq_cims_management_ui/devtools/firebase-emulator:/firebase/baseline-data
