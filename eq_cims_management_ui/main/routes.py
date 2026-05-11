@@ -19,12 +19,15 @@ from flask import (
     render_template,
     request,
     url_for,
+    g,
+    current_app,
 )
 from google.api_core.exceptions import RetryError
 from werkzeug.wrappers.response import Response
 
 from eq_cims_management_ui.errors.routes import error_content_500
-from eq_cims_management_ui.utils.database.firestore_logic import create_new_session
+from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
+from eq_cims_management_ui.utils.database.firestore_logic import create_new_session, get_session
 
 main_blueprint = Blueprint("main", __name__)
 view_session_blueprint = Blueprint(
@@ -67,7 +70,7 @@ def create_session() -> Response | tuple[str, int]:
     """
     try:
         create_new_session()
-        return redirect(url_for("view_session.get_view_session"))
+        return redirect(url_for("main.get_view_session"))
     except RetryError:
         return render_template("error.html", error_content=error_content_500), 500
 
@@ -83,12 +86,9 @@ def status() -> tuple[str, int]:
     return "", 200
 
 
-@view_session_blueprint.route("/view-session", methods=["GET"])
+@main_blueprint.route("/view-session", methods=["GET"])
 def get_view_session() -> str:
-    """
-    Render a template for the view session page.
+    session = get_session()
 
-    Returns:
-        str: A rendered HTML page containing a table of sample CIs.
-    """
-    return render_template("view-session.html")
+
+    return session.get("metadata").to_dict()

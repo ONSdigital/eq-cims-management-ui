@@ -19,7 +19,7 @@ from pathlib import Path
 
 import structlog
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, current_app
 from flask_talisman import Talisman
 from jinja2 import ChainableUndefined, FileSystemLoader
 from semver.version import Version
@@ -27,6 +27,7 @@ from semver.version import Version
 from eq_cims_management_ui.config.config import DefaultConfig
 from eq_cims_management_ui.errors.routes import errors_blueprint
 from eq_cims_management_ui.main.routes import main_blueprint, view_session_blueprint
+from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 from eq_cims_management_ui.utils.routes import utils_blueprint
 
 # Load .env file
@@ -51,6 +52,8 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     application.register_blueprint(errors_blueprint)
     application.register_blueprint(view_session_blueprint)
     application.register_blueprint(utils_blueprint)
+    firestore_handler = FirestoreHandler()
+    application.config["firestore_handler"] = firestore_handler
 
     jinja_config(application)
     design_system_config()

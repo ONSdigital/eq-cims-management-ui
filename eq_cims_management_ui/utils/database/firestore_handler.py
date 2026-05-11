@@ -13,6 +13,7 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+import requests
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
 from google.cloud.firestore import Client
@@ -43,6 +44,16 @@ class FirestoreHandler:
         latest_session_document_ref = self.client.collection("sessions").document(session_id)
 
         try:
+            status = requests.get("http://localhost:3030/status")
+            if status.status_code == 200:
+                logger.info("Successfully checked CIR status endpoint.")
+
+        except ConnectionError:
+            logger.exception("Failed to connect to CIR.")
+
+
+
+        try:
             logger.info("Creating session in Firestore database...")
             latest_session_document_ref.set(
                 {
@@ -51,6 +62,16 @@ class FirestoreHandler:
                 },
                 retry=Retry(timeout=15),
             )
+            metadata = requests.get("http://localhost:3030/v2/collection-instruments/metadata")
+            json = metadata.json()
+            for ci in json:
+                latest_session_document_ref.collection("metadata").document(ci["guid"]).set(
+                    {
+                        "guid": ci["guid"]
+                    },
+                    retry=Retry(timeout=15),
+                )
+
         except RetryError as error:
             logger.exception("Failed to create session in Firestore database.")
             raise RetryError(
