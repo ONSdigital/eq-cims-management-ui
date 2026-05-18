@@ -9,8 +9,6 @@ import logging
 
 from flask import current_app
 
-from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
-
 logger = logging.getLogger(__name__)
 
 
@@ -23,6 +21,25 @@ def create_new_session() -> None:
     firestore_handler = current_app.config["firestore_handler"]
     firestore_handler.create_database_session()
 
+
+def get_collection_instruments():
+    try:
+        firestore_handler = current_app.config["firestore_handler"]
+        latest_session = firestore_handler.latest_session_document_ref
+        ci_metadata_documents = latest_session.collection("metadata").stream()
+        ci_metadata = []
+        for metadata_item in ci_metadata_documents:
+            ci_metadata.append(metadata_item.to_dict())
+        return ci_metadata
+    except Exception:
+        # Retrieve the existing latest session
+        # Need an instance of firestore handler class with the latest session document reference set
+        pass
+
 def get_session():
-    firestore_handler = current_app.config["firestore_handler"]
-    return firestore_handler.latest_session_document_ref
+    """
+    - Check for session
+    - If session,
+    - set that session doc ref, to firestoreHandlers doc ref
+    - Else, "continue"
+    """
