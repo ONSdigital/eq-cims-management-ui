@@ -19,15 +19,12 @@ from flask import (
     render_template,
     request,
     url_for,
-    g,
-    current_app,
 )
 from google.api_core.exceptions import RetryError
 from werkzeug.wrappers.response import Response
 
 from eq_cims_management_ui.errors.routes import error_content_500
-from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
-from eq_cims_management_ui.utils.database.firestore_logic import create_new_session, get_session
+from eq_cims_management_ui.utils.database.firestore_logic import create_new_session, get_collection_instruments
 
 main_blueprint = Blueprint("main", __name__)
 view_session_blueprint = Blueprint(
@@ -53,6 +50,9 @@ def index() -> str:
     Returns:
         str: 200 index page.
     """
+    # call get_session here to check if a session isn't "Not started"
+    # if it's found, redirect to view session
+    # if not, do below
     return render_template("index.html")
 
 
@@ -87,8 +87,6 @@ def status() -> tuple[str, int]:
 
 
 @main_blueprint.route("/view-session", methods=["GET"])
-def get_view_session() -> str:
-    session = get_session()
-
-
-    return session.get("metadata").to_dict()
+def get_view_session():
+    ci_metadata = get_collection_instruments()
+    return render_template("view-session.html", ci_metadata=ci_metadata)
