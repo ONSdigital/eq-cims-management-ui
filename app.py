@@ -86,6 +86,8 @@ def jinja_config(application: Flask) -> None:
     application.jinja_env.undefined = ChainableUndefined
     application.jinja_env.filters["env_override"] = env_override
 
+    application.jinja_env.add_extension("jinja2.ext.do")
+
     # Clean up white space.
     application.jinja_env.trim_blocks = True
     application.jinja_env.lstrip_blocks = True
