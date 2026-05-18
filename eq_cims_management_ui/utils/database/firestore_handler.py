@@ -67,7 +67,12 @@ class FirestoreHandler:
             for ci in json:
                 latest_session_document_ref.collection("metadata").document(ci["guid"]).set(
                     {
-                        "guid": ci["guid"]
+                        "survey_id": ci["survey_id"],
+                        "form_type": ci["classifier_value"],
+                        "cir_id": ci["guid"],
+                        "cir_version": ci["ci_version"],
+                        "validator_version": ci["validator_version"],
+                        "status": "Not started"
                     },
                     retry=Retry(timeout=15),
                 )
@@ -81,3 +86,10 @@ class FirestoreHandler:
 
         logger.info("Session created successfully: %s", session_id)
         self.latest_session_document_ref = latest_session_document_ref
+
+    def set_document_reference(self, document_reference: BaseDocumentReference):
+        self.latest_session_document_ref = document_reference
+
+    def retrieve_latest_session(self):
+        ## Go into database, check for session status and return CIs from there
+        pass
