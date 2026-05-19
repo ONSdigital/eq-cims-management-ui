@@ -49,10 +49,9 @@ class FirestoreHandler:
             if status.status_code == 200:
                 logger.info("Successfully checked CIR status endpoint.")
 
-        except ConnectionError:
+        except requests.exceptions.ConnectionError:
             logger.exception("Failed to connect to CIR.")
-
-
+            raise ConnectionError
 
         try:
             logger.info("Creating session in Firestore database...")
