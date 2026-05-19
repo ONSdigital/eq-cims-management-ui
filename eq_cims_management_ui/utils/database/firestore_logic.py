@@ -36,10 +36,17 @@ def get_collection_instruments():
         # Need an instance of firestore handler class with the latest session document reference set
         pass
 
-def get_session():
-    """
-    - Check for session
-    - If session,
-    - set that session doc ref, to firestoreHandlers doc ref
-    - Else, "continue"
-    """
+def is_latest_session_present():
+    firestore_handler = current_app.config["firestore_handler"]
+
+    if session_doc_ref := firestore_handler.retrieve_latest_session():
+
+        current_session = session_doc_ref.get().to_dict()
+
+        if current_session["status"] != "Not started": # TO BECOME AN ENUM
+            firestore_handler.set_document_reference(session_doc_ref)
+            return True
+        return False
+
+    else:
+        return False

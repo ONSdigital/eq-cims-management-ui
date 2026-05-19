@@ -18,6 +18,7 @@ from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
 from google.cloud.firestore import Client
 from google.cloud.firestore_v1.base_document import BaseDocumentReference
+from google.cloud.firestore_v1 import Query
 
 logger = logging.getLogger(__name__)
 
@@ -92,4 +93,14 @@ class FirestoreHandler:
 
     def retrieve_latest_session(self):
         ## Go into database, check for session status and return CIs from there
-        pass
+        latest_document_query = self.client.collection("sessions").order_by(
+            "created_at",
+            direction=Query.DESCENDING
+        ).limit(1)
+
+        query_results_list = latest_document_query.get()
+
+        # Get the latest session document by retrieving the first element from the query result which is a list
+        if len(query_results_list) > 0:
+            return query_results_list[0].reference
+        return None
