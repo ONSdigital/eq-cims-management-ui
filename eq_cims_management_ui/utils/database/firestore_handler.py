@@ -64,6 +64,9 @@ class FirestoreHandler:
             )
             metadata = requests.get("http://localhost:3030/v2/collection-instruments/metadata")
             json = metadata.json()
+            if type(json) is not list and json.get("message") == "No CI found":
+                logger.error("Failed to retrieve collection instrument metadata from CIR.")
+                raise ValueError("Failed to retrieve collection instrument metadata from CIR.")
             for ci in json:
                 latest_session_document_ref.collection("metadata").document(ci["guid"]).set(
                     {

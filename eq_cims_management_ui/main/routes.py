@@ -72,7 +72,7 @@ def create_session() -> Response | tuple[str, int]:
     try:
         create_new_session()
         return redirect(url_for("main.get_view_session"))
-    except (RetryError, ConnectionError):
+    except (RetryError, ConnectionError, ValueError):
         return render_template("error.html", error_content=error_content_500), 500
 
 
