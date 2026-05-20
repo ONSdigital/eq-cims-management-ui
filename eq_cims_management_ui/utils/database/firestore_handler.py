@@ -62,19 +62,21 @@ class FirestoreHandler:
                 },
                 retry=Retry(timeout=15),
             )
-            metadata = requests.get("http://localhost:3030/v2/collection-instruments/metadata")
-            json = metadata.json()
-            if type(json) is not list and json.get("message") == "No CI found":
+
+            metadata_received = requests.get("http://localhost:3030/v2/collection-instruments/metadata")
+            ci_metadata = metadata_received.json()
+            if type(ci_metadata) is not list and ci_metadata.get("message") == "No CI found":
                 logger.error("Failed to retrieve collection instrument metadata from CIR.")
                 raise ValueError("Failed to retrieve collection instrument metadata from CIR.")
-            for ci in json:
-                latest_session_document_ref.collection("metadata").document(ci["guid"]).set(
+
+            for ci_metadata_item in ci_metadata:
+                latest_session_document_ref.collection("metadata").document(ci_metadata_item["guid"]).set(
                     {
-                        "survey_id": ci["survey_id"],
-                        "form_type": ci["classifier_value"],
-                        "cir_id": ci["guid"],
-                        "cir_version": ci["ci_version"],
-                        "validator_version": ci["validator_version"],
+                        "survey_id": ci_metadata_item["survey_id"],
+                        "form_type": ci_metadata_item["classifier_value"],
+                        "cir_id": ci_metadata_item["guid"],
+                        "cir_version": ci_metadata_item["ci_version"],
+                        "validator_version": ci_metadata_item["validator_version"],
                         "status": "Not started"
                     },
                     retry=Retry(timeout=15),
