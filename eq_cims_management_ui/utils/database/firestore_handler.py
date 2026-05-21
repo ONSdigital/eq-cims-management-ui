@@ -30,6 +30,8 @@ class FirestoreHandler:
 
     Methods:
         create_database_session
+        retrieve_latest_session
+        set_document_reference
     """
 
     def __init__(self) -> None:
@@ -39,7 +41,8 @@ class FirestoreHandler:
     def create_database_session(self) -> None:
         """
         Creates a new session in the Firestore database with a unique session ID. Adds session data to the database,
-        particularly the time of creation and status of the session.
+        particularly the time of creation and status of the session. Additionally, retrieves collection instruments from
+        CIR and adds them to the database.
         """
         session_id = str(uuid.uuid4())
         latest_session_document_ref = self.client.collection("sessions").document(session_id)
@@ -77,7 +80,7 @@ class FirestoreHandler:
                         "cir_id": ci_metadata_item["guid"],
                         "cir_version": ci_metadata_item["ci_version"],
                         "validator_version": ci_metadata_item["validator_version"],
-                        "status": "Not started"
+                        "status": "Not started",
                     },
                     retry=Retry(timeout=15),
                 )
@@ -92,19 +95,32 @@ class FirestoreHandler:
         logger.info("Session created successfully: %s", session_id)
         self.latest_session_document_ref = latest_session_document_ref
 
-    def set_document_reference(self, document_reference: BaseDocumentReference):
-        self.latest_session_document_ref = document_reference
+    def retrieve_latest_session(self) -> BaseDocumentReference | None:
+        """
+        Queries the Firestore database for the latest session by sorting all session by creation date in descending
+        order.
 
-    def retrieve_latest_session(self):
-        ## Go into database, check for session status and return CIs from there
-        latest_document_query = self.client.collection("sessions").order_by(
-            "created_at",
-            direction=Query.DESCENDING
-        ).limit(1)
+        Returns:
+            BaseDocumentReference: The document reference of the latest session found.
+            None: If no session is found.
+        """
+        latest_document_query = (
+            self.client.collection("sessions").order_by("created_at", direction=Query.DESCENDING).limit(1)
+        )
 
         query_results_list = latest_document_query.get()
 
-        # Get the latest session document by retrieving the first element from the query result which is a list
+        # Gets the latest session document reference by retrieving the first item of the resulting list from the query
         if len(query_results_list) > 0:
             return query_results_list[0].reference
         return None
+
+    def set_document_reference(self, document_reference: BaseDocumentReference):
+        """
+        Set the latest session document reference. Used when an in-progress session is present and setting this
+        reference as an attribute of the FirestoreHandler instance.
+
+        Args:
+            document_reference: The document reference of the latest session found.
+        """
+        self.latest_session_document_ref = document_reference
