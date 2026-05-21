@@ -91,6 +91,12 @@ def status() -> tuple[str, int]:
 
 
 @main_blueprint.route("/view-session", methods=["GET"])
-def get_view_session():
+def get_view_session() -> str:
+    """
+    Gets the collection instrument metadata from the database and renders the view-session page.
+
+    Returns:
+        str: The rendered view-session page.
+    """
     ci_metadata = get_collection_instruments()
     return render_template("view-session.html", ci_metadata=ci_metadata)

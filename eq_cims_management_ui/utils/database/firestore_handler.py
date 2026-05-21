@@ -17,8 +17,8 @@ import requests
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
 from google.cloud.firestore import Client
-from google.cloud.firestore_v1.base_document import BaseDocumentReference
 from google.cloud.firestore_v1 import Query
+from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +48,14 @@ class FirestoreHandler:
         latest_session_document_ref = self.client.collection("sessions").document(session_id)
 
         try:
-            status = requests.get("http://localhost:3030/status")
+            logger.info("Checking CIR status endpoint...")
+            status = requests.get("http://localhost:3030/status", timeout=15)
             if status.status_code == 200:
                 logger.info("Successfully checked CIR status endpoint.")
 
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError as error:
             logger.exception("Failed to connect to CIR.")
-            raise ConnectionError
+            raise ConnectionError from error
 
         try:
             logger.info("Creating session in Firestore database...")
@@ -66,11 +67,12 @@ class FirestoreHandler:
                 retry=Retry(timeout=15),
             )
 
-            metadata_received = requests.get("http://localhost:3030/v2/collection-instruments/metadata")
+            logger.info("Retrieving collection instrument metadata from CIR...")
+            metadata_received = requests.get("http://localhost:3030/v2/collection-instruments/metadata", timeout=15)
             ci_metadata = metadata_received.json()
             if type(ci_metadata) is not list and ci_metadata.get("message") == "No CI found":
                 logger.error("Failed to retrieve collection instrument metadata from CIR.")
-                raise ValueError("Failed to retrieve collection instrument metadata from CIR.")
+                raise ValueError
 
             for ci_metadata_item in ci_metadata:
                 latest_session_document_ref.collection("metadata").document(ci_metadata_item["guid"]).set(
@@ -104,18 +106,26 @@ class FirestoreHandler:
             BaseDocumentReference: The document reference of the latest session found.
             None: If no session is found.
         """
-        latest_document_query = (
-            self.client.collection("sessions").order_by("created_at", direction=Query.DESCENDING).limit(1)
-        )
+        try:
+            latest_document_query = (
+                self.client.collection("sessions").order_by("created_at", direction=Query.DESCENDING).limit(1)
+            )
 
-        query_results_list = latest_document_query.get()
+            query_results_list = latest_document_query.get()
 
-        # Gets the latest session document reference by retrieving the first item of the resulting list from the query
-        if len(query_results_list) > 0:
-            return query_results_list[0].reference
-        return None
+            # Get the latest session document reference by selecting the first item of the resulting list from the query
+            if len(query_results_list) > 0:
+                return query_results_list[0].reference
+        except RetryError as error:
+            logger.exception("Failed to retrieve latest session from Firestore database.")
+            raise RetryError(
+                cause=error,
+                message="Failed to create session in Firestore database.",
+            ) from error  # type: ignore[no-untyped-call]
+        else:
+            return None
 
-    def set_document_reference(self, document_reference: BaseDocumentReference):
+    def set_document_reference(self, document_reference: BaseDocumentReference) -> None:
         """
         Set the latest session document reference. Used when an in-progress session is present and setting this
         reference as an attribute of the FirestoreHandler instance.

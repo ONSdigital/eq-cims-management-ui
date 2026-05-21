@@ -8,6 +8,7 @@ Functions:
 import logging
 
 from flask import current_app
+from requests.exceptions import RetryError
 
 logger = logging.getLogger(__name__)
 
@@ -21,22 +22,19 @@ def create_new_session() -> None:
     firestore_handler.create_database_session()
 
 
-def get_collection_instruments():
+def get_collection_instruments() -> list[dict]:
     try:
         firestore_handler = current_app.config["firestore_handler"]
         latest_session = firestore_handler.latest_session_document_ref
         ci_metadata_documents = latest_session.collection("metadata").stream()
-        ci_metadata = []
-        for metadata_item in ci_metadata_documents:
-            ci_metadata.append(metadata_item.to_dict())
-        return ci_metadata
-    except Exception:
-        # Retrieve the existing latest session
-        # Need an instance of firestore handler class with the latest session document reference set
-        pass
+
+        return [metadata_item.to_dict() for metadata_item in ci_metadata_documents]
+    except RetryError as error:
+        logger.exception("Failed to retrieve collection instruments from Firestore after multiple attempts.")
+        raise RetryError from error
 
 
-def is_latest_session_present():
+def is_latest_session_present() -> bool:
     firestore_handler = current_app.config["firestore_handler"]
 
     if session_doc_ref := firestore_handler.retrieve_latest_session():
@@ -46,5 +44,5 @@ def is_latest_session_present():
             firestore_handler.set_document_reference(session_doc_ref)
             return True
         return False
-    else:
-        return False
+
+    return False
