@@ -23,7 +23,6 @@ from google.cloud.firestore_v1.base_document import BaseDocumentReference
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=too-few-public-methods
 class FirestoreHandler:
     """
     Handles CRUD interactions with the Firestore database to allow CIs and user sessions to be managed.
@@ -70,7 +69,7 @@ class FirestoreHandler:
             logger.info("Retrieving collection instrument metadata from CIR...")
             metadata_received = requests.get("http://localhost:3030/v2/collection-instruments/metadata", timeout=15)
             ci_metadata = metadata_received.json()
-            if type(ci_metadata) is not list and ci_metadata.get("message") == "No CI found":
+            if not isinstance(ci_metadata, list) and ci_metadata.get("message") == "No CI found":
                 logger.error("Failed to retrieve collection instrument metadata from CIR.")
                 raise ValueError
 
@@ -122,8 +121,8 @@ class FirestoreHandler:
                 cause=error,
                 message="Failed to create session in Firestore database.",
             ) from error  # type: ignore[no-untyped-call]
-        else:
-            return None
+
+        return None
 
     def set_document_reference(self, document_reference: BaseDocumentReference) -> None:
         """

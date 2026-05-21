@@ -23,6 +23,16 @@ def create_new_session() -> None:
 
 
 def get_collection_instruments() -> list[dict]:
+    """
+    Iterates through the collection instruments in the latest session in the Firestore database, which
+    will be used when displaying a list of CIs to the user.
+
+    Returns:
+        list[dict]: A list of the metadata of the collection instruments in the latest session.
+
+    Raises:
+        RetryError: If the Firestore operation fails
+    """
     try:
         firestore_handler = current_app.config["firestore_handler"]
         latest_session = firestore_handler.latest_session_document_ref
@@ -35,6 +45,12 @@ def get_collection_instruments() -> list[dict]:
 
 
 def is_latest_session_present() -> bool:
+    """
+    Checks if there is a session present in the Firestore database and that its status is not "Not started".
+
+    Returns:
+        bool: True if there is a session present with its status as not "Not started", False otherwise.
+    """
     firestore_handler = current_app.config["firestore_handler"]
 
     if session_doc_ref := firestore_handler.retrieve_latest_session():
