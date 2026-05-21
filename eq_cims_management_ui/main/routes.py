@@ -24,8 +24,11 @@ from google.api_core.exceptions import RetryError
 from werkzeug.wrappers.response import Response
 
 from eq_cims_management_ui.errors.routes import error_content_500
-from eq_cims_management_ui.utils.database.firestore_logic import create_new_session, get_collection_instruments, \
-    is_latest_session_present
+from eq_cims_management_ui.utils.database.firestore_logic import (
+    create_new_session,
+    get_collection_instruments,
+    is_latest_session_present,
+)
 
 main_blueprint = Blueprint("main", __name__)
 view_session_blueprint = Blueprint(

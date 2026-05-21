@@ -19,7 +19,7 @@ from pathlib import Path
 
 import structlog
 from dotenv import load_dotenv
-from flask import Flask, current_app
+from flask import Flask
 from flask_talisman import Talisman
 from jinja2 import ChainableUndefined, FileSystemLoader
 from semver.version import Version
