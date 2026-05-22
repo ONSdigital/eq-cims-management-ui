@@ -46,15 +46,8 @@ class FirestoreHandler:
         session_id = str(uuid.uuid4())
         latest_session_document_ref = self.client.collection("sessions").document(session_id)
 
-        try:
-            logger.info("Checking CIR status endpoint...")
-            status = requests.get("http://localhost:3030/status", timeout=15)
-            if status.status_code == 200:
-                logger.info("Successfully checked CIR status endpoint.")
-
-        except requests.exceptions.ConnectionError as error:
-            logger.exception("Failed to connect to CIR.")
-            raise ConnectionError from error
+        self.check_cir_status()
+        ci_metadata = self.get_ci_metadata()
 
         try:
             logger.info("Creating session in Firestore database...")
@@ -65,13 +58,6 @@ class FirestoreHandler:
                 },
                 retry=Retry(timeout=15),
             )
-
-            logger.info("Retrieving collection instrument metadata from CIR...")
-            metadata_received = requests.get("http://localhost:3030/v2/collection-instruments/metadata", timeout=15)
-            ci_metadata = metadata_received.json()
-            if not isinstance(ci_metadata, list) and ci_metadata.get("message") == "No CI found":
-                logger.error("Failed to retrieve collection instrument metadata from CIR.")
-                raise ValueError
 
             for ci_metadata_item in ci_metadata:
                 latest_session_document_ref.collection("metadata").document(ci_metadata_item["guid"]).set(
@@ -95,6 +81,7 @@ class FirestoreHandler:
 
         logger.info("Session created successfully: %s", session_id)
         self.latest_session_document_ref = latest_session_document_ref
+
 
     def retrieve_latest_session(self) -> BaseDocumentReference | None:
         """
@@ -133,3 +120,27 @@ class FirestoreHandler:
             document_reference: The document reference of the latest session found.
         """
         self.latest_session_document_ref = document_reference
+
+    @staticmethod
+    def check_cir_status():
+        try:
+            logger.info("Checking CIR status endpoint...")
+            status = requests.get("http://localhost:3030/status", timeout=15)
+            if status.status_code == 200:
+                logger.info("Successfully checked CIR status endpoint.")
+
+        except requests.exceptions.ConnectionError as error:
+            logger.exception("Failed to connect to CIR.")
+            raise ConnectionError
+
+    @staticmethod
+    def get_ci_metadata():
+        logger.info("Retrieving collection instrument metadata from CIR...")
+        metadata_received = requests.get("http://localhost:3030/v2/collection-instruments/metadata", timeout=15)
+        ci_metadata = metadata_received.json()
+
+        if not isinstance(ci_metadata, list) and ci_metadata.get("message") == "No CI found":
+            logger.error("Failed to retrieve collection instrument metadata from CIR.")
+            raise ValueError
+
+        return ci_metadata
