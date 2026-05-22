@@ -13,3 +13,10 @@ def test_create_session(mock_client, mock_create_database_session):
     assert mock_client.call_count == 1
     assert mock_create_database_session.return_value is not None
     assert mock_create_database_session.call_count == 1
+
+def test_get_collection_instruments():
+    pass
+
+
+def test_is_latest_session_present():
+    pass

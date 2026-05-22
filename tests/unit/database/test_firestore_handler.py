@@ -4,12 +4,14 @@ are working as expected.
 """
 
 import pytest
+import requests
 from google.api_core.exceptions import RetryError
 
 from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
+from tests.unit.conftest import mock_invalid_cir_metadata_requests, mock_valid_cir_requests
 
 
-@pytest.mark.usefixtures("mock_firestore_session")
+@pytest.mark.usefixtures("mock_valid_cir_requests", "mock_firestore_session")
 def test_create_database_session():
     """
     Test that a new session document is created in a mock Firestore instance with the expected
@@ -25,8 +27,10 @@ def test_create_database_session():
         "status": "Not started",
     }
 
+    # Need to assert the value of CIR metadata
 
-@pytest.mark.usefixtures("mock_erroneous_firestore_session")
+
+@pytest.mark.usefixtures("mock_valid_cir_requests", "mock_erroneous_firestore_session")
 def test_create_session_fails():
     """
     Test that an exception is raised when the create_database_session method fails to create a new
@@ -37,3 +41,26 @@ def test_create_session_fails():
     with pytest.raises(RetryError):
         firestore_handler.create_database_session()
         assert firestore_handler.latest_session_document_ref is None
+
+
+@pytest.mark.usefixtures("mock_erroneous_cir_status")
+def test_create_session_fails_with_connection_error():
+    firestore_handler = FirestoreHandler()
+
+    with pytest.raises(requests.exceptions.ConnectionError):
+        firestore_handler.create_database_session()
+        assert firestore_handler.latest_session_document_ref is None
+
+
+@pytest.mark.usefixtures("mock_invalid_cir_metadata_requests")
+def test_empty_cir_metadata_response():
+    firestore_handler = FirestoreHandler()
+
+    with pytest.raises(ValueError):
+        firestore_handler.create_database_session()
+        assert firestore_handler.latest_session_document_ref is None
+
+
+def test_retrieve_latest_session():
+    pass
+# Need to add tests for the retrieve_latest_session method with mocks

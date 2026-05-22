@@ -9,6 +9,7 @@ from unittest import mock
 from unittest.mock import MagicMock
 
 import pytest
+import requests
 from google.api_core.exceptions import RetryError
 
 from app import create_app
@@ -112,3 +113,61 @@ def mock_create_database_session():
         "eq_cims_management_ui.utils.database.firestore_logic.FirestoreHandler.create_database_session",
     ) as mock_create_database_session:
         yield mock_create_database_session
+
+
+class MockCirResponse:
+    def __init__(self, response):
+        self.response = response
+
+    def json(self) -> dict:
+        return self.response
+
+
+class MockStatus:
+    def __init__(self, status_code):
+        self.status_code = status_code
+
+
+@pytest.fixture()
+def mock_valid_cir_requests(monkeypatch):
+
+    def mock_status(*args, **kwargs):
+        return MockStatus("200")
+
+    def mock_cir_metadata(*args, **kwargs):
+        return MockCirResponse([
+            {"ci_version":1, "data_version":"0.0.1", "validator_version":"0.0.1", "classifier_type":"form_type", "classifier_value":"1234", "guid":"xyz", "language":"en", "published_at":"2026-05-21T13:57:24.276672Z", "survey_id":"999", "title":"Test Survey"},
+            {"ci_version":1, "data_version":"0.0.1", "validator_version":"0.0.1", "classifier_type":"form_type", "classifier_value":"1234", "guid":"abc", "language":"en", "published_at":"2026-05-21T13:56:55.905000Z", "survey_id":"999", "title":"Test Survey 2"},
+        ])
+
+    responses = iter([mock_status(), mock_cir_metadata()])
+
+    def mock_get(*args, **kwargs):
+        return next(responses)
+    monkeypatch.setattr(requests, "get", mock_get)
+
+
+@pytest.fixture()
+def mock_invalid_cir_metadata_requests(monkeypatch):
+
+    def mock_status(*args, **kwargs):
+        return MockStatus("200")
+
+    def mock_cir_metadata_empty(*args, **kwargs):
+        return MockCirResponse({"status":"error","message":"No CI found"})
+
+    responses = iter([mock_status(), mock_cir_metadata_empty()])
+
+    def mock_get(*args, **kwargs):
+        return next(responses)
+
+    monkeypatch.setattr(requests, "get", mock_get)
+
+
+@pytest.fixture()
+def mock_erroneous_cir_status(monkeypatch):
+
+    def mock_status(*args, **kwargs):
+        raise requests.exceptions.ConnectionError
+
+    monkeypatch.setattr(requests, "get", mock_status)
