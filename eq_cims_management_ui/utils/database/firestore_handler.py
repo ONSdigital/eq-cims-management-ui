@@ -131,7 +131,7 @@ class FirestoreHandler:
 
         except requests.exceptions.ConnectionError as error:
             logger.exception("Failed to connect to CIR.")
-            raise ConnectionError
+            raise error
 
     @staticmethod
     def get_ci_metadata():
