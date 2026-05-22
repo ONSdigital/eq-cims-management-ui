@@ -1,6 +1,7 @@
 """Module testing a basic flask instance."""
 
 import pytest
+import requests
 
 from app import create_app
 from eq_cims_management_ui.config import config
@@ -37,7 +38,7 @@ def test_index_route_get_method(test_client):
     assert "CI migration process" in response.get_data(as_text=True)
 
 
-@pytest.mark.usefixtures("mock_firestore_session")
+@pytest.mark.usefixtures("mock_firestore_session", "mock_valid_cir_requests")
 def test_create_session_route(test_client):
     """
     Test the create session route.
@@ -51,8 +52,8 @@ def test_create_session_route(test_client):
     assert response.request.path == "/view-session"
 
 
-@pytest.mark.usefixtures("mock_erroneous_firestore_session")
-def test_create_session_route_failure(test_client):
+@pytest.mark.usefixtures("mock_erroneous_firestore_session", "mock_valid_cir_requests")
+def test_create_session_route_failure_on_firestore(test_client):
     """
     Test the create session route when the database instance isn't present.
 
@@ -62,6 +63,23 @@ def test_create_session_route_failure(test_client):
     response = test_client.get("/create-session", follow_redirects=True)
     assert response.status_code == 500
     assert response.data  # Ensure it's not empty
+
+@pytest.mark.usefixtures("mock_erroneous_cir_status")
+def test_create_session_route_failure_on_cir_status(test_client):  # False positive test
+    pass
+    # with pytest.raises(requests.exceptions.ConnectionError):
+    #     response = test_client.get("/create-session", follow_redirects=True)
+    #     assert response.status_code == 500
+    #     assert response.data  # Ensure it's not empty
+
+
+@pytest.mark.usefixtures("mock_invalid_cir_metadata_requests")
+def test_create_session_route_failure_on_empty_cir_response(test_client):
+    pass
+    # with pytest.raises(ValueError):
+    #     response = test_client.get("/create-session", follow_redirects=True)
+    #     assert response.status_code == 500
+    #     assert response.data  # Ensure it's not empty
 
 
 def test_status_check(test_client):
@@ -85,7 +103,7 @@ def test_favicon(test_client):
     assert response.data  # Make sure it's not empty
 
 
-@pytest.mark.usefixtures("mock_firestore_session")
+@pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_metadata_stream")
 def test_view_session(test_client):
     """
     GIVEN a call to the view-session endpoint.

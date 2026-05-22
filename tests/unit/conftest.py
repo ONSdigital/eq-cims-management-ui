@@ -95,6 +95,33 @@ def mock_erroneous_firestore_session(monkeypatch):
 
 
 @pytest.fixture
+def mock_firestore_metadata_stream(monkeypatch):
+    mock_current_app = MagicMock()
+    mock_firestore_handler = MagicMock()
+    mock_session_ref = MagicMock()
+    mock_collection = MagicMock()
+
+    mock_ci_metadata = [
+        MagicMock(to_dict=lambda d=ci_metadata: d) for ci_metadata in [
+            {"ci_version": 1, "data_version": "0.0.1", "validator_version": "0.0.1", "classifier_type": "form_type",
+             "classifier_value": "1234", "guid": "xyz", "language": "en", "published_at": "2026-05-21T13:57:24.276672Z",
+             "survey_id": "999", "title": "Test Survey", "status": "Not started"},
+            {"ci_version": 1, "data_version": "0.0.1", "validator_version": "0.0.1", "classifier_type": "form_type",
+             "classifier_value": "1234", "guid": "abc", "language": "en", "published_at": "2026-05-21T13:56:55.905000Z",
+             "survey_id": "999", "title": "Test Survey 2", "status": "Not started"},
+        ]
+    ]
+
+    mock_firestore_handler.latest_session_document_ref = mock_session_ref
+    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
+
+    mock_session_ref.collection.return_value = mock_collection
+    mock_collection.stream.return_value = mock_ci_metadata
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
+
+
+@pytest.fixture
 def mock_client():
     """
     Fixture to mock the Firestore Client class.
