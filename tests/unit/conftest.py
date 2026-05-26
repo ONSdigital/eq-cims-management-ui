@@ -95,7 +95,7 @@ def mock_erroneous_firestore_session(monkeypatch):
 
 
 @pytest.fixture
-def mock_firestore_metadata_stream(monkeypatch):
+def mock_firestore_ci_metadata_stream(monkeypatch):
     mock_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
     mock_session_ref = MagicMock()
@@ -117,6 +117,21 @@ def mock_firestore_metadata_stream(monkeypatch):
 
     mock_session_ref.collection.return_value = mock_collection
     mock_collection.stream.return_value = mock_ci_metadata
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
+
+
+@pytest.fixture
+def mock_invalid_firestore_metadata_stream(monkeypatch):
+    mock_current_app = MagicMock()
+    mock_firestore_handler = MagicMock()
+    mock_session_ref = MagicMock()
+    mock_collection = MagicMock()
+
+    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
+    mock_firestore_handler.latest_session_document_ref = mock_session_ref
+    mock_session_ref.collection.return_value = mock_collection
+    mock_collection.stream.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception")
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
 
