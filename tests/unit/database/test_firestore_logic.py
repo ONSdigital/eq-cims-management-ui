@@ -3,7 +3,7 @@
 import pytest
 from google.api_core.exceptions import RetryError
 
-from eq_cims_management_ui.utils.database.firestore_logic import create_new_session, get_collection_instruments
+from eq_cims_management_ui.utils.database.firestore_logic import create_new_session, get_collection_instruments, is_latest_session_present
 
 
 @pytest.mark.usefixtures("mock_client", "mock_create_database_session")
@@ -39,5 +39,8 @@ def test_get_collection_instruments_fails():
         assert test_erroneous_ci_metadata is None
 
 
+@pytest.mark.usefixtures("mock_retrieve_latest_session", "mock_firestore_get_session")
 def test_is_latest_session_present():
-    pass
+    is_latest_session = is_latest_session_present()
+    
+    assert is_latest_session == False
