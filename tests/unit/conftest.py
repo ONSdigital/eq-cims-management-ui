@@ -122,6 +122,41 @@ def mock_firestore_metadata_stream(monkeypatch):
 
 
 @pytest.fixture
+def mock_retrieve_latest_session(monkeypatch):
+    mock_client = MagicMock()
+    mock_collection = MagicMock()
+    mock_query_list = MagicMock()
+    mock_document_snapshot = MagicMock()
+    mock_session_ref = "abc-def-ghi"
+
+    mock_client.collection.return_value = mock_collection
+
+    mock_collection.order_by.return_value = mock_query_list
+    mock_query_list.limit.return_value = mock_query_list
+    mock_query_list.get.return_value = [mock_document_snapshot]
+
+    mock_document_snapshot.reference = mock_session_ref
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+
+@pytest.fixture
+def mock_retrieve_latest_session_not_present(monkeypatch):
+    mock_client = MagicMock()
+    mock_collection = MagicMock()
+    mock_query_list = MagicMock()
+
+    mock_client.collection.return_value = mock_collection
+
+    mock_collection.order_by.return_value = mock_query_list
+    mock_query_list.limit.return_value = mock_query_list
+    mock_query_list.get.return_value = []
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+
+
+@pytest.fixture
 def mock_client():
     """
     Fixture to mock the Firestore Client class.
@@ -181,9 +216,10 @@ def mock_invalid_cir_metadata_requests(monkeypatch):
         return MockStatus("200")
 
     def mock_cir_metadata_empty(*args, **kwargs):
-        return MockCirResponse({"status":"error","message":"No CI found"})
+        # return MockCirResponse({"status":"error","message":"No CI found"})
+        raise ValueError
 
-    responses = iter([mock_status(), mock_cir_metadata_empty()])
+    responses = iter([mock_status(), mock_cir_metadata_empty])
 
     def mock_get(*args, **kwargs):
         return next(responses)

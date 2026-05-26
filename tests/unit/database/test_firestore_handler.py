@@ -44,7 +44,7 @@ def test_create_session_fails():
 
 
 @pytest.mark.usefixtures("mock_erroneous_cir_status")
-def test_create_session_fails_with_connection_error():
+def test_create_session_fails_with_cir_connection_error():
     firestore_handler = FirestoreHandler()
 
     with pytest.raises(requests.exceptions.ConnectionError):
@@ -61,6 +61,22 @@ def test_empty_cir_metadata_response():
         assert firestore_handler.latest_session_document_ref is None
 
 
+@pytest.mark.usefixtures("mock_retrieve_latest_session")
 def test_retrieve_latest_session():
-    pass
+    firestore_handler = FirestoreHandler()
+
+    latest_session = firestore_handler.retrieve_latest_session()
+
+    assert latest_session is not None
+    assert latest_session == "abc-def-ghi"
+
+
+@pytest.mark.usefixtures("mock_retrieve_latest_session_not_present")
+def test_retrieve_latest_session_no_session():
+    firestore_handler = FirestoreHandler()
+
+    latest_session = firestore_handler.retrieve_latest_session()
+
+    assert latest_session is None
+
 # Need to add tests for the retrieve_latest_session method with mocks
