@@ -106,10 +106,11 @@ class FirestoreHandler:
             logger.exception("Failed to retrieve latest session from Firestore database.")
             raise RetryError(
                 cause=error,
-                message="Failed to create session in Firestore database.",
+                message="Failed to retrieve session in Firestore database.",
             ) from error  # type: ignore[no-untyped-call]
 
         return None
+
 
     def set_document_reference(self, document_reference: BaseDocumentReference) -> None:
         """
@@ -120,6 +121,7 @@ class FirestoreHandler:
             document_reference: The document reference of the latest session found.
         """
         self.latest_session_document_ref = document_reference
+
 
     @staticmethod
     def check_cir_status():
@@ -132,6 +134,7 @@ class FirestoreHandler:
         except requests.exceptions.ConnectionError as error:
             logger.exception("Failed to connect to CIR.")
             raise error
+
 
     @staticmethod
     def get_ci_metadata():
