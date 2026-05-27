@@ -44,3 +44,10 @@ def test_is_latest_session_present():
     is_latest_session = is_latest_session_present()
     
     assert is_latest_session == False
+
+
+@pytest.mark.usefixtures("mock_retrieve_latest_session", "mock_firestore_get_session_not_not_started")
+def test_is_latest_session_present_status_not_not_started():
+    is_latest_session = is_latest_session_present()
+    
+    assert is_latest_session == True

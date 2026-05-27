@@ -208,6 +208,24 @@ def mock_firestore_get_session(monkeypatch):
     
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
     
+    
+@pytest.fixture
+def mock_firestore_get_session_not_not_started(monkeypatch):
+    mock_current_app = MagicMock()
+    mock_firestore_handler = MagicMock()
+    mock_session_doc_ref = MagicMock()
+    
+    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
+    
+    mock_firestore_handler.retrieve_latest_session.return_value = mock_session_doc_ref
+    
+    mock_session_doc_ref.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Running", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+    )
+    
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
+    
+    
 
 class MockCirResponse:
     def __init__(self, response):
