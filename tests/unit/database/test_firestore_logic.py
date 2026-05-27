@@ -39,22 +39,17 @@ def test_get_collection_instruments_fails():
         assert test_erroneous_ci_metadata is None
 
 
-@pytest.mark.usefixtures("mock_retrieve_latest_session", "mock_firestore_get_session")
-def test_is_latest_session_present():
+@pytest.mark.parametrize(
+    "fixtures, expected_result",
+    [
+        (("mock_retrieve_latest_session", "mock_firestore_get_session"), False),
+        (("mock_retrieve_latest_session", "mock_firestore_get_session_no_session"), False),
+        (("mock_retrieve_latest_session", "mock_firestore_get_session_in_progress"), True),
+    ]
+)
+def test_is_latest_session_present(request, fixtures, expected_result):
+    for fixture in fixtures:
+        request.getfixturevalue(fixture)
+
     is_latest_session = is_latest_session_present()
-    
-    assert is_latest_session == False
-
-
-@pytest.mark.usefixtures("mock_retrieve_latest_session", "mock_firestore_get_session_no_session")
-def test_is_latest_session_present_no_session():
-    is_latest_session = is_latest_session_present()
-    
-    assert is_latest_session == False
-
-
-@pytest.mark.usefixtures("mock_retrieve_latest_session", "mock_firestore_get_session_not_not_started")
-def test_is_latest_session_present_status_not_not_started():
-        is_latest_session = is_latest_session_present()
-        
-        assert is_latest_session == True
+    assert is_latest_session == expected_result

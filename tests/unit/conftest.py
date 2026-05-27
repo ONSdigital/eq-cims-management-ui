@@ -210,7 +210,7 @@ def mock_firestore_get_session(monkeypatch):
     
     
 @pytest.fixture
-def mock_firestore_get_session_not_not_started(monkeypatch):
+def mock_firestore_get_session_in_progress(monkeypatch):
     mock_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
     mock_session_doc_ref = MagicMock()
