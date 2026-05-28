@@ -278,10 +278,9 @@ def mock_invalid_cir_metadata_requests(monkeypatch):
         return MockStatus("200")
 
     def mock_cir_metadata_empty(*args, **kwargs):
-        # return MockCirResponse({"status":"error","message":"No CI found"})
-        raise ValueError
+        return MockCirResponse({"status":"error","message":"No CI found"})
 
-    responses = iter([mock_status(), mock_cir_metadata_empty])
+    responses = iter([mock_status(), mock_cir_metadata_empty()])
 
     def mock_get(*args, **kwargs):
         return next(responses)
