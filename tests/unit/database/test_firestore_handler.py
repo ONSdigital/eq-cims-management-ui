@@ -27,8 +27,6 @@ def test_create_database_session():
         "status": "Not started",
     }
 
-    # Need to assert the value of CIR metadata
-
 
 @pytest.mark.usefixtures("mock_valid_cir_requests", "mock_erroneous_firestore_session")
 def test_create_session_fails():
@@ -79,4 +77,12 @@ def test_retrieve_latest_session_no_session():
 
     assert latest_session is None
 
-# Need to add tests for the retrieve_latest_session method with mocks
+
+@pytest.mark.usefixtures("mock_document_reference")
+def test_set_document_reference(mock_document_reference):
+    firestore_handler = FirestoreHandler()
+
+    firestore_handler.set_document_reference(mock_document_reference)
+
+    assert firestore_handler.latest_session_document_ref is not None
+    assert firestore_handler.latest_session_document_ref.id == "abc-def-ghi"

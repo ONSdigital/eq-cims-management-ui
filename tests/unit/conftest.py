@@ -233,6 +233,19 @@ def mock_firestore_get_session_no_session(monkeypatch):
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
 
 
+@pytest.fixture
+def mock_document_reference():
+    """
+    Fixture to mock a Firestore document reference.
+
+    Returns:
+        MagicMock: A mock instance of a Firestore document reference with an id attribute.
+    """
+    mock_doc_ref = MagicMock()
+    mock_doc_ref.id = "abc-def-ghi"
+    
+    return mock_doc_ref
+
 
 class MockCirResponse:
     def __init__(self, response):
