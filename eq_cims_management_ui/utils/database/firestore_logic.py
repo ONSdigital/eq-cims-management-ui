@@ -8,7 +8,7 @@ Functions:
 import logging
 
 from flask import current_app
-from requests.exceptions import RetryError
+from google.api_core.exceptions import RetryError
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,10 @@ def get_collection_instruments() -> list[dict]:
         return [metadata_item.to_dict() for metadata_item in ci_metadata_documents]
     except RetryError as error:
         logger.exception("Failed to retrieve collection instruments from Firestore after multiple attempts.")
-        raise RetryError from error
+        raise RetryError(
+            cause=error,
+            message="Failed to create session in Firestore database.",
+        ) from error  # type: ignore[no-untyped-call]
 
 
 def is_latest_session_present() -> bool:
