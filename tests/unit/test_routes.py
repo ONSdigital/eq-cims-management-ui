@@ -38,6 +38,20 @@ def test_index_route_get_method(test_client):
     assert "CI migration process" in response.get_data(as_text=True)
 
 
+@pytest.mark.usefixtures("mock_firestore_get_session_in_progress")
+def test_index_route_get_method_latest_session_present(test_client):
+    """
+    Test the index route when there is a session already present in the database.
+    
+    This test sends a GET request to the root URL ("/") using the test client
+    and verifies that the response is a redirect when there is a session present.
+    """
+    
+    response = test_client.get("/")
+    # Checks that the response is a redirect
+    assert response.status_code == 302
+
+
 @pytest.mark.usefixtures("mock_firestore_session", "mock_valid_cir_requests")
 def test_create_session_route(test_client):
     """
@@ -63,6 +77,7 @@ def test_create_session_route_failure_on_firestore(test_client):
     response = test_client.get("/create-session", follow_redirects=True)
     assert response.status_code == 500
     assert response.data  # Ensure it's not empty
+
 
 @pytest.mark.usefixtures("mock_erroneous_cir_status")
 def test_create_session_route_failure_on_cir_status(test_client):  # False positive test
