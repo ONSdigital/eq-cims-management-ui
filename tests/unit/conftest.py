@@ -169,6 +169,20 @@ def mock_retrieve_latest_session_not_present(monkeypatch):
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
 
+@pytest.fixture
+def mock_retrieve_latest_session_failure(monkeypatch):
+    mock_client = MagicMock()
+    mock_collection = MagicMock()
+    mock_query_list = MagicMock()
+
+    mock_client.collection.return_value = mock_collection
+
+    mock_collection.order_by.return_value = mock_query_list
+    mock_query_list.limit.return_value = mock_query_list
+    mock_query_list.get.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception raise")
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
 
 @pytest.fixture
 def mock_create_database_session(monkeypatch):
@@ -243,7 +257,7 @@ def mock_document_reference():
     """
     mock_doc_ref = MagicMock()
     mock_doc_ref.id = "abc-def-ghi"
-    
+
     return mock_doc_ref
 
 
@@ -264,7 +278,7 @@ class MockStatus:
 def mock_valid_cir_requests(monkeypatch):
 
     def mock_status(*args, **kwargs):
-        return MockStatus("200")
+        return MockStatus(200)
 
     def mock_cir_metadata(*args, **kwargs):
         return MockCirResponse([
@@ -283,7 +297,7 @@ def mock_valid_cir_requests(monkeypatch):
 def mock_invalid_cir_metadata_requests(monkeypatch):
 
     def mock_status(*args, **kwargs):
-        return MockStatus("200")
+        return MockStatus(200 )
 
     def mock_cir_metadata_empty(*args, **kwargs):
         return MockCirResponse({"status":"error","message":"No CI found"})
