@@ -1,7 +1,6 @@
 """Module testing a basic flask instance."""
 
 import pytest
-import requests
 
 from app import create_app
 from eq_cims_management_ui.config import config
@@ -25,6 +24,7 @@ def create_client():
         yield client
 
 
+@pytest.mark.usefixtures("mock_firestore_get_session_no_session")
 def test_index_route_get_method(test_client):
     """
     Test the index route of the application.
@@ -42,14 +42,15 @@ def test_index_route_get_method(test_client):
 def test_index_route_get_method_latest_session_present(test_client):
     """
     Test the index route when there is a session already present in the database.
-    
+
     This test sends a GET request to the root URL ("/") using the test client
     and verifies that the response is a redirect when there is a session present.
     """
-    
+
     response = test_client.get("/")
     # Checks that the response is a redirect
     assert response.status_code == 302
+    assert response.location == "/view-session"
 
 
 @pytest.mark.usefixtures("mock_firestore_session", "mock_valid_cir_requests")

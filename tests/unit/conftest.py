@@ -131,7 +131,7 @@ def mock_invalid_firestore_metadata_stream(monkeypatch):
     mock_current_app.config = {"firestore_handler": mock_firestore_handler}
     mock_firestore_handler.latest_session_document_ref = mock_session_ref
     mock_session_ref.collection.return_value = mock_collection
-    mock_collection.stream.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception")
+    mock_collection.stream.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception raise")
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
 
@@ -170,74 +170,69 @@ def mock_retrieve_latest_session_not_present(monkeypatch):
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
 
 
-
 @pytest.fixture
-def mock_client():
-    """
-    Fixture to mock the Firestore Client class.
-
-    Yields:
-        - mock_client: A mock instance of the Firestore Client class.
-    """
-    with mock.patch("eq_cims_management_ui.utils.database.firestore_handler.Client") as mock_client:
-        yield mock_client
-
-
-@pytest.fixture
-def mock_create_database_session():
+def mock_create_database_session(monkeypatch):
     """Fixture to mock the create_database_session method."""
-    with mock.patch(
-        "eq_cims_management_ui.utils.database.firestore_logic.FirestoreHandler.create_database_session",
-    ) as mock_create_database_session:
-        yield mock_create_database_session
-        
+    mock_current_app = MagicMock()
+    mock_firestore_handler = MagicMock()
+
+    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
+
+    with mock.patch.object(
+        mock_current_app.config["firestore_handler"],
+        "create_database_session",
+    ) as mock_create_database_session_test:
+        yield mock_create_database_session_test
+
 
 @pytest.fixture
 def mock_firestore_get_session(monkeypatch):
     mock_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
     mock_session_doc_ref = MagicMock()
-    
+
     mock_current_app.config = {"firestore_handler": mock_firestore_handler}
-    
+
     mock_firestore_handler.retrieve_latest_session.return_value = mock_session_doc_ref
-    
+
     mock_session_doc_ref.get.return_value = MagicMock(
         to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
     )
-    
+
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
-    
-    
+
+
 @pytest.fixture
 def mock_firestore_get_session_in_progress(monkeypatch):
     mock_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
     mock_session_doc_ref = MagicMock()
-    
+
     mock_current_app.config = {"firestore_handler": mock_firestore_handler}
-    
+
     mock_firestore_handler.retrieve_latest_session.return_value = mock_session_doc_ref
-    
+
     mock_session_doc_ref.get.return_value = MagicMock(
         to_dict=lambda: {"status": "Running", "created_at": "2026-05-05T15:00:43.198172+01:00"},
     )
-    
+
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
-    
-    
+
+
 @pytest.fixture
 def mock_firestore_get_session_no_session(monkeypatch):
     mock_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
-    
+
     mock_current_app.config = {"firestore_handler": mock_firestore_handler}
-    
+
     mock_firestore_handler.retrieve_latest_session.return_value = None
-    
+
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
-    
-    
+
+
 
 class MockCirResponse:
     def __init__(self, response):
