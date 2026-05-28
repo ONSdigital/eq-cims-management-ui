@@ -103,7 +103,7 @@ def test_favicon(test_client):
     assert response.data  # Make sure it's not empty
 
 
-@pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_metadata_stream")
+@pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_ci_metadata_stream")
 def test_view_session(test_client):
     """
     GIVEN a call to the view-session endpoint.
