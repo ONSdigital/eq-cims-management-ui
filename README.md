@@ -128,14 +128,20 @@ The `@ons/design-system` package is then automatically added to the jinja config
 The used design system version is pulled directly from the version in package.json.
 A fallback version is set in `templates/base.html`.
 
-### Run Application with Database
+### Run Application with Database and CIR FastAPI
 
-To run the application with a local database, you will need to complete the following steps:
+To run the application with a local database and to point to CIR, you will need to complete the following steps:
 
-- Create or update a `.env` file to contain the following environment variable:
+- Clone the [CIR FastAPI](https://github.com/ONSdigital/eq-cir-fastapi) repository and follow their README to
+  [run the application](https://github.com/ONSdigital/eq-cir-fastapi/blob/main/README.md#running-the-application-locally).
+  **Note**: The CIR application must be running for the UI to work as expected, so ensure you have completed this step
+  before proceeding.
+
+- Create or update a `.env` file to contain the following environment variables:
 
 ```text
 FIRESTORE_EMULATOR_HOST="localhost:8080"
+CIR_API_BASE_URL="localhost:3030"
 ```
 
 - To run the application locally with a Firestore emulator, use the following commands:

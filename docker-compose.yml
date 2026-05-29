@@ -6,6 +6,8 @@ services:
     volumes:
       - ./eq_cims_management_ui/devtools/firebase-emulator:/firebase
       - ./eq_cims_management_ui/devtools/firebase-emulator:/firebase/baseline-data
+    networks:
+      - eq-cir-fastapi_default
 
   eq-cims-management-ui:
     build: ./
@@ -14,6 +16,13 @@ services:
     environment:
       - PORT=5100
       - FIRESTORE_EMULATOR_HOST=firestore:8080
+      - CIR_API_BASE_URL=api-cir:3030
     restart: on-failure
     depends_on:
       - firestore
+    networks:
+      - eq-cir-fastapi_default
+
+networks:
+  eq-cir-fastapi_default:
+    external: true

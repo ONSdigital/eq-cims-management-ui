@@ -9,6 +9,7 @@ Raises:
 """
 
 import logging
+import os
 import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -127,7 +128,8 @@ class FirestoreHandler:
     def check_cir_status():
         try:
             logger.info("Checking CIR status endpoint...")
-            status = requests.get("http://localhost:3030/status", timeout=15)
+            cir_status_url = f"http://{os.getenv("CIR_API_BASE_URL")}/status"
+            status = requests.get(cir_status_url, timeout=15)
             if status.status_code == 200:
                 logger.info("Successfully checked CIR status endpoint.")
 
@@ -139,7 +141,8 @@ class FirestoreHandler:
     @staticmethod
     def get_ci_metadata():
         logger.info("Retrieving collection instrument metadata from CIR...")
-        metadata_received = requests.get("http://localhost:3030/collection-instruments/metadata", timeout=15)
+        cir_metadata_url = f"http://{os.getenv("CIR_API_BASE_URL")}/collection-instruments/metadata"
+        metadata_received = requests.get(cir_metadata_url, timeout=15)
         ci_metadata = metadata_received.json()
 
         if not isinstance(ci_metadata, list) and ci_metadata.get("message") == "No CI found":
