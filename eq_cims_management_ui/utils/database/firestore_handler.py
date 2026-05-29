@@ -139,7 +139,7 @@ class FirestoreHandler:
     @staticmethod
     def get_ci_metadata():
         logger.info("Retrieving collection instrument metadata from CIR...")
-        metadata_received = requests.get("http://localhost:3030/v2/collection-instruments/metadata", timeout=15)
+        metadata_received = requests.get("http://localhost:3030/collection-instruments/metadata", timeout=15)
         ci_metadata = metadata_received.json()
 
         if not isinstance(ci_metadata, list) and ci_metadata.get("message") == "No CI found":
