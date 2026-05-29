@@ -16,23 +16,26 @@ def test_render_initial_page(page: Page):
 
 def test_create_session_displays_content(page: Page):
     """Verify that clicking the create session button displays the expected content."""
+
     def handle_status(route: Route):
         route.fulfill(json={"status": "OK"})
-        
+
     def handle_ci_json(route: Route):
-        ci_json = [{
-            "ci_version": 1,
-            "data_version": "0.0.1",
-            "validator_version": "0.0.1",
-            "classifier_type": "form_type",
-            "classifier_value": "1234",
-            "guid": "abcd",
-            "language": "en",
-            "published_at": "2026-01-01T00:00:00.00Z",
-            "survey_id": "000",
-            "title": "Test Survey"
-        }]
-        
+        ci_json = [
+            {
+                "ci_version": 1,
+                "data_version": "0.0.1",
+                "validator_version": "0.0.1",
+                "classifier_type": "form_type",
+                "classifier_value": "1234",
+                "guid": "abcd",
+                "language": "en",
+                "published_at": "2026-01-01T00:00:00.00Z",
+                "survey_id": "000",
+                "title": "Test Survey",
+            },
+        ]
+
         route.fulfill(json=ci_json)
 
     page.route("**/status", handle_status)

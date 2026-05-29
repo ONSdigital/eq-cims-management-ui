@@ -102,13 +102,34 @@ def mock_firestore_ci_metadata_stream(monkeypatch):
     mock_collection = MagicMock()
 
     mock_ci_metadata = [
-        MagicMock(to_dict=lambda d=ci_metadata: d) for ci_metadata in [
-            {"ci_version": 1, "data_version": "0.0.1", "validator_version": "0.0.1", "classifier_type": "form_type",
-             "classifier_value": "1234", "guid": "xyz", "language": "en", "published_at": "2026-05-21T13:57:24.276672Z",
-             "survey_id": "999", "title": "Test Survey", "status": "Not started"},
-            {"ci_version": 1, "data_version": "0.0.1", "validator_version": "0.0.1", "classifier_type": "form_type",
-             "classifier_value": "1234", "guid": "abc", "language": "en", "published_at": "2026-05-21T13:56:55.905000Z",
-             "survey_id": "999", "title": "Test Survey 2", "status": "Not started"},
+        MagicMock(to_dict=lambda d=ci_metadata: d)
+        for ci_metadata in [
+            {
+                "ci_version": 1,
+                "data_version": "0.0.1",
+                "validator_version": "0.0.1",
+                "classifier_type": "form_type",
+                "classifier_value": "1234",
+                "guid": "xyz",
+                "language": "en",
+                "published_at": "2026-05-21T13:57:24.276672Z",
+                "survey_id": "999",
+                "title": "Test Survey",
+                "status": "Not started",
+            },
+            {
+                "ci_version": 1,
+                "data_version": "0.0.1",
+                "validator_version": "0.0.1",
+                "classifier_type": "form_type",
+                "classifier_value": "1234",
+                "guid": "abc",
+                "language": "en",
+                "published_at": "2026-05-21T13:56:55.905000Z",
+                "survey_id": "999",
+                "title": "Test Survey 2",
+                "status": "Not started",
+            },
         ]
     ]
 
@@ -131,7 +152,10 @@ def mock_invalid_firestore_metadata_stream(monkeypatch):
     mock_current_app.config = {"firestore_handler": mock_firestore_handler}
     mock_firestore_handler.latest_session_document_ref = mock_session_ref
     mock_session_ref.collection.return_value = mock_collection
-    mock_collection.stream.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception raise")
+    mock_collection.stream.side_effect = RetryError(
+        cause=Exception("RetryError"),
+        message="Mock RetryError Exception raise",
+    )
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_logic.current_app", mock_current_app)
 
@@ -169,6 +193,7 @@ def mock_retrieve_latest_session_not_present(monkeypatch):
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
 
+
 @pytest.fixture
 def mock_retrieve_latest_session_failure(monkeypatch):
     mock_client = MagicMock()
@@ -179,7 +204,10 @@ def mock_retrieve_latest_session_failure(monkeypatch):
 
     mock_collection.order_by.return_value = mock_query_list
     mock_query_list.limit.return_value = mock_query_list
-    mock_query_list.get.side_effect = RetryError(cause=Exception("RetryError"), message="Mock RetryError Exception raise")
+    mock_query_list.get.side_effect = RetryError(
+        cause=Exception("RetryError"),
+        message="Mock RetryError Exception raise",
+    )
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
 
@@ -277,34 +305,59 @@ class MockStatus:
 @pytest.fixture()
 def mock_valid_cir_requests(monkeypatch):
 
-    def mock_status(*args, **kwargs):
+    def mock_status(*_args, **_kwargs):
         return MockStatus(200)
 
-    def mock_cir_metadata(*args, **kwargs):
-        return MockCirResponse([
-            {"ci_version":1, "data_version":"0.0.1", "validator_version":"0.0.1", "classifier_type":"form_type", "classifier_value":"1234", "guid":"xyz", "language":"en", "published_at":"2026-05-21T13:57:24.276672Z", "survey_id":"999", "title":"Test Survey"},
-            {"ci_version":1, "data_version":"0.0.1", "validator_version":"0.0.1", "classifier_type":"form_type", "classifier_value":"1234", "guid":"abc", "language":"en", "published_at":"2026-05-21T13:56:55.905000Z", "survey_id":"999", "title":"Test Survey 2"},
-        ])
+    def mock_cir_metadata(*_args, **_kwargs):
+        return MockCirResponse(
+            [
+                {
+                    "ci_version": 1,
+                    "data_version": "0.0.1",
+                    "validator_version": "0.0.1",
+                    "classifier_type": "form_type",
+                    "classifier_value": "1234",
+                    "guid": "xyz",
+                    "language": "en",
+                    "published_at": "2026-05-21T13:57:24.276672Z",
+                    "survey_id": "999",
+                    "title": "Test Survey",
+                },
+                {
+                    "ci_version": 1,
+                    "data_version": "0.0.1",
+                    "validator_version": "0.0.1",
+                    "classifier_type": "form_type",
+                    "classifier_value": "1234",
+                    "guid": "abc",
+                    "language": "en",
+                    "published_at": "2026-05-21T13:56:55.905000Z",
+                    "survey_id": "999",
+                    "title": "Test Survey 2",
+                },
+            ],
+        )
 
     responses = iter([mock_status(), mock_cir_metadata()])
 
-    def mock_get(*args, **kwargs):
+    def mock_get(*_args, **_kwargs):
         return next(responses)
+
     monkeypatch.setattr(requests, "get", mock_get)
 
 
 @pytest.fixture()
 def mock_invalid_cir_metadata_requests(monkeypatch):
 
-    def mock_status(*args, **kwargs):
+    def mock_status(*_args, **_kwargs):
         return MockStatus(200)
 
-    def mock_cir_metadata_empty(*args, **kwargs):
-        return MockCirResponse({"status":"error","message":"No CI found"})
+    def mock_cir_metadata_empty(*_args, **_kwargs):
+        return MockCirResponse({"status": "error", "message": "No CI found"})
 
     responses = iter([mock_status(), mock_cir_metadata_empty()])
 
-    def mock_get(*args, **kwargs):
+    def mock_get(*_args, **_kwargs):
         return next(responses)
 
     monkeypatch.setattr(requests, "get", mock_get)
@@ -313,7 +366,7 @@ def mock_invalid_cir_metadata_requests(monkeypatch):
 @pytest.fixture()
 def mock_erroneous_cir_status(monkeypatch):
 
-    def mock_status(*args, **kwargs):
+    def mock_status(*_args, **_kwargs):
         raise requests.exceptions.ConnectionError
 
     monkeypatch.setattr(requests, "get", mock_status)

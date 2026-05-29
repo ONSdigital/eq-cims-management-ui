@@ -2,15 +2,12 @@
 This module contains tests for the FirestoreHandler class to ensure interactions with Firestore instances
 are working as expected.
 """
-import logging
 
 import pytest
 import requests
 from google.api_core.exceptions import RetryError
-from structlog.testing import capture_logs
 
 from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
-from tests.unit.conftest import mock_invalid_cir_metadata_requests, mock_valid_cir_requests
 
 
 @pytest.mark.usefixtures("mock_valid_cir_requests", "mock_firestore_session")
@@ -78,6 +75,7 @@ def test_retrieve_latest_session_no_session():
     latest_session = firestore_handler.retrieve_latest_session()
 
     assert latest_session is None
+
 
 @pytest.mark.usefixtures("mock_retrieve_latest_session_failure")
 def test_retrieve_latest_session_failure():

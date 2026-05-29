@@ -83,7 +83,6 @@ class FirestoreHandler:
         logger.info("Session created successfully: %s", session_id)
         self.latest_session_document_ref = latest_session_document_ref
 
-
     def retrieve_latest_session(self) -> BaseDocumentReference | None:
         """
         Queries the Firestore database for the latest session by sorting all session by creation date in descending
@@ -112,7 +111,6 @@ class FirestoreHandler:
 
         return None
 
-
     def set_document_reference(self, document_reference: BaseDocumentReference) -> None:
         """
         Set the latest session document reference. Used when an in-progress session is present and setting this
@@ -122,7 +120,6 @@ class FirestoreHandler:
             document_reference: The document reference of the latest session found.
         """
         self.latest_session_document_ref = document_reference
-
 
     @staticmethod
     def check_cir_status():
@@ -136,7 +133,6 @@ class FirestoreHandler:
         except requests.exceptions.ConnectionError as error:
             logger.exception("Failed to connect to CIR.")
             raise requests.exceptions.ConnectionError from error
-
 
     @staticmethod
     def get_ci_metadata():
