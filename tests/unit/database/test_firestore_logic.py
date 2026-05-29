@@ -56,6 +56,7 @@ def test_get_collection_instruments():
 
 @pytest.mark.usefixtures("mock_invalid_firestore_metadata_stream")
 def test_get_collection_instruments_fails():
+    """Test that get_collection_instruments returns None when the Firestore stream fails."""
     with pytest.raises(RetryError):
         test_erroneous_ci_metadata = get_collection_instruments()
         assert test_erroneous_ci_metadata is None
@@ -70,6 +71,10 @@ def test_get_collection_instruments_fails():
     ],
 )
 def test_is_latest_session_present(request, fixtures, expected_result):
+    """
+    Test that the is_latest_session_present function returns the expected result depending on if the latest session
+    is present, not present or in progress.
+    """
     for fixture in fixtures:
         request.getfixturevalue(fixture)
 

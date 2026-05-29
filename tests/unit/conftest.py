@@ -290,6 +290,8 @@ def mock_document_reference():
 
 
 class MockCirResponse:
+    """Class to mock the response from the CIR API."""
+
     def __init__(self, response):
         self.response = response
 
@@ -298,12 +300,21 @@ class MockCirResponse:
 
 
 class MockStatus:
+    """Class to mock the status code received from the CIR API."""
+
     def __init__(self, status_code):
         self.status_code = status_code
 
 
 @pytest.fixture()
 def mock_valid_cir_requests(monkeypatch):
+    """
+    Fixture to mock the requests library and return a predefined response for CIR metadata requests. This represents the
+    scenario where the CIR API is available and returns valid metadata for collection instruments.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the requests library.
+    """
 
     def mock_status(*_args, **_kwargs):
         return MockStatus(200)
@@ -348,6 +359,13 @@ def mock_valid_cir_requests(monkeypatch):
 
 @pytest.fixture()
 def mock_invalid_cir_metadata_requests(monkeypatch):
+    """
+    Fixture to mock the requests library and return a predefined response for CIR metadata requests where the CIR API
+    is available but returns an empty response as CI metadata cannot be retrieved.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the requests library.
+    """
 
     def mock_status(*_args, **_kwargs):
         return MockStatus(200)
@@ -365,6 +383,13 @@ def mock_invalid_cir_metadata_requests(monkeypatch):
 
 @pytest.fixture()
 def mock_erroneous_cir_status(monkeypatch):
+    """
+    Fixture to mock the requests library and return a predefined response for CIR status requests where the CIR API is
+    not available.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the requests library.
+    """
 
     def mock_status(*_args, **_kwargs):
         raise requests.exceptions.ConnectionError

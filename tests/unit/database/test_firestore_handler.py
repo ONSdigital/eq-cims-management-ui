@@ -42,6 +42,10 @@ def test_create_session_fails():
 
 @pytest.mark.usefixtures("mock_erroneous_cir_status")
 def test_create_session_fails_with_cir_connection_error():
+    """
+    Test that when trying to create a new session, a 'requests.exception.ConnectionError' exception is raised when CIR
+    is not available.
+    """
     firestore_handler = FirestoreHandler()
 
     with pytest.raises(requests.exceptions.ConnectionError):
@@ -51,6 +55,10 @@ def test_create_session_fails_with_cir_connection_error():
 
 @pytest.mark.usefixtures("mock_invalid_cir_metadata_requests")
 def test_empty_cir_metadata_response():
+    """
+    Test that when trying to create a new session, a 'ValueError' exception is raised when CIR returns an empty
+    response for collection instrument metadata.
+    """
     firestore_handler = FirestoreHandler()
 
     with pytest.raises(ValueError):
@@ -60,6 +68,10 @@ def test_empty_cir_metadata_response():
 
 @pytest.mark.usefixtures("mock_retrieve_latest_session")
 def test_retrieve_latest_session():
+    """
+    Test that the retrieve_latest_session method returns the expected session ID when a latest session document is
+    present and the status is not 'Not started'.
+    """
     firestore_handler = FirestoreHandler()
 
     latest_session = firestore_handler.retrieve_latest_session()
@@ -70,6 +82,7 @@ def test_retrieve_latest_session():
 
 @pytest.mark.usefixtures("mock_retrieve_latest_session_not_present")
 def test_retrieve_latest_session_no_session():
+    """Test that the retrieve_latest_session method returns None when no latest session document is present."""
     firestore_handler = FirestoreHandler()
 
     latest_session = firestore_handler.retrieve_latest_session()
@@ -79,6 +92,10 @@ def test_retrieve_latest_session_no_session():
 
 @pytest.mark.usefixtures("mock_retrieve_latest_session_failure")
 def test_retrieve_latest_session_failure():
+    """
+    Test that the retrieve_latest_session method returns None when a RetryError occurs while retrieving the
+    latest session.
+    """
     with pytest.raises(RetryError):
         firestore_handler = FirestoreHandler()
         latest_session = firestore_handler.retrieve_latest_session()
@@ -87,6 +104,7 @@ def test_retrieve_latest_session_failure():
 
 @pytest.mark.usefixtures("mock_document_reference")
 def test_set_document_reference(mock_document_reference):
+    """Test that the set_document_reference method sets the latest_session_document_ref attribute correctly."""
     firestore_handler = FirestoreHandler()
 
     firestore_handler.set_document_reference(mock_document_reference)
