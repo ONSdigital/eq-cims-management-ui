@@ -1,6 +1,7 @@
 """Module testing a basic flask instance."""
 
 import pytest
+import requests
 
 from app import create_app
 from eq_cims_management_ui.config import config
@@ -80,22 +81,18 @@ def test_create_session_route_failure_on_firestore(test_client):
     assert response.data  # Ensure it's not empty
 
 
-@pytest.mark.usefixtures("mock_erroneous_cir_status")
-def test_create_session_route_failure_on_cir_status(test_client):  # False positive test
-    pass
-    # with pytest.raises(requests.exceptions.ConnectionError):
-    #     response = test_client.get("/create-session", follow_redirects=True)
-    #     assert response.status_code == 500
-    #     assert response.data  # Ensure it's not empty
+@pytest.mark.usefixtures("mock_firestore_session", "mock_erroneous_cir_status")
+def test_create_session_route_failure_on_cir_status(test_client):
+    response = test_client.get("/create-session", follow_redirects=True)
+    assert response.status_code == 500
+    assert response.data  # Ensure it's not empty
 
 
-@pytest.mark.usefixtures("mock_invalid_cir_metadata_requests")
+@pytest.mark.usefixtures("mock_firestore_session", "mock_invalid_cir_metadata_requests")
 def test_create_session_route_failure_on_empty_cir_response(test_client):
-    pass
-    # with pytest.raises(ValueError):
-    #     response = test_client.get("/create-session", follow_redirects=True)
-    #     assert response.status_code == 500
-    #     assert response.data  # Ensure it's not empty
+    response = test_client.get("/create-session", follow_redirects=True)
+    assert response.status_code == 500
+    assert response.data  # Ensure it's not empty
 
 
 def test_status_check(test_client):

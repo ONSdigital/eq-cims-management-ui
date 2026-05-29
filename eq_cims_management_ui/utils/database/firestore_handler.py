@@ -133,7 +133,7 @@ class FirestoreHandler:
 
         except requests.exceptions.ConnectionError as error:
             logger.exception("Failed to connect to CIR.")
-            raise error
+            raise requests.exceptions.ConnectionError from error
 
 
     @staticmethod

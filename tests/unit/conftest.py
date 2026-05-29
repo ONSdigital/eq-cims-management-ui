@@ -297,7 +297,7 @@ def mock_valid_cir_requests(monkeypatch):
 def mock_invalid_cir_metadata_requests(monkeypatch):
 
     def mock_status(*args, **kwargs):
-        return MockStatus(200 )
+        return MockStatus(200)
 
     def mock_cir_metadata_empty(*args, **kwargs):
         return MockCirResponse({"status":"error","message":"No CI found"})
