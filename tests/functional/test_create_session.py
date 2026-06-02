@@ -19,7 +19,7 @@ def setup_cir():
 
     requests.post(
         url="http://localhost:3030/collection-instruments",
-        params={"guid": "abc", "validator_version": "0.0.1", "ci_version": "1"},
+        params={"guid": "abcd", "validator_version": "0.0.1", "ci_version": "1"},
         json=test_schema,
     )
 
