@@ -24,7 +24,7 @@ eq-cims-management-ui
     - [Pre-requisites](#pre-requisites)
     - [Installation](#installation)
 - [Development](#development)
-    - [Run Application with Database](#run-application-with-database)
+    - [Run Application with Database and CIR FastAPI](#run-application-with-database-and-cir-fastapi)
     - [Run All Tests](#run-all-tests)
     - [Run Unit Tests with Coverage](#run-unit-tests-with-coverage)
     - [Run Functional Tests](#run-functional-tests)
@@ -133,9 +133,9 @@ A fallback version is set in `templates/base.html`.
 To run the application with a local database and to point to CIR, you will need to complete the following steps:
 
 - Clone the [CIR FastAPI](https://github.com/ONSdigital/eq-cir-fastapi) repository and follow their README to
-  [run the application](https://github.com/ONSdigital/eq-cir-fastapi/blob/main/README.md#running-the-application-locally).
-  **Note**: The CIR application must be running for the UI to work as expected, so ensure you have completed this step
-  before proceeding.
+[run the application](https://github.com/ONSdigital/eq-cir-fastapi/blob/main/README.md#running-the-application-locally).
+**Note**: The CIR application must be running for the UI to work as expected, so ensure you have completed this step
+before proceeding.
 
 - Create or update a `.env` file to contain the following environment variables:
 
