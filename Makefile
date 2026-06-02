@@ -42,11 +42,11 @@ test:  ## Run the tests and check coverage.
 
 .PHONY: test-functional
 test-functional:  ## Run the functional tests.
-	poetry run pytest tests/functional/** --headed
+	poetry run pytest tests/functional
 
 .PHONY: test-functional-headed
 test-functional-headed:  ## Run the functional tests, displaying each test in the browser.
-	poetry run pytest tests/functional/** --headed
+	poetry run pytest tests/functional --headed
 
 .PHONY: test-unit
 test-unit:  ## Run the unit tests.
