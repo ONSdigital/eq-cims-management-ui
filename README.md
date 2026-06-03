@@ -185,7 +185,6 @@ make test-unit
 The functional tests are written in Python using the Playwright framework. Functional tests require a running
 instance of the Firestore Emulator and CIR. To run the functional tests, use the following commands:
 
-
 ```bash
 make dev-compose-up
 ```

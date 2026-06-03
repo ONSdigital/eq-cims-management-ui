@@ -126,7 +126,7 @@ class FirestoreHandler:
         self.latest_session_document_ref = document_reference
 
     @staticmethod
-    def check_cir_status():
+    def check_cir_status() -> None:
         """
         Checks the availability of CIR by making a GET request to the '/status' endpoint of CIR API. If the request
         returns a non-200 status code, an exception is raised.
@@ -163,7 +163,8 @@ class FirestoreHandler:
         metadata_received = requests.get(cir_metadata_url, timeout=15)
         ci_metadata = metadata_received.json()
 
-        if not isinstance(ci_metadata, list) and ci_metadata.get("message") == "No CI found":
+        # CI metadata is always returned as a list of dictionaries given CIs are published
+        if not isinstance(ci_metadata, list) or ci_metadata[0].get("message") == "No CI found":
             logger.error("Failed to retrieve collection instrument metadata from CIR.")
             raise ValueError
 

@@ -2,7 +2,6 @@
 
 import json
 import re
-from pathlib import Path
 
 import pytest
 import requests
@@ -13,7 +12,7 @@ table_column_headers = ["Survey ID", "Form type", "CIR ID", "CIR version", "Vali
 
 @pytest.fixture()
 def setup_cir():
-    schema_path = Path(__file__).parent / "test_ci.json"
+    schema_path = "tests/functional/test_ci.json"
     with open(schema_path) as f:
         test_schema = json.load(f)
 
