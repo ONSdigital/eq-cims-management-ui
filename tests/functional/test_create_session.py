@@ -1,6 +1,6 @@
 """This module contains the functional tests for the Create Session feature of the CIMS Management UI."""
+
 import json
-import os
 import re
 from pathlib import Path
 
@@ -8,8 +8,8 @@ import pytest
 import requests
 from playwright.sync_api import Page, expect
 
-
 table_column_headers = ["Survey ID", "Form type", "CIR ID", "CIR version", "Validator version", "Status"]
+
 
 @pytest.fixture()
 def setup_cir():
@@ -21,6 +21,7 @@ def setup_cir():
         url="http://localhost:3030/collection-instruments",
         params={"guid": "abcd", "validator_version": "0.0.1", "ci_version": "1"},
         json=test_schema,
+        timeout=15,
     )
 
     yield
@@ -28,6 +29,7 @@ def setup_cir():
     requests.delete(
         url="http://localhost:3030/collection-instruments",
         params={"survey_id": "123"},
+        timeout=15,
     )
 
 
@@ -41,7 +43,6 @@ def test_render_initial_page(page: Page):
 @pytest.mark.usefixtures("setup_cir")
 def test_create_session_displays_content(page: Page):
     """Verify that clicking the create session button displays the expected content."""
-
     page.goto("http://localhost:5100/")
 
     create_session_button = page.get_by_test_id("create-session-btn")

@@ -3,6 +3,8 @@ This module contains the business logic for interacting with the Firestore datab
 
 Functions:
     create_new_session
+    get_collection_instruments
+    is_latest_session_present
 """
 
 import logging
