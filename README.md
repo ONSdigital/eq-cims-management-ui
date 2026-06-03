@@ -161,7 +161,7 @@ docker-compose up -d
 ### Run All Tests
 
 To run all functional and unit tests, run the following commands (*Note: Functional tests require an instance
-of the Firestore Emulator to be running*):
+of the Firestore Emulator and a local instance of CIR to be running*):
 
 ```bash
 make dev-compose-up
@@ -183,7 +183,8 @@ make test-unit
 ### Run Functional Tests
 
 The functional tests are written in Python using the Playwright framework. Functional tests require a running
-instance of the Firestore Emulator. To run the functional tests, use the following commands:
+instance of the Firestore Emulator and CIR. To run the functional tests, use the following commands:
+
 
 ```bash
 make dev-compose-up
