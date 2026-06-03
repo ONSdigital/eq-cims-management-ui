@@ -64,6 +64,7 @@ jobs:
       - name: Docker compose CIR
         run: |
           cd eq-cir-fastapi
+          ls -ls
           docker-compose up --build -d
 
       - name: Docker compose CIMS UI
