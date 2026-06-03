@@ -41,19 +41,6 @@ jobs:
       - name: Unit Tests
         run: make test-unit
 
-      - name: Docker compose
-        run: docker compose up --build -d
-
-      - name: Functional Tests
-        run: make test-functional
-
-      - name: Docker compose shutdown
-        run: docker compose kill
-
-  functional-tests:
-    name: Functional Tests
-    runs-on: ubuntu-22.04
-    steps:
       - name: Checkout eq-cir-fastapi
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -65,7 +52,7 @@ jobs:
         run: |
           cd eq-cir-fastapi
           ls -ls
-          docker-compose up --build -d
+          docker compose up --build -d
 
       - name: Docker compose CIMS UI
         run: docker compose up --build -d
