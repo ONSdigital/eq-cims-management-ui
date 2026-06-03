@@ -304,6 +304,7 @@ def mock_document_reference():
     return mock_doc_ref
 
 
+# pylint: disable=too-few-public-methods
 class MockCirResponse:
     """Class to mock the response from the CIR API."""
 
@@ -315,6 +316,7 @@ class MockCirResponse:
         return self.response
 
 
+# pylint: disable=too-few-public-methods
 class MockStatus:
     """Class to mock the status code received from the CIR API."""
 
