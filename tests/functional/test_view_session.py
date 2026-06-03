@@ -1,5 +1,6 @@
 """This module contains the functional tests for the View Session feature of the CIMS Management UI."""
 
+import json
 import re  # Uses Regex to ensure case sensitivity for tests
 from pathlib import Path
 
