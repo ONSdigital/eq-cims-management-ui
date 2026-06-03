@@ -69,4 +69,4 @@ jobs:
       - name: Docker compose CIR shutdown
         run: |
           cd eq-cir-fastapi
-          docker-compose kill
+          docker compose kill
