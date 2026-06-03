@@ -49,3 +49,33 @@ jobs:
 
       - name: Docker compose shutdown
         run: docker compose kill
+
+  functional-tests:
+    name: Functional Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout eq-cir-fastapi
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: "ONSDigital/eq-cir-fastapi"
+          ref: "main"
+          path: "eq-cir-fastapi"
+
+      - name: Docker compose CIR
+        run: |
+          cd eq-cir-fastapi
+          docker-compose up --build -d
+
+      - name: Docker compose CIMS UI
+        run: docker compose up --build -d
+
+      - name: Functional Tests
+        run: make test-functional
+
+      - name: Docker compose CIMS UI shutdown
+        run: docker compose kill
+
+      - name: Docker compose CIR shutdown
+        run: |
+          cd eq-cir-fastapi
+          docker-compose kill
