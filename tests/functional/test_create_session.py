@@ -14,7 +14,7 @@ table_column_headers = ["Survey ID", "Form type", "CIR ID", "CIR version", "Vali
 def setup_cir():
     """Fixture to set up a CIR for testing purposes by adding a test collection instrument to CIR."""
     schema_path = "tests/functional/test_ci.json"
-    with open(schema_path) as f:
+    with open(schema_path, encoding="utf-8") as f:
         test_schema = json.load(f)
 
     requests.post(
