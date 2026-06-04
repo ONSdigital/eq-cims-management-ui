@@ -37,7 +37,7 @@ gunicorn:  ## Run the app with Gunicorn.
 	poetry run gunicorn --bind 0.0.0.0:5100 app:app
 
 .PHONY: test
-test: test-functional  ## Run the tests and check coverage.
+test: ## Run the tests and check coverage.
 	poetry run pytest -n auto --cov=eq_cims_management_ui --cov-report term-missing --cov-fail-under=100
 
 .PHONY: test-functional

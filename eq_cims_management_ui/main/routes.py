@@ -16,13 +16,14 @@ import logging
 import requests
 from flask import (
     Blueprint,
+    Response,
     redirect,
     render_template,
     request,
     url_for,
 )
+from flask.typing import ResponseReturnValue
 from google.api_core.exceptions import RetryError
-from werkzeug.wrappers.response import Response
 
 from eq_cims_management_ui.errors.routes import error_content_500
 from eq_cims_management_ui.utils.database.firestore_logic import (
@@ -48,7 +49,7 @@ def before_request_func() -> None:
 
 
 @main_blueprint.route("/", methods=["GET"])
-def index() -> Response | str:
+def index() -> Response | ResponseReturnValue:
     """
     Retrieve UI index and checks if there is a session already present.
 
@@ -62,7 +63,7 @@ def index() -> Response | str:
 
 
 @main_blueprint.route("/create-session", methods=["GET"])
-def create_session() -> Response | tuple[str, int]:
+def create_session() -> Response | ResponseReturnValue:
     """
     Create a new session in the Firestore database and redirect to the view-session page.
 
@@ -81,7 +82,7 @@ def create_session() -> Response | tuple[str, int]:
 
 
 @main_blueprint.route("/status", methods=["GET"])
-def status() -> tuple[str, int]:
+def status() -> ResponseReturnValue:
     """
     Status check endpoint.
 
@@ -92,7 +93,7 @@ def status() -> tuple[str, int]:
 
 
 @main_blueprint.route("/view-session", methods=["GET"])
-def get_view_session() -> str:
+def get_view_session() -> ResponseReturnValue:
     """
     Gets the collection instrument metadata from the database and renders the view-session page.
 
