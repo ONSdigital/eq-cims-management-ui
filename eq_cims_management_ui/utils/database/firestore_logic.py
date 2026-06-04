@@ -12,6 +12,8 @@ import logging
 from flask import current_app
 from google.api_core.exceptions import RetryError
 
+from eq_cims_management_ui.utils.database.status import Status
+
 logger = logging.getLogger(__name__)
 
 
@@ -61,7 +63,7 @@ def is_latest_session_present() -> bool:
     if session_doc_ref := firestore_handler.retrieve_latest_session():
         current_session = session_doc_ref.get().to_dict()
 
-        if current_session["status"] != "Not started":  # TO BECOME AN ENUM
+        if current_session["status"] != Status.NOT_STARTED.value:
             firestore_handler.set_document_reference(session_doc_ref)
             return True
         return False
