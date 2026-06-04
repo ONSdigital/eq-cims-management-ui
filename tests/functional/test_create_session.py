@@ -41,7 +41,7 @@ def test_render_initial_page(page: Page):
 
 @pytest.mark.usefixtures("setup_cir")
 def test_create_session_displays_content(page: Page):
-    """Verify that clicking the create session button displays the expected content."""
+    """Verify that clicking the create session button displays the expected content after making a request to CIR."""
     page.goto("http://localhost:5100/")
 
     create_session_button = page.get_by_test_id("create-session-btn")
