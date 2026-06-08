@@ -97,11 +97,9 @@ class FirestoreHandler:
             None: If no session is found.
         """
         try:
-            latest_document_query = (
-                self.client.collection("sessions").order_by("created_at", direction=Query.DESCENDING).limit(1)
+            query_results_list = (
+                self.client.collection("sessions").order_by("created_at", direction=Query.DESCENDING).limit(1).get()
             )
-
-            query_results_list = latest_document_query.get()
 
             # Get the latest session document reference by selecting the first item of the resulting list from the query
             if len(query_results_list) > 0:
