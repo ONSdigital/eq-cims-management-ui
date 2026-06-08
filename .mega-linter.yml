@@ -23,6 +23,9 @@ ENABLE:
   - PYTHON
   - REPOSITORY
   - YAML
+  - HTML
+  - MAKEFILE
+  - DOCKERFILE
 
 SHOW_ELAPSED_TIME: true
 
@@ -45,3 +48,10 @@ EDITORCONFIG_EDITORCONFIG_CHECKER_FILTER_REGEX_EXCLUDE: "poetry.lock"
 
 # Disables import-error check for Pylint to prevent false positive errors
 PYTHON_PYLINT_ARGUMENTS: "--disable=import-error"
+
+# Use djlint for flask/jinja templates, disable htmlhint as it doesn't handle template syntax well
+DISABLE_LINTERS: [HTML_HTMLHINT]
+HTML_DJLINT_ARGUMENTS: ["--profile", "jinja"]
+
+# Ignore DL3008 as the Dockerfile does not currently pin apt package versions
+DOCKERFILE_HADOLINT_ARGUMENTS: "--ignore DL3008"
