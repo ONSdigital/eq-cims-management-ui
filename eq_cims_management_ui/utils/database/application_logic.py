@@ -9,7 +9,7 @@ Functions:
 
 import logging
 
-from flask import current_app
+from flask import g
 from google.api_core.exceptions import RetryError
 
 from eq_cims_management_ui.utils.database.status import Status
@@ -22,7 +22,7 @@ def create_new_session() -> None:
     Creates a new session in the Firestore database by calling the create_database_session
     method of the FirestoreHandler class.
     """
-    firestore_handler = current_app.config["firestore_handler"]
+    firestore_handler = g.firestore_handler
     firestore_handler.create_database_session()
 
 
@@ -38,7 +38,7 @@ def get_collection_instruments() -> list[dict]:
         RetryError: If the Firestore operation fails
     """
     try:
-        firestore_handler = current_app.config["firestore_handler"]
+        firestore_handler = g.firestore_handler
         latest_session = firestore_handler.latest_session_document_ref
         ci_metadata_documents = latest_session.collection("metadata").stream()
 
@@ -58,7 +58,7 @@ def is_latest_session_present() -> bool:
     Returns:
         bool: True if there is a session present with its status as not "Not started", False otherwise.
     """
-    firestore_handler = current_app.config["firestore_handler"]
+    firestore_handler = g.firestore_handler
 
     if session_doc_ref := firestore_handler.retrieve_latest_session():
         current_session = session_doc_ref.get().to_dict()

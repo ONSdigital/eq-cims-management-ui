@@ -19,7 +19,7 @@ from pathlib import Path
 
 import structlog
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, g
 from flask_talisman import Talisman
 from jinja2 import ChainableUndefined, FileSystemLoader
 from semver.version import Version
@@ -45,6 +45,8 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     """
     application = Flask(__name__)
 
+    initialise_firestore_handler(application)
+
     application.config.from_object(app_config)
     application.static_folder = Path("static")
 
@@ -52,14 +54,20 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     application.register_blueprint(errors_blueprint)
     application.register_blueprint(view_session_blueprint)
     application.register_blueprint(utils_blueprint)
-    firestore_handler = FirestoreHandler()
-    application.config["firestore_handler"] = firestore_handler
 
     jinja_config(application)
     design_system_config()
     configure_secure_headers(application)
 
     return application
+
+
+def initialise_firestore_handler(application: Flask) -> None:
+    firestore_handler = FirestoreHandler()
+
+    @application.before_request
+    def before_request_func() -> None:
+        g.firestore_handler = firestore_handler
 
 
 def env_override(value: str, key: str) -> str:
