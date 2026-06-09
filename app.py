@@ -63,6 +63,7 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
 
 
 def initialise_firestore_handler(application: Flask) -> None:
+    """Initialise FirestoreHandler and add it to the Flask global context so it can be accessed across the app."""
     firestore_handler = FirestoreHandler()
 
     @application.before_request
