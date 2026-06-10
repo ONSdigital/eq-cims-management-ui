@@ -19,7 +19,10 @@ from google.cloud.firestore import Client
 from google.cloud.firestore_v1 import Query
 from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
-from eq_cims_management_ui.utils.database.cir_operations import check_cir_status, get_ci_metadata
+from eq_cims_management_ui.utils.database.cir_operations import (
+    check_cir_status,
+    get_ci_metadata,
+)
 
 logger = logging.getLogger(__name__)
 
