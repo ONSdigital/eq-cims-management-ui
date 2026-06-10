@@ -71,7 +71,7 @@ def initialise_firestore_handler(application: Flask) -> None:
         g.firestore_handler = firestore_handler
 
     @application.teardown_appcontext
-    def teardown_firestore(exception: Exception | None = None) -> None:
+    def teardown_firestore(_exception: Exception | None = None) -> None:
         firestore_handler_teardown = g.pop("firestore_handler", None)
         if firestore_handler_teardown is not None:
             firestore_handler.close_connection()
