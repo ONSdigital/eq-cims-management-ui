@@ -70,6 +70,12 @@ def initialise_firestore_handler(application: Flask) -> None:
     def before_request_func() -> None:
         g.firestore_handler = firestore_handler
 
+    @application.teardown_appcontext
+    def teardown_firestore() -> None:
+        firestore_handler_teardown = g.pop("firestore_handler", None)
+        if firestore_handler_teardown is not None:
+            firestore_handler.close_connection()
+
 
 def env_override(value: str, key: str) -> str:
     """
