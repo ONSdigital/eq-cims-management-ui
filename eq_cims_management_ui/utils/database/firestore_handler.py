@@ -119,9 +119,6 @@ class FirestoreHandler:
         """
         self.latest_session_document_ref = document_reference
 
-
     def close_connection(self) -> None:
-        """
-        Closes the connection to the Firestore database by deleting the client instance.
-        """
-        self.client.close()
+        """Closes the connection to the Firestore database by deleting the client instance."""
+        self.client.close()  # type: ignore[no-untyped-call]

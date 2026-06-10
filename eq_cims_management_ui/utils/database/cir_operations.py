@@ -10,7 +10,6 @@ Raises:
     ValueError
 """
 
-
 import logging
 import os
 
