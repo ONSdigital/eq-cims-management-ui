@@ -136,3 +136,14 @@ def test_view_session(test_client):
 
     assert response.status_code == 200
     assert response.data  # Ensure it's not empty
+
+
+def test_erroneous_view_session(test_client):
+    """
+    GIVEN a direct call to the view-session endpoint where the database instance and ci_metadata have not been set.
+    THEN 500 is returned.
+    """
+    response = test_client.get("/view-session")
+
+    assert response.status_code == 500
+    assert response.data  # Ensure it's not empty

@@ -55,7 +55,7 @@ def index() -> Response | ResponseReturnValue:
 
     Returns:
         Response: A redirect to the view-session page if a session is already present.
-        str: 200 index page.
+        ResponseReturnValue: 200 index page.
     """
     if is_latest_session_present():
         return redirect(url_for("main.get_view_session"))
@@ -69,7 +69,7 @@ def create_session() -> Response | ResponseReturnValue:
 
     Returns:
         Response: A redirect to the view-session page if the session is created successfully.
-        tuple[str, int]: An error page with a 500 status code indicating that the session couldn't be created.
+        ResponseReturnValue: An error page with a 500 status code indicating that the session couldn't be created.
 
     Raises:
         RetryError: If there is an error while creating the session in the database, a RetryError is raised.
@@ -98,7 +98,15 @@ def get_view_session() -> ResponseReturnValue:
     Gets the collection instrument metadata from the database and renders the view-session page.
 
     Returns:
-        str: The rendered view-session page.
+        ResponseReturnValue: The rendered view-session page.
+        ResponseReturnValue: An error page with a 500 status code if no ci_metadata or Firestore session is present.
+
+    Raises:
+        AttributeError: As there's no ci_metadata or Firestore session present, an AttributeError is raised if the user
+        tries to access the view-session page directly.
     """
-    ci_metadata = get_collection_instruments()
-    return render_template("view-session.html", ci_metadata=ci_metadata)
+    try:
+        ci_metadata = get_collection_instruments()
+        return render_template("view-session.html", ci_metadata=ci_metadata)
+    except AttributeError:
+        return render_template("error.html", error_content=error_content_500), 500
