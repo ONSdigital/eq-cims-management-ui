@@ -18,6 +18,9 @@ jobs:
   lint-test:
     name: Lint and Test
     runs-on: ubuntu-22.04
+    env:
+      FIRESTORE_EMULATOR_HOST: localhost:9090
+      CIR_API_BASE_URL: localhost:3030
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -41,11 +44,29 @@ jobs:
       - name: Unit Tests
         run: make test-unit
 
-      - name: Docker compose
+      - name: Checkout eq-cir-fastapi
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: "ONSdigital/eq-cir-fastapi"
+          ref: "main"
+          path: "eq-cir-fastapi"
+
+      - name: Docker compose CIR
+        run: |
+          cd eq-cir-fastapi
+          ls -ls
+          docker compose up --build -d
+
+      - name: Docker compose CIMS UI
         run: docker compose up --build -d
 
       - name: Functional Tests
         run: make test-functional
 
-      - name: Docker compose shutdown
+      - name: Docker compose CIMS UI shutdown
         run: docker compose kill
+
+      - name: Docker compose CIR shutdown
+        run: |
+          cd eq-cir-fastapi
+          docker compose kill

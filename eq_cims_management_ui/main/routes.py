@@ -13,18 +13,24 @@ Raises:
 
 import logging
 
+import requests
 from flask import (
     Blueprint,
+    Response,
     redirect,
     render_template,
     request,
     url_for,
 )
+from flask.typing import ResponseReturnValue
 from google.api_core.exceptions import RetryError
-from werkzeug.wrappers.response import Response
 
 from eq_cims_management_ui.errors.routes import error_content_500
-from eq_cims_management_ui.utils.database.firestore_logic import create_new_session
+from eq_cims_management_ui.utils.database.application_logic import (
+    create_new_session,
+    get_collection_instruments,
+    is_latest_session_present,
+)
 
 main_blueprint = Blueprint("main", __name__)
 view_session_blueprint = Blueprint(
@@ -43,37 +49,40 @@ def before_request_func() -> None:
 
 
 @main_blueprint.route("/", methods=["GET"])
-def index() -> str:
+def index() -> Response | ResponseReturnValue:
     """
-    Retrieve UI index.
+    Retrieve UI index and checks if there is a session already present.
 
     Returns:
-        str: 200 index page.
+        Response: A redirect to the view-session page if a session is already present.
+        ResponseReturnValue: 200 index page.
     """
+    if is_latest_session_present():
+        return redirect(url_for("main.get_view_session"))
     return render_template("index.html")
 
 
 @main_blueprint.route("/create-session", methods=["GET"])
-def create_session() -> Response | tuple[str, int]:
+def create_session() -> Response | ResponseReturnValue:
     """
     Create a new session in the Firestore database and redirect to the view-session page.
 
     Returns:
         Response: A redirect to the view-session page if the session is created successfully.
-        tuple[str, int]: An error page with a 500 status code indicating that the session couldn't be created.
+        ResponseReturnValue: An error page with a 500 status code indicating that the session couldn't be created.
 
     Raises:
         RetryError: If there is an error while creating the session in the database, a RetryError is raised.
     """
     try:
         create_new_session()
-        return redirect(url_for("view_session.get_view_session"))
-    except RetryError:
+        return redirect(url_for("main.get_view_session"))
+    except (RetryError, requests.exceptions.ConnectionError, ValueError):
         return render_template("error.html", error_content=error_content_500), 500
 
 
 @main_blueprint.route("/status", methods=["GET"])
-def status() -> tuple[str, int]:
+def status() -> ResponseReturnValue:
     """
     Status check endpoint.
 
@@ -83,12 +92,21 @@ def status() -> tuple[str, int]:
     return "", 200
 
 
-@view_session_blueprint.route("/view-session", methods=["GET"])
-def get_view_session() -> str:
+@main_blueprint.route("/view-session", methods=["GET"])
+def get_view_session() -> ResponseReturnValue:
     """
-    Render a template for the view session page.
+    Gets the collection instrument metadata from the database and renders the view-session page.
 
     Returns:
-        str: A rendered HTML page containing a table of sample CIs.
+        ResponseReturnValue: The rendered view-session page.
+        ResponseReturnValue: An error page with a 500 status code if no ci_metadata or Firestore session is present.
+
+    Raises:
+        AttributeError: As there's no ci_metadata or Firestore session present, an AttributeError is raised if the user
+        tries to access the view-session page directly.
     """
-    return render_template("view-session.html")
+    try:
+        ci_metadata = get_collection_instruments()
+        return render_template("view-session.html", ci_metadata=ci_metadata)
+    except AttributeError:
+        return render_template("error.html", error_content=error_content_500), 500

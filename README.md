@@ -24,7 +24,7 @@ eq-cims-management-ui
     - [Pre-requisites](#pre-requisites)
     - [Installation](#installation)
 - [Development](#development)
-    - [Run Application with Database](#run-application-with-database)
+    - [Run Application with Database and CIR FastAPI](#run-application-with-database-and-cir-fastapi)
     - [Run All Tests](#run-all-tests)
     - [Run Unit Tests with Coverage](#run-unit-tests-with-coverage)
     - [Run Functional Tests](#run-functional-tests)
@@ -128,14 +128,20 @@ The `@ons/design-system` package is then automatically added to the jinja config
 The used design system version is pulled directly from the version in package.json.
 A fallback version is set in `templates/base.html`.
 
-### Run Application with Database
+### Run Application with Database and CIR FastAPI
 
-To run the application with a local database, you will need to complete the following steps:
+To run the application with a local database and to point to CIR, you will need to complete the following steps:
 
-- Create or update a `.env` file to contain the following environment variable:
+- Clone the [CIR FastAPI](https://github.com/ONSdigital/eq-cir-fastapi) repository and follow their README to
+[run the application](https://github.com/ONSdigital/eq-cir-fastapi/blob/main/README.md#running-the-application-locally).
+**Note**: The CIR application must be running for the UI to work as expected, so ensure you have completed this step
+before proceeding.
+
+- Create or update a `.env` file to contain the following environment variables:
 
 ```text
 FIRESTORE_EMULATOR_HOST="localhost:8080"
+CIR_API_BASE_URL="localhost:3030"
 ```
 
 - To run the application locally with a Firestore emulator, use the following commands:
@@ -155,7 +161,7 @@ docker-compose up -d
 ### Run All Tests
 
 To run all functional and unit tests, run the following commands (*Note: Functional tests require an instance
-of the Firestore Emulator to be running*):
+of the Firestore Emulator and a local instance of CIR to be running*):
 
 ```bash
 make dev-compose-up
@@ -177,7 +183,7 @@ make test-unit
 ### Run Functional Tests
 
 The functional tests are written in Python using the Playwright framework. Functional tests require a running
-instance of the Firestore Emulator. To run the functional tests, use the following commands:
+instance of the Firestore Emulator and CIR. To run the functional tests, use the following commands:
 
 ```bash
 make dev-compose-up

@@ -19,7 +19,7 @@ from pathlib import Path
 
 import structlog
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, g
 from flask_talisman import Talisman
 from jinja2 import ChainableUndefined, FileSystemLoader
 from semver.version import Version
@@ -27,6 +27,7 @@ from semver.version import Version
 from eq_cims_management_ui.config.config import DefaultConfig
 from eq_cims_management_ui.errors.routes import errors_blueprint
 from eq_cims_management_ui.main.routes import main_blueprint, view_session_blueprint
+from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 from eq_cims_management_ui.utils.routes import utils_blueprint
 
 # Load .env file
@@ -44,6 +45,8 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     """
     application = Flask(__name__)
 
+    initialise_firestore_handler(application)
+
     application.config.from_object(app_config)
     application.static_folder = Path("static")
 
@@ -57,6 +60,21 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     configure_secure_headers(application)
 
     return application
+
+
+def initialise_firestore_handler(application: Flask) -> None:
+    """Initialise FirestoreHandler and add it to the Flask global context so it can be accessed across the app."""
+    firestore_handler = FirestoreHandler()
+
+    @application.before_request
+    def before_request_func() -> None:
+        g.firestore_handler = firestore_handler
+
+    @application.teardown_appcontext
+    def teardown_firestore(_exception: Exception | None = None) -> None:
+        firestore_handler_teardown = g.pop("firestore_handler", None)
+        if firestore_handler_teardown is not None:
+            firestore_handler.close_connection()
 
 
 def env_override(value: str, key: str) -> str:
@@ -82,6 +100,8 @@ def jinja_config(application: Flask) -> None:
     application.jinja_loader = file_system_loader
     application.jinja_env.undefined = ChainableUndefined
     application.jinja_env.filters["env_override"] = env_override
+
+    application.jinja_env.add_extension("jinja2.ext.do")
 
     # Clean up white space.
     application.jinja_env.trim_blocks = True
