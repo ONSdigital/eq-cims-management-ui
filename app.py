@@ -154,6 +154,7 @@ def configure_secure_headers(application: Flask) -> None:
             "'self'",
             "https://*.googletagmanager.com",
             "https://*.google-analytics.com",
+            "http://localhost:8081",
         ],
         "frame-src": [],
         "img-src": ["'self'", "data:", application.config["CDN_URL"]],

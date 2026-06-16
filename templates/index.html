@@ -11,8 +11,12 @@
       "variants": "timer",
       "url": url_for("main.create_session"),
       "attributes": {
-        "data-testid": "create-session-btn"
+        "data-testid": "create-session-btn",
+        "id": "create-session-btn"
       }
     })
   }}
+
+ <script src="{{ url_for('static', filename='index.js') }}" defer></script>
+
 {%- endblock main -%}
