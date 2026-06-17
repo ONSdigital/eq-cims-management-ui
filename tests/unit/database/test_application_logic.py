@@ -6,7 +6,7 @@ from google.api_core.exceptions import RetryError
 from eq_cims_management_ui.utils.database.application_logic import (
     create_new_session,
     get_collection_instruments,
-    is_latest_session_present,
+    is_latest_session_in_progress,
 )
 
 
@@ -78,5 +78,5 @@ def test_is_latest_session_present(request, fixtures, expected_result):
     for fixture in fixtures:
         request.getfixturevalue(fixture)
 
-    is_latest_session = is_latest_session_present()
+    is_latest_session = is_latest_session_in_progress()
     assert is_latest_session == expected_result

@@ -13,6 +13,7 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from eq_cims_management_ui.utils.socketio import socketio
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
 from google.cloud.firestore import Client
@@ -84,6 +85,7 @@ class FirestoreHandler:
             ) from error  # type: ignore[no-untyped-call]
 
         logger.info("Session created successfully: %s", session_id)
+        socketio.emit("button_enable", namespace="/")
         self.latest_session_document_ref = latest_session_document_ref
 
     def retrieve_latest_session(self) -> BaseDocumentReference | None:
@@ -125,3 +127,13 @@ class FirestoreHandler:
     def close_connection(self) -> None:
         """Closes the connection to the Firestore database by deleting the client instance."""
         self.client.close()  # type: ignore[no-untyped-call]
+
+    def update_ci_status(self, ci_guid: str, status: str) -> None:
+        session = self.latest_session_document_ref
+        session.collection("metadata").document(ci_guid).update({"status": status}, retry=Retry(timeout=15))
+        logger.info("Updated CI status in Firestore database for CI guid: %s to status: %s", session.collection("metadata").document(ci_guid).get().to_dict()["cir_id"], session.collection("metadata").document(ci_guid).get().to_dict()["status"])
+
+    def update_session_status(self, status: str) -> None:
+        self.latest_session_document_ref.update({"status": status}, retry=Retry(timeout=15))
+        logger.info("Updated session status in Firestore database to status: %s", self.latest_session_document_ref.get().to_dict()["status"])
+

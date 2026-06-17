@@ -12,6 +12,7 @@ Raises:
 """
 
 import logging
+import time
 
 import requests
 from flask import (
@@ -21,16 +22,22 @@ from flask import (
     render_template,
     request,
     url_for,
+    current_app,
 )
 from flask.typing import ResponseReturnValue
+from flask_socketio import emit, join_room
 from google.api_core.exceptions import RetryError
 
 from eq_cims_management_ui.errors.routes import error_content_500
 from eq_cims_management_ui.utils.database.application_logic import (
     create_new_session,
     get_collection_instruments,
-    is_latest_session_present,
+    is_latest_session_in_progress,
+    update_ci_status,
+    update_session_status,
+    get_session_status,
 )
+from eq_cims_management_ui.utils.socketio import socketio
 
 main_blueprint = Blueprint("main", __name__)
 view_session_blueprint = Blueprint(
@@ -47,6 +54,54 @@ def before_request_func() -> None:
     if request.endpoint != "status":
         logger.info("Request received for %s", request.url)
 
+@socketio.on("connect")
+def handle_connect(auth):
+    session_id = auth.get("session_id")
+    current_app.config["session_id"] = session_id
+    if session_id:
+        join_room(session_id)
+
+
+@socketio.on("republish")
+def handle_republish():
+    session_id = current_app.config.get("session_id")
+    ci_metadata = get_collection_instruments()
+    update_session_status("Running")
+    emit("button_disable", to=session_id)
+    for ci in ci_metadata:
+        guid = ci["cir_id"]
+        if ci["status"] == "Success":
+            emit("cell_update", {"guid": guid, "status": "Success", "index": 5}, to=session_id)
+            continue
+        version = ci["cir_version"]
+        update_ci_status(guid, "Started")
+        emit("cell_update", {"guid": guid, "status": "Started", "index": 5}, to=session_id)
+        try:
+            response = requests.get(f"http://localhost:8081/republishschema/{guid}/cirversion/{version}")
+            if response.json()["success"]:
+                logger.error("Successfully republished CI: %s", guid)
+                emit("cell_update", {"guid": guid, "status": "Success", "index": 5}, to=session_id)
+                update_ci_status(guid, "Success")
+            else:
+                logger.error("Failed to republish CI: %s", guid)
+                emit("cell_update", {"guid": guid, "status": "Failure", "index": 5}, to=session_id)
+                update_ci_status(guid, "Failure")
+
+
+        except [ConnectionError, ConnectionRefusedError] as e:
+            logger.error("Failed to republish CI: %s: %s", guid, str(e))
+            emit("cell_update", {"guid": guid, "status": "Failure", "index": 5}, to=session_id)
+            update_ci_status(guid, "Failure")
+
+    updated_ci_metadata = get_collection_instruments()
+    all_updates_success = all(ci["status"] == "Success" for ci in updated_ci_metadata)
+    if all_updates_success:
+        update_session_status("Success")
+    else:
+        update_session_status("Failure")
+        emit("button_enable", to=session_id)
+
+
 
 @main_blueprint.route("/", methods=["GET"])
 def index() -> Response | ResponseReturnValue:
@@ -57,7 +112,7 @@ def index() -> Response | ResponseReturnValue:
         Response: A redirect to the view-session page if a session is already present.
         ResponseReturnValue: 200 index page.
     """
-    if is_latest_session_present():
+    if is_latest_session_in_progress():
         return redirect(url_for("main.get_view_session"))
     return render_template("index.html")
 
@@ -107,7 +162,13 @@ def get_view_session() -> ResponseReturnValue:
     """
     try:
         ci_metadata = get_collection_instruments()
-        return render_template("view-session.html", ci_metadata=ci_metadata)
+        session_id = current_app.config.get("session_id")
+        for ci in ci_metadata:
+            socketio.emit("cell_update", {"guid": ci["cir_id"], "status": ci["status"], "index": 5}, to=session_id)
+        session_status = get_session_status()
+
+        logger.info(ci_metadata)
+        return render_template("view-session.html", ci_metadata=ci_metadata, session_status=get_session_status())
     except AttributeError:
         return render_template("error.html", error_content=error_content_500), 500
 

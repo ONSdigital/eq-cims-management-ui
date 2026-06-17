@@ -29,6 +29,9 @@ from eq_cims_management_ui.errors.routes import errors_blueprint
 from eq_cims_management_ui.main.routes import main_blueprint, view_session_blueprint
 from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 from eq_cims_management_ui.utils.routes import utils_blueprint
+from flask_socketio import SocketIO
+
+from eq_cims_management_ui.utils.socketio import socketio
 
 # Load .env file
 load_dotenv()
@@ -49,6 +52,8 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
 
     application.config.from_object(app_config)
     application.static_folder = Path("static")
+    application.config["SECRET_KEY"] = "secret!"
+    application.config["firestore_handler"] = FirestoreHandler()
 
     application.register_blueprint(main_blueprint)
     application.register_blueprint(errors_blueprint)
@@ -148,13 +153,17 @@ def configure_secure_headers(application: Flask) -> None:
             application.config["CDN_URL"],
             "https://*.googletagmanager.com",
             "https://*.google-analytics.com",
+            "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js",
         ],
         "style-src": ["'self'", application.config["CDN_URL"]],
         "connect-src": [
             "'self'",
             "https://*.googletagmanager.com",
             "https://*.google-analytics.com",
+            "ws://127.0.0.1:5100",
+            "wss://127.0.0.1:5100",
             "http://localhost:8081",
+            "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js.map"
         ],
         "frame-src": [],
         "img-src": ["'self'", "data:", application.config["CDN_URL"]],
@@ -206,9 +215,11 @@ def configure_logging():
 
 configure_logging()
 app = create_app(DefaultConfig)
+socketio.init_app(app)
+logger.info("id of the first: %s", id(socketio))
 
 if __name__ == "__main__":
     host = os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", 5100))
     debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
-    app.run(host=host, port=port, debug=debug_mode)
+    socketio.run(app, host=host, port=port, debug=debug_mode, allow_unsafe_werkzeug=True)
