@@ -214,7 +214,6 @@ def configure_logging():
 configure_logging()
 app = create_app(DefaultConfig)
 socketio.init_app(app)
-logger.info("id of the first: %s", id(socketio))
 
 if __name__ == "__main__":
     host = os.environ.get("HOST", "127.0.0.1")
