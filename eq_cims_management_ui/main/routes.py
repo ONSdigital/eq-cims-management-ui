@@ -168,9 +168,3 @@ def get_view_session() -> ResponseReturnValue:
         return render_template("view-session.html", ci_metadata=ci_metadata, session_status=get_session_status())
     except AttributeError:
         return render_template("error.html", error_content=error_content_500), 500
-
-
-@main_blueprint.route("/get-ci-metadata", methods=["GET"])
-def get_ci_metadata():
-    ci_metadata = get_collection_instruments()
-    return {"ci_metadata": ci_metadata}
