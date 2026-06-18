@@ -46,6 +46,8 @@ view_session_blueprint = Blueprint(
 
 logger = logging.getLogger(__name__)
 
+STATUS_TO_SUFFIX = {"Started": "info", "Success": "success", "Failure": "error", "Not Started": "dead"}
+
 
 @main_blueprint.before_request
 def before_request_func() -> None:
@@ -71,25 +73,45 @@ def handle_republish():
     for ci in ci_metadata:
         guid = ci["cir_id"]
         if ci["status"] == "Success":
-            emit("cell_update", {"guid": guid, "status": "Success", "index": 5}, to=session_id)
+            emit(
+                "cell_update",
+                {"guid": guid, "status": "Success", "index": 5, "suffix": STATUS_TO_SUFFIX["Success"]},
+                to=session_id,
+            )
             continue
         version = ci["cir_version"]
         update_ci_status(guid, "Started")
-        emit("cell_update", {"guid": guid, "status": "Started", "index": 5}, to=session_id)
+        emit(
+            "cell_update",
+            {"guid": guid, "status": "Started", "index": 5, "suffix": STATUS_TO_SUFFIX["Started"]},
+            to=session_id,
+        )
         try:
             response = requests.get(f"http://localhost:8081/republishschema/{guid}/cirversion/{version}", timeout=10000)
             if response.json()["success"]:
                 logger.error("Successfully republished CI: %s", guid)
-                emit("cell_update", {"guid": guid, "status": "Success", "index": 5}, to=session_id)
+                emit(
+                    "cell_update",
+                    {"guid": guid, "status": "Success", "index": 5, "suffix": STATUS_TO_SUFFIX["Success"]},
+                    to=session_id,
+                )
                 update_ci_status(guid, "Success")
             else:
                 logger.error("Failed to republish CI: %s", guid)
-                emit("cell_update", {"guid": guid, "status": "Failure", "index": 5}, to=session_id)
+                emit(
+                    "cell_update",
+                    {"guid": guid, "status": "Failure", "index": 5, "suffix": STATUS_TO_SUFFIX["Failure"]},
+                    to=session_id,
+                )
                 update_ci_status(guid, "Failure")
 
         except (requests.exceptions.ConnectionError, ConnectionRefusedError):
             logger.exception("Failed to republish CI: %s", guid)
-            emit("cell_update", {"guid": guid, "status": "Failure", "index": 5}, to=session_id)
+            emit(
+                "cell_update",
+                {"guid": guid, "status": "Failure", "index": 5, "suffix": STATUS_TO_SUFFIX["Failure"]},
+                to=session_id,
+            )
             update_ci_status(guid, "Failure")
 
     updated_ci_metadata = get_collection_instruments()
@@ -160,11 +182,6 @@ def get_view_session() -> ResponseReturnValue:
     """
     try:
         ci_metadata = get_collection_instruments()
-        session_id = current_app.config.get("session_id")
-        for ci in ci_metadata:
-            socketio.emit("cell_update", {"guid": ci["cir_id"], "status": ci["status"], "index": 5}, to=session_id)
-
-        logger.info(ci_metadata)
         return render_template("view-session.html", ci_metadata=ci_metadata, session_status=get_session_status())
     except AttributeError:
         return render_template("error.html", error_content=error_content_500), 500
