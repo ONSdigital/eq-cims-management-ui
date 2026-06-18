@@ -12,17 +12,16 @@ Raises:
 """
 
 import logging
-import time
 
 import requests
 from flask import (
     Blueprint,
     Response,
+    current_app,
     redirect,
     render_template,
     request,
     url_for,
-    current_app,
 )
 from flask.typing import ResponseReturnValue
 from flask_socketio import emit, join_room
@@ -32,10 +31,10 @@ from eq_cims_management_ui.errors.routes import error_content_500
 from eq_cims_management_ui.utils.database.application_logic import (
     create_new_session,
     get_collection_instruments,
+    get_session_status,
     is_latest_session_in_progress,
     update_ci_status,
     update_session_status,
-    get_session_status,
 )
 from eq_cims_management_ui.utils.socketio import socketio
 
@@ -53,6 +52,7 @@ def before_request_func() -> None:
     """Log the request before it is processed."""
     if request.endpoint != "status":
         logger.info("Request received for %s", request.url)
+
 
 @socketio.on("connect")
 def handle_connect(auth):
@@ -77,7 +77,7 @@ def handle_republish():
         update_ci_status(guid, "Started")
         emit("cell_update", {"guid": guid, "status": "Started", "index": 5}, to=session_id)
         try:
-            response = requests.get(f"http://localhost:8081/republishschema/{guid}/cirversion/{version}")
+            response = requests.get(f"http://localhost:8081/republishschema/{guid}/cirversion/{version}", timeout=10000)
             if response.json()["success"]:
                 logger.error("Successfully republished CI: %s", guid)
                 emit("cell_update", {"guid": guid, "status": "Success", "index": 5}, to=session_id)
@@ -87,9 +87,8 @@ def handle_republish():
                 emit("cell_update", {"guid": guid, "status": "Failure", "index": 5}, to=session_id)
                 update_ci_status(guid, "Failure")
 
-
-        except [ConnectionError, ConnectionRefusedError] as e:
-            logger.error("Failed to republish CI: %s: %s", guid, str(e))
+        except (requests.exceptions.ConnectionError, ConnectionRefusedError):
+            logger.exception("Failed to republish CI: %s", guid)
             emit("cell_update", {"guid": guid, "status": "Failure", "index": 5}, to=session_id)
             update_ci_status(guid, "Failure")
 
@@ -100,7 +99,6 @@ def handle_republish():
     else:
         update_session_status("Failure")
         emit("button_enable", to=session_id)
-
 
 
 @main_blueprint.route("/", methods=["GET"])
@@ -165,7 +163,6 @@ def get_view_session() -> ResponseReturnValue:
         session_id = current_app.config.get("session_id")
         for ci in ci_metadata:
             socketio.emit("cell_update", {"guid": ci["cir_id"], "status": ci["status"], "index": 5}, to=session_id)
-        session_status = get_session_status()
 
         logger.info(ci_metadata)
         return render_template("view-session.html", ci_metadata=ci_metadata, session_status=get_session_status())

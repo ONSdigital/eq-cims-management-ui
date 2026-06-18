@@ -9,7 +9,7 @@ Functions:
 
 import logging
 
-from flask import g, current_app
+from flask import current_app
 from google.api_core.exceptions import RetryError
 
 from eq_cims_management_ui.utils.database.status import Status
@@ -50,6 +50,7 @@ def get_collection_instruments() -> list[dict]:
             message="Failed to create session in Firestore database.",
         ) from error  # type: ignore[no-untyped-call]
 
+
 def get_session_status() -> str | None:
     """
     Retrieves the status of the latest session in the Firestore database.
@@ -65,9 +66,11 @@ def get_session_status() -> str | None:
 
     return None
 
+
 def is_latest_session_in_progress() -> bool:
     """
-    Checks if there is a session in progress in the Firestore database and that its status is not "Not started" or "Success".
+    Checks if there is a session in progress in the Firestore database by retrieving the latest session and checking its
+    status.
 
     Returns:
         bool: True if there is a session in progress with its status as not "Not started" or "Success", False otherwise.
@@ -84,9 +87,11 @@ def is_latest_session_in_progress() -> bool:
 
     return False
 
+
 def update_ci_status(guid, status) -> None:
     firestore_handler = current_app.config["firestore_handler"]
     firestore_handler.update_ci_status(guid, status)
+
 
 def update_session_status(status) -> None:
     firestore_handler = current_app.config["firestore_handler"]

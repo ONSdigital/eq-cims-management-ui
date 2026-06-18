@@ -13,7 +13,6 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from eq_cims_management_ui.utils.socketio import socketio
 from google.api_core.exceptions import RetryError
 from google.api_core.retry import Retry
 from google.cloud.firestore import Client
@@ -24,6 +23,7 @@ from eq_cims_management_ui.utils.database.cir_operations import (
     check_cir_status,
     get_ci_metadata,
 )
+from eq_cims_management_ui.utils.socketio import socketio
 
 logger = logging.getLogger(__name__)
 
@@ -131,9 +131,15 @@ class FirestoreHandler:
     def update_ci_status(self, ci_guid: str, status: str) -> None:
         session = self.latest_session_document_ref
         session.collection("metadata").document(ci_guid).update({"status": status}, retry=Retry(timeout=15))
-        logger.info("Updated CI status in Firestore database for CI guid: %s to status: %s", session.collection("metadata").document(ci_guid).get().to_dict()["cir_id"], session.collection("metadata").document(ci_guid).get().to_dict()["status"])
+        logger.info(
+            "Updated CI status in Firestore database for CI guid: %s to status: %s",
+            session.collection("metadata").document(ci_guid).get().to_dict()["cir_id"],
+            session.collection("metadata").document(ci_guid).get().to_dict()["status"],
+        )
 
     def update_session_status(self, status: str) -> None:
         self.latest_session_document_ref.update({"status": status}, retry=Retry(timeout=15))
-        logger.info("Updated session status in Firestore database to status: %s", self.latest_session_document_ref.get().to_dict()["status"])
-
+        logger.info(
+            "Updated session status in Firestore database to status: %s",
+            self.latest_session_document_ref.get().to_dict()["status"],
+        )
