@@ -64,59 +64,44 @@ def handle_connect(auth):
         join_room(session_id)
 
 
+def _emit_status(guid, ci_status, session_id):
+    emit(
+        "cell_update",
+        {"guid": guid, "status": ci_status, "index": 5, "suffix": STATUS_TO_SUFFIX[ci_status]},
+        to=session_id,
+    )
+    update_ci_status(guid, ci_status)
+
+
 @socketio.on("republish")
 def handle_republish():
     session_id = current_app.config.get("session_id")
     ci_metadata = get_collection_instruments()
     update_session_status("Running")
     emit("button_disable", to=session_id)
+
     for ci in ci_metadata:
         guid = ci["cir_id"]
         if ci["status"] == "Success":
-            emit(
-                "cell_update",
-                {"guid": guid, "status": "Success", "index": 5, "suffix": STATUS_TO_SUFFIX["Success"]},
-                to=session_id,
-            )
+            _emit_status(guid, "Success", session_id)
             continue
-        version = ci["cir_version"]
-        update_ci_status(guid, "Started")
-        emit(
-            "cell_update",
-            {"guid": guid, "status": "Started", "index": 5, "suffix": STATUS_TO_SUFFIX["Started"]},
-            to=session_id,
-        )
-        try:
-            response = requests.get(f"http://localhost:8081/republishschema/{guid}/cirversion/{version}", timeout=10000)
-            if response.json()["success"]:
-                logger.error("Successfully republished CI: %s", guid)
-                emit(
-                    "cell_update",
-                    {"guid": guid, "status": "Success", "index": 5, "suffix": STATUS_TO_SUFFIX["Success"]},
-                    to=session_id,
-                )
-                update_ci_status(guid, "Success")
-            else:
-                logger.error("Failed to republish CI: %s", guid)
-                emit(
-                    "cell_update",
-                    {"guid": guid, "status": "Failure", "index": 5, "suffix": STATUS_TO_SUFFIX["Failure"]},
-                    to=session_id,
-                )
-                update_ci_status(guid, "Failure")
 
+        _emit_status(guid, "Started", session_id)
+        try:
+            response = requests.get(
+                f"http://localhost:8081/republishschema/{guid}/cirversion/{ci['cir_version']}",
+                timeout=10000,
+            )
+            status = "Success" if response.json()["success"] else "Failure"
         except (requests.exceptions.ConnectionError, ConnectionRefusedError):
             logger.exception("Failed to republish CI: %s", guid)
-            emit(
-                "cell_update",
-                {"guid": guid, "status": "Failure", "index": 5, "suffix": STATUS_TO_SUFFIX["Failure"]},
-                to=session_id,
-            )
-            update_ci_status(guid, "Failure")
+            status = "Failure"
+
+        logger.error("%s republished CI: %s", "Successfully" if status == "Success" else "Failed to", guid)
+        _emit_status(guid, status, session_id)
 
     updated_ci_metadata = get_collection_instruments()
-    all_updates_success = all(ci["status"] == "Success" for ci in updated_ci_metadata)
-    if all_updates_success:
+    if all(ci["status"] == "Success" for ci in updated_ci_metadata):
         update_session_status("Success")
     else:
         update_session_status("Failure")

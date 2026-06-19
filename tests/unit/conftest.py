@@ -51,25 +51,26 @@ def setup_mock_firestore():
 
     Returns:
         mock_session_doc_ref (MagicMock): A mock instance of a Firestore document reference.
-        mock_flask_g (MagicMock): A mock instance of the current Flask app with the global variable for Firestore set.
+        mock_flask_current_app (MagicMock): A mock instance of the current Flask app with the global variable for
+        Firestore set.
     """
-    mock_flask_g = MagicMock()
+    mock_flask_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
     mock_session_doc_ref = MagicMock()
 
-    mock_flask_g.firestore_handler = mock_firestore_handler
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
 
     mock_firestore_handler.retrieve_latest_session.return_value = mock_session_doc_ref
 
-    return mock_session_doc_ref, mock_flask_g
+    return mock_session_doc_ref, mock_flask_current_app
 
 
 def mock_setup_app_with_firestore_handler():
     """Create a mocked Flask global with a mocked firestore_handler in config."""
-    mock_flask_g = MagicMock()
+    mock_flask_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
-    mock_flask_g.firestore_handler = mock_firestore_handler
-    return mock_flask_g, mock_firestore_handler
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
+    return mock_flask_current_app, mock_firestore_handler
 
 
 def setup_firestore_query_mock():
@@ -167,7 +168,7 @@ def mock_erroneous_firestore_session(monkeypatch):
 @pytest.fixture
 def mock_firestore_ci_metadata_stream(monkeypatch):
     """Mock the Firestore client to simulate streaming collection instrument metadata."""
-    mock_flask_g, mock_firestore_handler = mock_setup_app_with_firestore_handler()
+    mock_flask_current_app, mock_firestore_handler = mock_setup_app_with_firestore_handler()
     mock_session_ref = MagicMock()
     mock_collection = MagicMock()
 
@@ -178,13 +179,13 @@ def mock_firestore_ci_metadata_stream(monkeypatch):
     mock_session_ref.collection.return_value = mock_collection
     mock_collection.stream.return_value = mock_ci_metadata
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
 def mock_invalid_firestore_metadata_stream(monkeypatch):
     """Mock the Firestore client to simulate a RetryError when failing to stream collection instrument metadata."""
-    mock_flask_g, mock_firestore_handler = mock_setup_app_with_firestore_handler()
+    mock_flask_current_app, mock_firestore_handler = mock_setup_app_with_firestore_handler()
     mock_session_ref = MagicMock()
     mock_collection = MagicMock()
 
@@ -195,7 +196,7 @@ def mock_invalid_firestore_metadata_stream(monkeypatch):
         message="Mock RetryError Exception raise",
     )
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
@@ -236,15 +237,15 @@ def mock_retrieve_latest_session_failure(monkeypatch):
 @pytest.fixture
 def mock_create_database_session(monkeypatch):
     """Fixture to mock the create_database_session method."""
-    mock_flask_g = MagicMock()
+    mock_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
 
-    mock_flask_g.firestore_handler = mock_firestore_handler
+    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_current_app)
 
     with mock.patch.object(
-        mock_flask_g.firestore_handler,
+        mock_current_app.config["firestore_handler"],
         "create_database_session",
     ) as mock_create_database_session_test:
         yield mock_create_database_session_test
@@ -253,38 +254,38 @@ def mock_create_database_session(monkeypatch):
 @pytest.fixture
 def mock_firestore_get_session(monkeypatch):
     """Mock getting latest session doc reference from Firestore, simulating a session with 'Not started' status."""
-    mock_session_doc_ref, mock_flask_g = setup_mock_firestore()
+    mock_session_doc_ref, mock_flask_current_app = setup_mock_firestore()
 
     mock_session_doc_ref.get.return_value = MagicMock(
         to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
     )
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
 def mock_firestore_get_session_in_progress(monkeypatch):
     """Mock getting latest session doc reference from Firestore, simulating a session with 'Running' status."""
-    mock_session_doc_ref, mock_flask_g = setup_mock_firestore()
+    mock_session_doc_ref, mock_flask_current_app = setup_mock_firestore()
 
     mock_session_doc_ref.get.return_value = MagicMock(
         to_dict=lambda: {"status": "Running", "created_at": "2026-05-05T15:00:43.198172+01:00"},
     )
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
 def mock_firestore_get_session_no_session(monkeypatch):
     """Mock getting latest session doc reference from Firestore, simulating no session being present."""
-    mock_flask_g = MagicMock()
+    mock_flask_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
 
-    mock_flask_g.firestore_handler = mock_firestore_handler
+    mock_flask_current_app.firestore_handler = mock_firestore_handler
 
     mock_firestore_handler.retrieve_latest_session.return_value = None
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
