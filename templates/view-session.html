@@ -23,7 +23,7 @@
 
     {% set tds = [] %}
     {% for metadata in ci_metadata %}
-        {% set status_class = "info" if metadata["status"] == "Started"
+        {% set suffix = "info" if metadata["status"] == "Started"
           else "error" if metadata["status"] == "Failure"
           else "success" if metadata["status"] == "Success"
           else "dead" %}
@@ -35,7 +35,7 @@
                 {"value": metadata["cir_version"]},
                 {"value": metadata["validator_version"]},
                 {
-                  "value": '<span class="ons-status ons-status--' + status_class + '">' + metadata["status"] + '</span>',
+                  "value": '<span class="ons-status ons-status--' + suffix + '">' + metadata["status"] + '</span>',
                   "dataSort": "0"
                 }
             ], "id": metadata["cir_id"]
