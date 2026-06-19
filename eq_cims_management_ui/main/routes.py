@@ -64,7 +64,7 @@ def handle_connect(auth):
         join_room(session_id)
 
 
-def _emit_status(guid, ci_status, session_id):
+def emit_status(guid, ci_status, session_id):
     emit(
         "cell_update",
         {"guid": guid, "status": ci_status, "index": 5, "suffix": STATUS_TO_SUFFIX[ci_status]},
@@ -83,10 +83,10 @@ def handle_republish():
     for ci in ci_metadata:
         guid = ci["cir_id"]
         if ci["status"] == "Success":
-            _emit_status(guid, "Success", session_id)
+            emit_status(guid, "Success", session_id)
             continue
 
-        _emit_status(guid, "Started", session_id)
+        emit_status(guid, "Started", session_id)
         try:
             response = requests.get(
                 f"http://localhost:8081/republishschema/{guid}/cirversion/{ci['cir_version']}",
@@ -98,7 +98,7 @@ def handle_republish():
             status = "Failure"
 
         logger.error("%s republished CI: %s", "Successfully" if status == "Success" else "Failed to", guid)
-        _emit_status(guid, status, session_id)
+        emit_status(guid, status, session_id)
 
     updated_ci_metadata = get_collection_instruments()
     if all(ci["status"] == "Success" for ci in updated_ci_metadata):
