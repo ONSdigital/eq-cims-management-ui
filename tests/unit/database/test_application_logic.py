@@ -7,6 +7,8 @@ from eq_cims_management_ui.utils.database.application_logic import (
     create_new_session,
     get_collection_instruments,
     is_latest_session_in_progress,
+    update_ci_status,
+    update_session_status,
 )
 
 
@@ -80,3 +82,19 @@ def test_is_latest_session_present(request, fixtures, expected_result):
 
     is_latest_session = is_latest_session_in_progress()
     assert is_latest_session == expected_result
+
+
+@pytest.mark.usefixtures("mock_firestore_update_session_status")
+def test_update_session_status(mock_firestore_update_session_status):
+    """Test that the update_firestore_session_status function updates the session status correctly."""
+    update_session_status("Running")
+
+    assert mock_firestore_update_session_status.call_count == 1
+
+
+@pytest.mark.usefixtures("mock_firestore_update_ci_status")
+def test_update_ci_status(mock_firestore_update_ci_status):
+    """Test that the update_ci_status function updates the collection instrument status correctly."""
+    update_ci_status("abc", "Success")
+
+    assert mock_firestore_update_ci_status.call_count == 1
