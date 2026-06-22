@@ -90,9 +90,9 @@ def is_latest_session_in_progress() -> bool:
 
 def update_ci_status(guid, status) -> None:
     firestore_handler = current_app.config["firestore_handler"]
-    firestore_handler.update_ci_status(guid, status)
+    firestore_handler.update_firestore_ci_status(guid, status)
 
 
 def update_session_status(status) -> None:
     firestore_handler = current_app.config["firestore_handler"]
-    firestore_handler.update_session_status(status)
+    firestore_handler.update_firestore_session_status(status)

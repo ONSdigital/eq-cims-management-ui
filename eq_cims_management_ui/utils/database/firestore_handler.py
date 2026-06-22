@@ -71,8 +71,10 @@ class FirestoreHandler:
                         "form_type": ci_metadata_item["classifier_value"],
                         "cir_id": ci_metadata_item["guid"],
                         "cir_version": ci_metadata_item["ci_version"],
+                        "publish_date": ci_metadata_item["published_at"],
                         "validator_version": ci_metadata_item["validator_version"],
                         "status": "Not started",
+                        "error_message": ""
                     },
                     retry=Retry(timeout=15),
                 )
@@ -128,7 +130,7 @@ class FirestoreHandler:
         """Closes the connection to the Firestore database by deleting the client instance."""
         self.client.close()  # type: ignore[no-untyped-call]
 
-    def update_ci_status(self, ci_guid: str, status: str) -> None:
+    def update_firestore_ci_status(self, ci_guid: str, status: str) -> None:
         session = self.latest_session_document_ref
         session.collection("metadata").document(ci_guid).update({"status": status}, retry=Retry(timeout=15))
         logger.info(
@@ -137,7 +139,7 @@ class FirestoreHandler:
             session.collection("metadata").document(ci_guid).get().to_dict()["status"],
         )
 
-    def update_session_status(self, status: str) -> None:
+    def update_firestore_session_status(self, status: str) -> None:
         self.latest_session_document_ref.update({"status": status}, retry=Retry(timeout=15))
         logger.info(
             "Updated session status in Firestore database to status: %s",
