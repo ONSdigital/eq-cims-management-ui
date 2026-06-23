@@ -29,7 +29,7 @@ ci_metadata = [
         "validator_version": "0.0.1",
         "status": "Success",
         "error_message": "",
-    }
+    },
 ]
 
 republished_ci_metadata = [
@@ -52,7 +52,7 @@ republished_ci_metadata = [
         "validator_version": "0.0.1",
         "status": "Success",
         "error_message": "",
-    }
+    },
 ]
 
 failed_republished_ci_metadata = [
@@ -75,7 +75,7 @@ failed_republished_ci_metadata = [
         "validator_version": "0.0.1",
         "status": "Success",
         "error_message": "",
-    }
+    },
 ]
 
 
