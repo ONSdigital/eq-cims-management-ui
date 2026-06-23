@@ -74,7 +74,7 @@ class FirestoreHandler:
                         "publish_date": ci_metadata_item["published_at"],
                         "validator_version": ci_metadata_item["validator_version"],
                         "status": "Not started",
-                        "error_message": ""
+                        "error_message": "",
                     },
                     retry=Retry(timeout=15),
                 )

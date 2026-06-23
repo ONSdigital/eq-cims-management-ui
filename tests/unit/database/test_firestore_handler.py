@@ -137,5 +137,3 @@ def test_update_ci_status(mock_update_ci_status):
     firestore_handler.update_firestore_ci_status("xyz", "Success")
 
     assert subcollection.document("abc-def-ghi").get().to_dict()["status"] == "Success"
-
-    # latest_session_document_ref.collection("metadata").document(ci_guid).get().to_dict()["status"],

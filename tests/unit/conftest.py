@@ -52,7 +52,7 @@ ci_metadata = {
     "publish_date": "2026-05-21T13:59:24.276672Z",
     "validator_version": "0.0.1",
     "status": "Not started",
-    "error_message": ""
+    "error_message": "",
 }
 
 republished_ci_metadata = {
@@ -63,7 +63,7 @@ republished_ci_metadata = {
     "publish_date": "2026-05-21T13:59:24.276672Z",
     "validator_version": "0.0.1",
     "status": "Success",
-    "error_message": ""
+    "error_message": "",
 }
 
 
@@ -259,15 +259,12 @@ def mock_retrieve_latest_session_failure(monkeypatch):
 @pytest.fixture
 def mock_create_database_session(monkeypatch):
     """Fixture to mock the create_database_session method."""
-    mock_current_app = MagicMock()
-    mock_firestore_handler = MagicMock()
+    mock_flask_current_app, _mock_firestore_handler = mock_setup_app_with_firestore_handler()
 
-    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
-
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_current_app)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
     with mock.patch.object(
-        mock_current_app.config["firestore_handler"],
+        mock_flask_current_app.config["firestore_handler"],
         "create_database_session",
     ) as mock_create_database_session_test:
         yield mock_create_database_session_test
@@ -276,14 +273,12 @@ def mock_create_database_session(monkeypatch):
 @pytest.fixture
 def mock_firestore_update_session_status(monkeypatch):
     """Mock updating the status of a session in Firestore."""
-    mock_current_app = MagicMock()
-    mock_firestore_handler = MagicMock()
-    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
+    mock_flask_current_app, _mock_firestore_handler = mock_setup_app_with_firestore_handler()
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_current_app)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
     with mock.patch.object(
-        mock_current_app.config["firestore_handler"],
+        mock_flask_current_app.config["firestore_handler"],
         "update_firestore_session_status",
     ) as mock_update_session_status_test:
         yield mock_update_session_status_test
@@ -292,14 +287,12 @@ def mock_firestore_update_session_status(monkeypatch):
 @pytest.fixture
 def mock_firestore_update_ci_status(monkeypatch):
     """Mock updating the status of a session in Firestore."""
-    mock_current_app = MagicMock()
-    mock_firestore_handler = MagicMock()
-    mock_current_app.config = {"firestore_handler": mock_firestore_handler}
+    mock_flask_current_app, _mock_firestore_handler = mock_setup_app_with_firestore_handler()
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_current_app)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
     with mock.patch.object(
-        mock_current_app.config["firestore_handler"],
+        mock_flask_current_app.config["firestore_handler"],
         "update_firestore_ci_status",
     ) as mock_update_ci_status_test:
         yield mock_update_ci_status_test
@@ -356,14 +349,20 @@ def mock_document_reference():
     return mock_doc_ref
 
 
-@pytest.fixture
-def mock_update_session_status(monkeypatch):
+def setup_mock_initial_firestore_session():
     mock_client = MagicMock()
     mock_collection = MagicMock()
     mock_document = MagicMock()
 
     mock_client.collection.return_value = mock_collection
     mock_collection.document.return_value = mock_document
+
+    return mock_client, mock_document
+
+
+@pytest.fixture
+def mock_update_session_status(monkeypatch):
+    mock_client, mock_document = setup_mock_initial_firestore_session()
 
     mock_document.get.return_value = MagicMock(
         to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
@@ -382,24 +381,19 @@ def mock_update_session_status(monkeypatch):
 
 @pytest.fixture
 def mock_update_ci_status(monkeypatch):
-    mock_client = MagicMock()
-    mock_collection = MagicMock()
-    mock_document = MagicMock()
+    mock_client, mock_document = setup_mock_initial_firestore_session()
+
     mock_sub_collection = MagicMock()
     mock_sub_document = MagicMock()
     mock_document_id = "abc-def-ghi"
 
-    mock_client.collection.return_value = mock_collection
-    mock_collection.document.return_value = mock_document
-
-
     mock_document.collection.return_value = mock_sub_collection
     mock_sub_collection.document.return_value = mock_sub_document
+    mock_sub_document.id = mock_document_id
 
     mock_sub_document.get.return_value = MagicMock(
         to_dict=lambda: ci_metadata,
     )
-    mock_sub_document.id = mock_document_id
 
     def mock_update(*_args, **_kwargs):
         mock_sub_document.get.return_value = MagicMock(
