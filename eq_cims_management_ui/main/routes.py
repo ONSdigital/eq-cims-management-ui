@@ -81,11 +81,7 @@ def handle_republish() -> None:
     Republish the collection instruments and emit the status to the Websocket session depending on the response
     from Author republish API.
     """
-    session_id = ""
-    try:
-        session_id = current_app.config["session_id"]
-    except KeyError:
-        logger.exception("Session ID not found in current_app.config")
+    session_id = current_app.config.get("session_id", "")
     ci_metadata = get_collection_instruments()
     update_session_status("Running")
     emit("button_disable", to=session_id)
