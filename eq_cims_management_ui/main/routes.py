@@ -58,6 +58,7 @@ def before_request_func() -> None:
 
 @socketio.on("connect")
 def handle_connect(auth):
+    """Create a new Websocket session and join the room for the session."""
     session_id = auth.get("session_id")
     current_app.config["session_id"] = session_id
     if session_id:
@@ -65,6 +66,7 @@ def handle_connect(auth):
 
 
 def emit_status(guid, ci_status, session_id):
+    """Emit the status of a collection instrument and update the status in the database."""
     emit(
         "cell_update",
         {"guid": guid, "status": ci_status, "index": 5, "suffix": STATUS_TO_SUFFIX[ci_status]},
@@ -75,6 +77,10 @@ def emit_status(guid, ci_status, session_id):
 
 @socketio.on("republish")
 def handle_republish():
+    """
+    Republish the collection instruments and emit the status to the Websocket session depending on the response
+    from Author republish API.
+    """
     session_id = current_app.config.get("session_id")
     ci_metadata = get_collection_instruments()
     update_session_status("Running")
@@ -92,13 +98,13 @@ def handle_republish():
                 f"http://localhost:8081/republishschema/{guid}/cirversion/{ci['cir_version']}",
                 timeout=10000,
             )
-            status = "Success" if response.json()["success"] else "Failure"
+            ci_status = "Success" if response.json()["success"] else "Failure"
         except (requests.exceptions.ConnectionError, ConnectionRefusedError):
             logger.exception("Failed to republish CI: %s", guid)
-            status = "Failure"
+            ci_status = "Failure"
 
-        logger.error("%s republished CI: %s", "Successfully" if status == "Success" else "Failed to", guid)
-        emit_status(guid, status, session_id)
+        logger.error("%s republished CI: %s", "Successfully" if ci_status == "Success" else "Failed to", guid)
+        emit_status(guid, ci_status, session_id)
 
     updated_ci_metadata = get_collection_instruments()
     if all(ci["status"] == "Success" for ci in updated_ci_metadata):

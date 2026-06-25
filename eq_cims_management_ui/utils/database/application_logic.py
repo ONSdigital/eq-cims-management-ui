@@ -88,11 +88,11 @@ def is_latest_session_in_progress() -> bool:
     return False
 
 
-def update_ci_status(guid, status) -> None:
+def update_ci_status(guid: str, status: str) -> None:
     firestore_handler = current_app.config["firestore_handler"]
     firestore_handler.update_firestore_ci_status(guid, status)
 
 
-def update_session_status(status) -> None:
+def update_session_status(status: str) -> None:
     firestore_handler = current_app.config["firestore_handler"]
     firestore_handler.update_firestore_session_status(status)

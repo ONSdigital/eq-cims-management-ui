@@ -10,6 +10,7 @@ from playwright.sync_api import Page, expect
 
 table_column_headers = ["Survey ID", "Form type", "CIR ID", "CIR version", "Validator version", "Status"]
 
+
 @pytest.fixture()
 def setup_cir():
     """Fixture to set up a CIR for testing purposes by adding test collection instruments to CIR."""
@@ -92,6 +93,27 @@ def test_display_content(page: Page):
 
 
 @pytest.mark.usefixtures("setup_cir")
+def test_display_content_after_republish_in_progress(page: Page):
+    """
+    Verify that clicking the back button after a successful republish process returns the user to the create session
+    page.
+    """
+    page.goto("http://localhost:5100/")
+
+    create_session_button = page.get_by_test_id("create-session-btn")
+
+    create_session_button.click()
+
+    republish_button = page.get_by_test_id("republish-btn")
+    republish_button.click()
+
+    time.sleep(3)
+
+    expect(republish_button).to_be_disabled()
+    expect(page.get_by_text("Stared")).to_have_count(1)
+
+
+@pytest.mark.usefixtures("setup_cir")
 def test_display_content_after_republish_complete(page: Page):
     """
     Verify that clicking the back button after a successful republish process returns the user to the create session
@@ -117,7 +139,37 @@ def test_display_content_after_republish_complete(page: Page):
 
 
 @pytest.mark.usefixtures("setup_cir")
-def test_display_content_republish_in_progress(page: Page):
+def test_display_content_after_republish_complete_after_closing_page(page: Page):
+    """
+    Verify that clicking the back button after a successful republish process returns the user to the create session
+    page.
+    """
+    page.goto("http://localhost:5100/")
+
+    create_session_button = page.get_by_test_id("create-session-btn")
+
+    create_session_button.click()
+
+    republish_button = page.get_by_test_id("republish-btn")
+    republish_button.click()
+
+    time.sleep(15)
+
+    page.close()
+
+    new_page = page.context.new_page()
+    new_page.goto("http://localhost:5100/")
+
+    expect(page).to_have_title(re.compile(r"Collection Instrument Migration Service \(CIMS\)"))
+
+    create_session_button.click()
+
+    expect(republish_button).to_be_enabled()
+    expect(page.get_by_text("Not started")).to_have_count(3)
+
+
+@pytest.mark.usefixtures("setup_cir")
+def test_display_content_republish_in_progress_after_navigating_back(page: Page):
     """Verify that clicking the create session button displays the expected content after making a request to CIR."""
     page.goto("http://localhost:5100/")
 
@@ -159,5 +211,3 @@ def test_display_content_republish_in_progress_after_closing_page(page: Page):
     new_page.goto("http://localhost:5100/")
 
     expect(new_page.get_by_test_id("republish-btn")).to_be_disabled()
-
-
