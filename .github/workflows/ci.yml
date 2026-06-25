@@ -57,6 +57,19 @@ jobs:
           ls -ls
           docker compose up --build -d
 
+      - name: Checkout author-api-republish-mock
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: "ONSdigital/author-api-republish-mock"
+          ref: "main"
+          path: "author-api-republish-mock"
+
+      - name: Docker compose Mock Author
+        run: |
+          cd author-api-republish-mock
+          ls -ls
+          docker compose up --build -d
+
       - name: Docker compose CIMS UI
         run: docker compose up --build -d
 
@@ -69,4 +82,9 @@ jobs:
       - name: Docker compose CIR shutdown
         run: |
           cd eq-cir-fastapi
+          docker compose kill
+
+      - name: Docker compose CIR shutdown
+        run: |
+          cd author-api-republish-mock
           docker compose kill

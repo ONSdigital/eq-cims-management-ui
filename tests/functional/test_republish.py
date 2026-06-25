@@ -19,21 +19,21 @@ def setup_cir():
 
     requests.post(
         url="http://localhost:3030/collection-instruments",
-        params={"guid": "75f9d538-dda2-4852-ab6d-729391da2cdc", "validator_version": "0.0.1", "ci_version": "1"},
+        params={"guid": "75f9d538-dda2-4852-ab6d-729391da2cdc", "validator_version": "0.0.1", "ci_version": "2"},
         json=test_schema,
         timeout=15,
     )
 
     requests.post(
         url="http://localhost:3030/collection-instruments",
-        params={"guid": "35ef7238-d689-4285-adee-bd662a051f83", "validator_version": "0.0.1", "ci_version": "2"},
+        params={"guid": "35ef7238-d689-4285-adee-bd662a051f83", "validator_version": "0.0.1", "ci_version": "3"},
         json=test_schema,
         timeout=15,
     )
 
     requests.post(
         url="http://localhost:3030/collection-instruments",
-        params={"guid": "cccac6bb-82de-4eca-9cee-6ca59b2751db", "validator_version": "0.0.1", "ci_version": "3"},
+        params={"guid": "cccac6bb-82de-4eca-9cee-6ca59b2751db", "validator_version": "0.0.1", "ci_version": "4"},
         json=test_schema,
         timeout=15,
     )
@@ -155,8 +155,9 @@ def test_display_content_republish_in_progress_after_closing_page(page: Page):
 
     page.close()
 
-    page.goto("http://localhost:5100/")
+    new_page = page.context.new_page()
+    new_page.goto("http://localhost:5100/")
 
-    expect(republish_button).to_be_disabled()
+    expect(new_page.get_by_test_id("republish-btn")).to_be_disabled()
 
 
