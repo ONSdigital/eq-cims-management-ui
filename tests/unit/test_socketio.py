@@ -124,9 +124,13 @@ class TestSocketIO(unittest.TestCase):
 
     def test_emit_status_function(self):
         app = create_app(DefaultConfig)
-        with app.app_context(), patch(
-            "eq_cims_management_ui.main.routes.update_ci_status",
-        ) as mock_update_ci_status, app.test_request_context():
+        with (
+            app.app_context(),
+            patch(
+                "eq_cims_management_ui.main.routes.update_ci_status",
+            ) as mock_update_ci_status,
+            app.test_request_context(),
+        ):
             flask.current_app.extensions["socketio"] = socketio
             flask.request.namespace = "/"
             emit_status("f3bb3302-04a1-4bea-9c32-9c46a9a93306", "Not Started", "test-session-123")
@@ -140,14 +144,18 @@ class TestSocketIO(unittest.TestCase):
             flask.current_app.extensions["socketio"] = socketio
             client = socketio.test_client(app, auth={"session_id": session_id})
 
-            with patch("eq_cims_management_ui.main.routes.get_collection_instruments") as mock_get_cis, patch(
-                "eq_cims_management_ui.main.routes.update_session_status",
-            ) as mock_update_session, patch(
-                "eq_cims_management_ui.main.routes.update_ci_status",
-            ) as mock_update_ci, patch(
-                "eq_cims_management_ui.main.routes.requests.get",
-            ) as mock_requests_get:
-
+            with (
+                patch("eq_cims_management_ui.main.routes.get_collection_instruments") as mock_get_cis,
+                patch(
+                    "eq_cims_management_ui.main.routes.update_session_status",
+                ) as mock_update_session,
+                patch(
+                    "eq_cims_management_ui.main.routes.update_ci_status",
+                ) as mock_update_ci,
+                patch(
+                    "eq_cims_management_ui.main.routes.requests.get",
+                ) as mock_requests_get,
+            ):
                 mock_get_cis.side_effect = [ci_metadata, republished_ci_metadata]
                 mock_requests_get.return_value.json.return_value = {"success": True}
 
@@ -172,14 +180,18 @@ class TestSocketIO(unittest.TestCase):
             flask.current_app.extensions["socketio"] = socketio
             client = socketio.test_client(app, auth={"session_id": session_id})
 
-            with patch("eq_cims_management_ui.main.routes.get_collection_instruments") as mock_get_cis, patch(
-                "eq_cims_management_ui.main.routes.update_session_status",
-            ) as mock_update_session, patch(
-                "eq_cims_management_ui.main.routes.update_ci_status",
-            ) as mock_update_ci, patch(
-                "eq_cims_management_ui.main.routes.requests.get",
-            ) as mock_requests_get:
-
+            with (
+                patch("eq_cims_management_ui.main.routes.get_collection_instruments") as mock_get_cis,
+                patch(
+                    "eq_cims_management_ui.main.routes.update_session_status",
+                ) as mock_update_session,
+                patch(
+                    "eq_cims_management_ui.main.routes.update_ci_status",
+                ) as mock_update_ci,
+                patch(
+                    "eq_cims_management_ui.main.routes.requests.get",
+                ) as mock_requests_get,
+            ):
                 mock_get_cis.side_effect = [ci_metadata, failed_republished_ci_metadata]
                 mock_requests_get.side_effect = requests.exceptions.ConnectionError()
 
