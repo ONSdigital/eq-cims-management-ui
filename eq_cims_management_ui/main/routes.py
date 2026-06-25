@@ -57,7 +57,7 @@ def before_request_func() -> None:
 
 
 @socketio.on("connect")
-def handle_connect(auth):
+def handle_connect(auth: dict) -> None:
     """Create a new Websocket session and join the room for the session."""
     session_id = auth.get("session_id")
     current_app.config["session_id"] = session_id
@@ -65,7 +65,7 @@ def handle_connect(auth):
         join_room(session_id)
 
 
-def emit_status(guid, ci_status, session_id):
+def emit_status(guid: str, ci_status: str, session_id: str) -> None:
     """Emit the status of a collection instrument and update the status in the database."""
     emit(
         "cell_update",
@@ -76,12 +76,16 @@ def emit_status(guid, ci_status, session_id):
 
 
 @socketio.on("republish")
-def handle_republish():
+def handle_republish() -> None:
     """
     Republish the collection instruments and emit the status to the Websocket session depending on the response
     from Author republish API.
     """
-    session_id = current_app.config.get("session_id")
+    session_id = ""
+    try:
+        session_id = current_app.config["session_id"]
+    except KeyError:
+        logger.exception("Session ID not found in current_app.config")
     ci_metadata = get_collection_instruments()
     update_session_status("Running")
     emit("button_disable", to=session_id)

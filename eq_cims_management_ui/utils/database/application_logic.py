@@ -8,6 +8,7 @@ Functions:
 """
 
 import logging
+from typing import Any
 
 from flask import current_app
 from google.api_core.exceptions import RetryError
@@ -51,7 +52,7 @@ def get_collection_instruments() -> list[dict]:
         ) from error  # type: ignore[no-untyped-call]
 
 
-def get_session_status() -> str | None:
+def get_session_status() -> Any:
     """
     Retrieves the status of the latest session in the Firestore database.
 

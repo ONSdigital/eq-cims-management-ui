@@ -40,7 +40,7 @@ class FirestoreHandler:
 
     def __init__(self) -> None:
         self.client: Client = Client()
-        self.latest_session_document_ref: BaseDocumentReference | None = None
+        self.latest_session_document_ref: BaseDocumentReference
 
     def create_database_session(self) -> None:
         """
@@ -135,13 +135,13 @@ class FirestoreHandler:
         session.collection("metadata").document(ci_guid).update({"status": status}, retry=Retry(timeout=15))
         logger.info(
             "Updated CI status in Firestore database for CI guid: %s to status: %s",
-            session.collection("metadata").document(ci_guid).get().to_dict()["cir_id"],
-            session.collection("metadata").document(ci_guid).get().to_dict()["status"],
+            ci_guid,
+            status,
         )
 
     def update_firestore_session_status(self, status: str) -> None:
         self.latest_session_document_ref.update({"status": status}, retry=Retry(timeout=15))
         logger.info(
             "Updated session status in Firestore database to status: %s",
-            self.latest_session_document_ref.get().to_dict()["status"],
+            status,
         )
