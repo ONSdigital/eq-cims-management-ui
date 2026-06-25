@@ -380,6 +380,23 @@ def mock_update_session_status(monkeypatch):
 
 
 @pytest.fixture
+def mock_update_session_status_fails(monkeypatch):
+    mock_client, mock_document = setup_mock_initial_firestore_session()
+
+    mock_document.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+    )
+
+    mock_document.update.side_effect = RetryError(
+        cause=Exception("RetryError"),
+        message="Mock RetryError Exception raise",
+    )
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+    return mock_document
+
+
+@pytest.fixture
 def mock_update_ci_status(monkeypatch):
     mock_client, mock_document = setup_mock_initial_firestore_session()
 
@@ -401,6 +418,31 @@ def mock_update_ci_status(monkeypatch):
         )
 
     mock_sub_document.update.side_effect = mock_update
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+    return mock_document, mock_sub_collection
+
+
+@pytest.fixture
+def mock_update_ci_status_fails(monkeypatch):
+    mock_client, mock_document = setup_mock_initial_firestore_session()
+
+    mock_sub_collection = MagicMock()
+    mock_sub_document = MagicMock()
+    mock_document_id = "abc-def-ghi"
+
+    mock_document.collection.return_value = mock_sub_collection
+    mock_sub_collection.document.return_value = mock_sub_document
+    mock_sub_document.id = mock_document_id
+
+    mock_sub_document.get.return_value = MagicMock(
+        to_dict=lambda: ci_metadata,
+    )
+
+    mock_sub_document.update.side_effect = RetryError(
+        cause=Exception("RetryError"),
+        message="Mock RetryError Exception raise",
+    )
     monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
 
     return mock_document, mock_sub_collection

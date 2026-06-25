@@ -126,6 +126,20 @@ def test_update_session_status(mock_update_session_status):
     assert firestore_handler.latest_session_document_ref.get().to_dict()["status"] == "Running"
 
 
+@pytest.mark.usefixtures("mock_valid_cir_requests", "mock_update_session_status_fails")
+def test_update_session_status_failure(mock_update_session_status_fails):
+    """
+    Test that the retrieve_latest_session method returns None when a RetryError occurs while retrieving the
+    latest session.
+    """
+    firestore_handler = FirestoreHandler()
+    firestore_handler.latest_session_document_ref = mock_update_session_status_fails
+
+    assert firestore_handler.latest_session_document_ref.get().to_dict()["status"] == "Not started"
+    with pytest.raises(RetryError):
+        firestore_handler.update_firestore_session_status("Running")
+
+
 @pytest.mark.usefixtures("mock_valid_cir_requests", "mock_update_ci_status")
 def test_update_ci_status(mock_update_ci_status):
     """Test that the update_ci_status method updates the status of a collection instrument document."""
@@ -137,3 +151,18 @@ def test_update_ci_status(mock_update_ci_status):
     firestore_handler.update_firestore_ci_status("xyz", "Success")
 
     assert subcollection.document("abc-def-ghi").get().to_dict()["status"] == "Success"
+
+
+@pytest.mark.usefixtures("mock_valid_cir_requests", "mock_update_ci_status_fails")
+def test_update_ci_status_failure(mock_update_ci_status_fails):
+    """
+    Test that the retrieve_latest_session method returns None when a RetryError occurs while retrieving the
+    latest session.
+    """
+    firestore_handler = FirestoreHandler()
+    firestore_handler.latest_session_document_ref, subcollection = mock_update_ci_status_fails
+
+    assert subcollection.document("abc-def-ghi").get().to_dict()["status"] == "Not started"
+
+    with pytest.raises(RetryError):
+        firestore_handler.update_firestore_ci_status("xyz", "Started")
