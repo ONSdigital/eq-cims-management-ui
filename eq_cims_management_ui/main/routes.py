@@ -134,6 +134,10 @@ def create_session() -> Response | ResponseReturnValue:
     Raises:
         RetryError: If there is an error while creating the session in the database, a RetryError is raised.
     """
+    if is_latest_session_in_progress():
+        logger.info("Session already in progress, redirecting to view-session")
+        return redirect(url_for("main.get_view_session"))
+
     try:
         create_new_session()
         return redirect(url_for("main.get_view_session"))
