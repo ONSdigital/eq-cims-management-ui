@@ -110,7 +110,9 @@ def test_display_content_after_republish_in_progress(page: Page):
     time.sleep(3)
 
     expect(republish_button).to_be_disabled()
-    expect(page.get_by_text("Stared")).to_have_count(1)
+    expect(page.get_by_text("Started")).to_have_count(1)
+
+    time.sleep(15)
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -155,17 +157,22 @@ def test_display_content_after_republish_complete_after_closing_page(page: Page)
 
     time.sleep(15)
 
+    new_page = page.context.new_page()
+
     page.close()
 
-    new_page = page.context.new_page()
     new_page.goto("http://localhost:5100/")
 
-    expect(page).to_have_title(re.compile(r"Collection Instrument Migration Service \(CIMS\)"))
+    expect(new_page).to_have_title(re.compile(r"Collection Instrument Migration Service \(CIMS\)"))
 
-    create_session_button.click()
+    second_create_session_button = new_page.get_by_test_id("create-session-btn")
 
-    expect(republish_button).to_be_enabled()
-    expect(page.get_by_text("Not started")).to_have_count(3)
+    second_create_session_button.click()
+
+    second_republish_button = new_page.get_by_test_id("republish-btn")
+
+    expect(second_republish_button).to_be_enabled()
+    expect(new_page.get_by_text("Not started")).to_have_count(3)
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -189,6 +196,8 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
 
     expect(republish_button).to_be_disabled()
 
+    time.sleep(15)
+
 
 @pytest.mark.usefixtures("setup_cir")
 def test_display_content_republish_in_progress_after_closing_page(page: Page):
@@ -203,11 +212,12 @@ def test_display_content_republish_in_progress_after_closing_page(page: Page):
 
     republish_button.click()
 
-    time.sleep(2)
-
     page.close()
 
     new_page = page.context.new_page()
+
     new_page.goto("http://localhost:5100/")
 
-    expect(new_page.get_by_test_id("republish-btn")).to_be_disabled()
+    second_republish_button = new_page.get_by_test_id("republish-btn")
+
+    expect(second_republish_button).to_be_disabled()
