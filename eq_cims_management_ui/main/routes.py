@@ -12,6 +12,7 @@ Raises:
 """
 
 import logging
+import os
 
 import requests
 from flask import (
@@ -95,7 +96,7 @@ def handle_republish() -> None:
         emit_status(guid, "Started", session_id)
         try:
             response = requests.get(
-                f"http://localhost:8081/republishschema/{guid}/cirversion/{ci['cir_version']}",
+                f"http://{os.getenv("AUTHOR_REPUBLISH_API_URL")}/republishschema/{guid}/cirversion/{ci['cir_version']}",
                 timeout=10000,
             )
             ci_status = "Success" if response.json()["success"] else "Failure"
