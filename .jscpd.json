@@ -1,6 +1,3 @@
 {
-  "ignore": [
-    "**/tests/**",
-    "**/test_*"
-  ]
+  "ignore": ["**/tests/**", "**/test_*"]
 }
