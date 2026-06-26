@@ -8,7 +8,7 @@ COPY app.py gunicorn_config.py poetry.lock pyproject.toml package.json package-l
 COPY templates /usr/src/templates
 COPY static /usr/src/static
 
-ENV WEB_SERVER_WORKERS=3
+ENV WEB_SERVER_WORKERS=1
 ENV WEB_SERVER_THREADS=10
 ENV HTTP_KEEP_ALIVE=2
 ENV GUNICORN_CMD_ARGS="-c gunicorn_config.py"
