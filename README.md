@@ -132,8 +132,9 @@ A fallback version is set in `templates/base.html`.
 
 To run the application with a local database and to point to CIR, you will need to complete the following steps:
 
-- Clone the [CIR FastAPI](https://github.com/ONSdigital/eq-cir-fastapi) and [Author API Republish Mock](https://github.com/ONSdigital/author-api-republish-mock) repository and follow their README to
-[run the application](https://github.com/ONSdigital/eq-cir-fastapi/blob/main/README.md#running-the-application-locally).
+- Clone the [CIR FastAPI](https://github.com/ONSdigital/eq-cir-fastapi) and
+[Author API Republish Mock](https://github.com/ONSdigital/author-api-republish-mock) repository and follow the
+relevant READMEs to run the applications.
 **Note**: The CIR application must be running for the UI to work as expected, so ensure you have completed this step
 before proceeding.
 
