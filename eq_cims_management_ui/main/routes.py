@@ -25,7 +25,7 @@ from flask import (
     url_for,
 )
 from flask.typing import ResponseReturnValue
-from flask_socketio import emit, join_room
+from flask_socketio import emit, join_room  # pyright: ignore
 from google.api_core.exceptions import RetryError
 
 from eq_cims_management_ui.errors.routes import error_content_500

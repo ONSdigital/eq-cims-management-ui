@@ -6,7 +6,8 @@
 {%- block main -%}
 
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
-    {% set variants = "small" if session_status == "Failure" or session_status == "Not started" else ["disabled", "small"] %}
+    {% set variants = "small"if session_status == "Failure" or session_status == "Not started"
+       else ["disabled", "small"] %}
 
     {{
         onsButton({
@@ -72,7 +73,7 @@
         })
     }}
 
- <script src="{{ url_for('static', filename='view-session.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='view-session.js') }}" defer></script>
 
 
 {%- endblock main -%}
