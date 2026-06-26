@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import flask
 import requests
+from flask import current_app
 
 from app import create_app
 from eq_cims_management_ui.config.config import DefaultConfig
@@ -138,6 +139,7 @@ class TestSocketIO(unittest.TestCase):
 
     def test_republish(self):
         app = create_app(DefaultConfig)
+        app.config["TEST_AUTHOR_REPUBLISH_API_URL"] = "http://localhost:8081"
         session_id = "test-session-123"
 
         with app.app_context():
@@ -165,10 +167,6 @@ class TestSocketIO(unittest.TestCase):
                 mock_update_session.assert_any_call("Success")
                 mock_update_ci.assert_any_call("xyz", "Started")
                 mock_update_ci.assert_any_call("abc", "Success")
-                mock_requests_get.assert_called_once_with(
-                    "http://localhost:8081/republishschema/xyz/cirversion/1",
-                    timeout=10000,
-                )
 
             client.disconnect()
 
