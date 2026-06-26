@@ -55,6 +55,20 @@ def test_render_initial_page(page: Page):
     expect(page).to_have_title(re.compile(r"Collection Instrument Migration Service \(CIMS\)"))
 
 
+def test_no_cis_present(page: Page):
+    """
+    Verify that clicking the create session button displays an error message when no collection instruments
+    are present in CIR.
+    """
+    page.goto("http://localhost:5100/")
+
+    create_session_button = page.get_by_test_id("create-session-btn")
+
+    create_session_button.click()
+
+    expect(page.get_by_role("heading", name=re.compile(r"Sorry, there is a problem with the service"))).to_be_visible()
+
+
 @pytest.mark.usefixtures("setup_cir")
 def test_display_content(page: Page):
     """
