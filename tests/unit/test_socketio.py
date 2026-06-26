@@ -86,8 +86,8 @@ class TestSocketIO(unittest.TestCase):
 
         self.assertTrue(client.is_connected())
 
-        self.assertTrue("republish" in client.socketio.server.handlers["/"])
-        self.assertTrue("connect" in client.socketio.server.handlers["/"])
+        self.assertTrue("republish" in client.socketio.server.handlers["/"])  # pyright: ignore
+        self.assertTrue("connect" in client.socketio.server.handlers["/"])  # pyright: ignore
 
         received = client.get_received()
         self.assertEqual(len(received), 0)

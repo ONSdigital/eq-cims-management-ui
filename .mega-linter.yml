@@ -56,6 +56,3 @@ HTML_DJLINT_ARGUMENTS: ["--profile", "jinja"]
 
 # Ignore DL3008 as the Dockerfile does not currently pin apt package versions
 DOCKERFILE_HADOLINT_ARGUMENTS: "--ignore DL3008"
-
-# Use a custom Pylint config file to avoid false positives and allow for project-specific rules
-PYTHON_PYLINT_CONFIG_FILE: .pylintrc

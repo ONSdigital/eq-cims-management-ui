@@ -7,7 +7,7 @@
 
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
     {% set variants = "small"if session_status == "Failure" or session_status == "Not started"
-       else ["disabled", "small"] %}
+      else ["disabled", "small"] %}
 
     {{
         onsButton({
