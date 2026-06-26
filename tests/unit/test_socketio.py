@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 import flask
 import requests
-from flask import current_app
 
 from app import create_app
 from eq_cims_management_ui.config.config import DefaultConfig
