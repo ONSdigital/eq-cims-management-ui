@@ -24,7 +24,7 @@ eq-cims-management-ui
     - [Pre-requisites](#pre-requisites)
     - [Installation](#installation)
 - [Development](#development)
-    - [Run Application with Database and CIR FastAPI](#run-application-with-database-and-cir-fastapi)
+    - [Run Application with Database, CIR FastAPI and Mock Author Republish](#run-application-with-database-cir-fastapi--mock-author-republish-api)
     - [Run All Tests](#run-all-tests)
     - [Run Unit Tests with Coverage](#run-unit-tests-with-coverage)
     - [Run Functional Tests](#run-functional-tests)
