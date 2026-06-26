@@ -90,10 +90,12 @@ def is_latest_session_in_progress() -> bool:
 
 
 def update_ci_status(guid: str, status: str) -> None:
+    """Updates the status of a collection instrument in the Firestore database."""
     firestore_handler = current_app.config["firestore_handler"]
     firestore_handler.update_firestore_ci_status(guid, status)
 
 
 def update_session_status(status: str) -> None:
+    """Updates the status of the session in the Firestore database."""
     firestore_handler = current_app.config["firestore_handler"]
     firestore_handler.update_firestore_session_status(status)

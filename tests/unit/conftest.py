@@ -1,4 +1,4 @@
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name, missing-function-docstring
 
 """
 Fixtures for testing the EQ CIR Management UI application.
