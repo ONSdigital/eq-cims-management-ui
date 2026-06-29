@@ -14,7 +14,7 @@ ENV HTTP_KEEP_ALIVE=2
 ENV GUNICORN_CMD_ARGS="-c gunicorn_config.py"
 ENV LOG_LEVEL=info
 
-RUN pip install --no-cache-dir poetry==2.1.2 && \
+RUN pip install --no-cache-dir poetry==2.4.1 && \
     poetry config virtualenvs.create false && \
     poetry install --without dev
 
