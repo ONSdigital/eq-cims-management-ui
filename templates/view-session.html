@@ -1,9 +1,22 @@
 {%- extends "base.html" -%}
 
+{% from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs %}
 {%- from "components/button/_macro.njk" import onsButton -%}
 {%- from "components/table/_macro.njk" import onsTable -%}
 
 {%- block main -%}
+
+  {{
+      onsBreadcrumbs({
+          "ariaLabel": "Breadcrumbs",
+          "itemsList": [
+              {
+                  "url": "/",
+                  "text": "Back"
+              }
+          ]
+      })
+  }}
 
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
     {% set variants = "small"if session_status == "Failure" or session_status == "Not started"

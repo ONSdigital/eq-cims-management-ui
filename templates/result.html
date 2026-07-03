@@ -1,10 +1,24 @@
 {%- extends "base.html" -%}
 
 {% from "components/description-list/_macro.njk" import onsDescriptionList %}
+{% from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs %}
 
 {%- block main -%}
 
+  {{
+      onsBreadcrumbs({
+          "ariaLabel": "Breadcrumbs",
+          "itemsList": [
+              {
+                  "url": "/view-session",
+                  "text": "Back"
+              }
+          ]
+      })
+  }}
+
   <h1>{{ guid }}</h1>
+
   {{
     onsDescriptionList({
         "classes": "ons-u-mb-no ons-u-mb-l",
