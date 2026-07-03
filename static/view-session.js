@@ -5,7 +5,7 @@ const socket = io({ transports: ["polling"], auth: { session_id: sessionId } });
 
 socket.on("cell_update", (data) => {
   const statusCell = document.getElementById(data.guid).cells[data.index];
-  statusCell.innerHTML = `<span class='ons-status ons-status--${data.suffix}'>${data.status}</span>`;
+  statusCell.innerHTML = `<a href='result/${data.guid}'><span class='ons-status ons-status--${data.suffix}'>${data.status}</span></a>`;
 });
 
 socket.on("button_disable", () => {

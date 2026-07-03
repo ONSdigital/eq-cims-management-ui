@@ -36,7 +36,7 @@
                 {"value": metadata["cir_version"]},
                 {"value": metadata["validator_version"]},
                 {
-                  "value": '<span class="ons-status ons-status--' + suffix + '">' + metadata["status"] + '</span>',
+                  "value": '<a href=result/' + metadata["cir_id"] + '><span class="ons-status ons-status--' + suffix + '">' + metadata["status"] + '</span></a>',
                   "dataSort": "0"
                 }
             ], "id": metadata["cir_id"]
