@@ -2,7 +2,6 @@
 
 import json
 import re
-import time
 
 import pytest
 import requests
@@ -100,9 +99,7 @@ def test_display_content(page: Page):
     republish_button.click()
     expect(republish_button).to_be_disabled()
 
-    time.sleep(15)
-
-    expect(page.get_by_text("Success")).to_have_count(3)
+    expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
     expect(republish_button).to_be_disabled()
 
 
@@ -121,12 +118,14 @@ def test_display_content_after_republish_in_progress(page: Page):
     republish_button = page.get_by_test_id("republish-btn")
     republish_button.click()
 
-    time.sleep(3)
+    expect(republish_button).to_be_visible()
+
+    page.wait_for_timeout(3000)
 
     expect(republish_button).to_be_disabled()
     expect(page.get_by_text("Started")).to_have_count(1)
 
-    time.sleep(15)
+    page.wait_for_timeout(15000)
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -144,7 +143,7 @@ def test_display_content_after_republish_complete(page: Page):
     republish_button = page.get_by_test_id("republish-btn")
     republish_button.click()
 
-    time.sleep(15)
+    page.wait_for_timeout(15000)
 
     page.go_back()
 
@@ -169,7 +168,7 @@ def test_display_content_after_republish_complete_after_closing_page(page: Page)
     republish_button = page.get_by_test_id("republish-btn")
     republish_button.click()
 
-    time.sleep(15)
+    page.wait_for_timeout(15000)
 
     new_page = page.context.new_page()
 
@@ -202,7 +201,7 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
 
     republish_button.click()
 
-    time.sleep(1)
+    page.wait_for_timeout(1000)
 
     page.go_back()
 
@@ -210,7 +209,7 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
 
     expect(republish_button).to_be_disabled()
 
-    time.sleep(15)
+    page.wait_for_timeout(15000)
 
 
 @pytest.mark.usefixtures("setup_cir")
