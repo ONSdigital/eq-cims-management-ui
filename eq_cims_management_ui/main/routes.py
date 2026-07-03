@@ -104,7 +104,7 @@ def handle_republish() -> None:
             logger.info("Successfully republished CI: %s", guid)
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, KeyError, ValueError):
             ci_status = CIStatus.FAILURE.value
-            logger.error("Failed to republish CI: %s", guid)
+            logger.exception("Failed to republish CI: %s", guid)
 
         emit_status(guid, ci_status, session_id)
 

@@ -2,7 +2,6 @@
 
 import json
 import re
-import time
 
 import pytest
 import requests
