@@ -37,6 +37,7 @@ from eq_cims_management_ui.utils.database.application_logic import (
     update_ci_status,
     update_session_status,
 )
+from eq_cims_management_ui.utils.database.status import CIStatus, Status
 from eq_cims_management_ui.utils.socketio import socketio
 
 main_blueprint = Blueprint("main", __name__)
@@ -84,34 +85,34 @@ def handle_republish() -> None:
     """
     session_id = current_app.config.get("session_id", "")
     ci_metadata = get_collection_instruments()
-    update_session_status("Running")
+    update_session_status(Status.RUNNING.value)
     emit("button_disable", to=session_id)
 
     for ci in ci_metadata:
         guid = ci["cir_id"]
-        if ci["status"] == "Success":
-            emit_status(guid, "Success", session_id)
+        if ci["status"] == CIStatus.SUCCESS.value:
+            emit_status(guid, CIStatus.SUCCESS.value, session_id)
             continue
 
-        emit_status(guid, "Started", session_id)
+        emit_status(guid, CIStatus.STARTED.value, session_id)
         try:
             response = requests.get(
                 f"http://{os.getenv("AUTHOR_REPUBLISH_API_URL")}/republishschema/{guid}/cirversion/{ci['cir_version']}",
-                timeout=10000,
+                timeout=15,
             )
-            ci_status = "Success" if response.json()["success"] else "Failure"
-        except (requests.exceptions.ConnectionError, ConnectionRefusedError):
-            logger.exception("Failed to republish CI: %s", guid)
-            ci_status = "Failure"
+            ci_status = CIStatus.SUCCESS.value if response.json()["success"] else CIStatus.FAILURE.value
+            logger.info("Successfully republished CI: %s", guid)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, KeyError, ValueError):
+            ci_status = CIStatus.FAILURE.value
+            logger.error("Failed to republish CI: %s", guid)
 
-        logger.error("%s republished CI: %s", "Successfully" if ci_status == "Success" else "Failed to", guid)
         emit_status(guid, ci_status, session_id)
 
     updated_ci_metadata = get_collection_instruments()
-    if all(ci["status"] == "Success" for ci in updated_ci_metadata):
-        update_session_status("Success")
+    if all(ci["status"] == CIStatus.SUCCESS.value for ci in updated_ci_metadata):
+        update_session_status(Status.SUCCESS.value)
     else:
-        update_session_status("Failure")
+        update_session_status(Status.FAILURE.value)
         emit("button_enable", to=session_id)
 
 

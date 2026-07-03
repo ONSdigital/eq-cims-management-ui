@@ -10,3 +10,10 @@ class Status(Enum):
     RUNNING = "Running"
     SUCCESS = "Success"
     FAILURE = "Failure"
+
+class CIStatus(Enum):
+    """An enumerator to reflect the status of a collection instrument."""
+    NOT_STARTED = "Not started"
+    STARTED = "Started"
+    SUCCESS = "Success"
+    FAILURE = "Failure"
