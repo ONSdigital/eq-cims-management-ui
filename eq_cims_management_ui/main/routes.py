@@ -28,7 +28,7 @@ from flask.typing import ResponseReturnValue
 from flask_socketio import emit, join_room  # pyright: ignore
 from google.api_core.exceptions import RetryError
 
-from eq_cims_management_ui.errors.routes import error_content_500
+from eq_cims_management_ui.errors.routes import error_content_404, error_content_500
 from eq_cims_management_ui.utils.database.application_logic import (
     create_new_session,
     get_collection_instruments,
@@ -192,11 +192,14 @@ def get_view_session() -> ResponseReturnValue:
 
 
 @main_blueprint.route("/result/<guid>", methods=["GET"])
-def get_result(guid):
+def get_result(guid) -> ResponseReturnValue:
 
     ci_metadata = get_collection_instruments()
 
     ci = next((ci for ci in ci_metadata if ci["cir_id"] == guid), None)
+
+    if not ci:
+        return render_template("error.html", error_content=error_content_404), 404
 
     ci_status = ci["status"] if ci else "Not found"
     survey_id = ci["survey_id"] if ci else "Not found"
