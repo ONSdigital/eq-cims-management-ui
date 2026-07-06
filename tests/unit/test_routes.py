@@ -166,3 +166,42 @@ def test_erroneous_view_session(test_client):
 
     assert response.status_code == 500
     assert response.data  # Ensure it's not empty
+
+
+@pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_ci_metadata_stream")
+def test_get_results(test_client):
+    """
+    GIVEN a call to the get-results endpoint.
+    THEN 200 is returned.
+    """
+    response = test_client.get("/result/abc")
+
+    assert response.status_code == 200
+    assert 'id="result-abc"' in str(response.data)
+    assert "Not started" in str(response.data)
+
+
+@pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_ci_metadata_stream")
+def test_get_results_invalid_guid(test_client):
+    """
+    GIVEN a call to the get-results endpoint with an invalid GUID.
+    THEN 404 is returned.
+    """
+    response = test_client.get("/result/edfhlisdfglskgfxlku")
+
+    assert response.status_code == 404
+    assert 'id="result-edfhlisdfglskgfxlku"' not in str(response.data)
+    assert "Page not found" in str(response.data)
+
+
+@pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_ci_metadata_stream")
+def test_get_results_no_guid(test_client):
+    """
+    GIVEN a call to the get-results endpoint with no GUID.
+    THEN 404 is returned.
+    """
+    response = test_client.get("/result/")
+
+    assert response.status_code == 404
+    assert 'id="result-' not in str(response.data)
+    assert "Page not found" in str(response.data)

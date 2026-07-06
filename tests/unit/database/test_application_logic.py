@@ -28,31 +28,25 @@ def test_get_collection_instruments():
     assert test_ci_metadata is not None
     assert len(test_ci_metadata) == 2
     assert test_ci_metadata[0] == {
-        "ci_version": 1,
-        "data_version": "0.0.1",
-        "validator_version": "0.0.1",
-        "classifier_type": "form_type",
-        "classifier_value": "1234",
-        "guid": "xyz",
-        "language": "en",
-        "published_at": "2026-05-21T13:57:24.276672Z",
         "survey_id": "999",
-        "title": "Test Survey",
+        "form_type": "1234",
+        "cir_id": "xyz",
+        "cir_version": 1,
+        "publish_date": "2026-05-21T13:59:24.276672Z",
+        "validator_version": "0.0.1",
         "status": "Not started",
+        "error_message": "None",
     }
 
     assert test_ci_metadata[1] == {
-        "ci_version": 1,
-        "data_version": "0.0.1",
-        "validator_version": "0.0.1",
-        "classifier_type": "form_type",
-        "classifier_value": "1234",
-        "guid": "abc",
-        "language": "en",
-        "published_at": "2026-05-21T13:56:55.905000Z",
         "survey_id": "999",
-        "title": "Test Survey 2",
+        "form_type": "1234",
+        "cir_id": "abc",
+        "cir_version": 2,
+        "publish_date": "2026-05-21T13:59:24.276672Z",
+        "validator_version": "0.0.1",
         "status": "Not started",
+        "error_message": "None",
     }
 
 
