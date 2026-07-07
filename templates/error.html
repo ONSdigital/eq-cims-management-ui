@@ -2,13 +2,16 @@
 {%- from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs -%}
 
 {%- block preMain -%}
+
+  {% set url = url if url else "/" %}
+
   {{
     onsBreadcrumbs({
         "ariaLabel": 'Breadcrumbs',
         "itemsList": [
             {
-                "url": '/',
-                "text": 'Home'
+                "url": url,
+                "text": 'Back'
             }
         ]
     })
