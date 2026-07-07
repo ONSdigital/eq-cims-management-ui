@@ -48,7 +48,12 @@ view_session_blueprint = Blueprint(
 
 logger = logging.getLogger(__name__)
 
-STATUS_TO_SUFFIX = {"Started": "info", "Success": "success", "Failure": "error", "Not Started": "dead"}
+STATUS_TO_SUFFIX = {
+    CIStatus.STARTED.value: "info",
+    CIStatus.SUCCESS.value: "success",
+    CIStatus.FAILURE.value: "error",
+    CIStatus.NOT_STARTED.value: "dead",
+}
 
 
 @main_blueprint.before_request

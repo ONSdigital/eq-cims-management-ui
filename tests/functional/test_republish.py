@@ -125,7 +125,7 @@ def test_display_content_after_republish_in_progress(page: Page):
     expect(republish_button).to_be_disabled()
     expect(page.get_by_text("Started")).to_have_count(1)
 
-    page.wait_for_timeout(15000)
+    expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -209,7 +209,7 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
 
     expect(republish_button).to_be_disabled()
 
-    page.wait_for_timeout(15000)
+    expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
 
 
 @pytest.mark.usefixtures("setup_cir")
