@@ -105,11 +105,15 @@ def handle_republish() -> None:
                 f"http://{os.getenv("AUTHOR_REPUBLISH_API_URL")}/republishschema/{guid}/cirversion/{ci['cir_version']}",
                 timeout=15,
             )
-            ci_status = CIStatus.SUCCESS.value if response.json()["success"] else CIStatus.FAILURE.value
-            logger.info("Successfully republished CI: %s", guid)
+            if response.json()["success"]:
+                ci_status = CIStatus.SUCCESS.value
+                logger.info("Successfully republished CI: %s", guid)
+            else:
+                ci_status = CIStatus.FAILURE.value
+                logger.error("Failed to republish CI: %s", guid)
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, KeyError, ValueError):
             ci_status = CIStatus.FAILURE.value
-            logger.exception("Failed to republish CI: %s", guid)
+            logger.exception("Failed while trying to republish CI: %s", guid)
 
         emit_status(guid, ci_status, session_id)
 
