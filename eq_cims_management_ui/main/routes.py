@@ -192,14 +192,23 @@ def get_view_session() -> ResponseReturnValue:
 
 
 @main_blueprint.route("/result/<guid>", methods=["GET"])
-def get_result(guid) -> ResponseReturnValue:
+def get_result(guid: str) -> ResponseReturnValue:
+    """
+    Retrieves the metadata for a specific collection instrument which is then rendered on the result page.
 
+    Args:
+        guid: The unique identifier of the collection instrument.
+
+    Returns:
+        ResponseReturnValue: The rendered result page.
+        ResponseReturnValue: An error page with a 404 status code if the collection instrument is not found.
+    """
     ci_metadata = get_collection_instruments()
 
     ci = next((ci for ci in ci_metadata if ci["cir_id"] == guid), None)
 
     if not ci:
-        return render_template("error.html", error_content=error_content_404), 404
+        return render_template("error.html", error_content=error_content_404, url="/view-session"), 404
 
     ci_status = ci["status"] if ci else "Not found"
     survey_id = ci["survey_id"] if ci else "Not found"

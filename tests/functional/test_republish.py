@@ -234,3 +234,5 @@ def test_display_content_republish_in_progress_after_closing_page(page: Page):
     second_republish_button = new_page.get_by_test_id("republish-btn")
 
     expect(second_republish_button).to_be_disabled()
+
+    new_page.wait_for_timeout(20000)
