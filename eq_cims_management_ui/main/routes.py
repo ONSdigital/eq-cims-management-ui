@@ -60,7 +60,7 @@ def before_request_func() -> None:
 
 @socketio.on("connect")
 def handle_connect(auth: dict) -> None:
-    """Create a new Websocket session and join the room for the session."""
+    """Create a new Socket IO session and join the room for the session."""
     session_id = auth.get("session_id")
     current_app.config["session_id"] = session_id
     if session_id:
@@ -87,7 +87,7 @@ def emit_status(guid: str, ci_status: str, session_id: str, validator_version: s
 @socketio.on("republish")
 def handle_republish() -> None:
     """
-    Republish the collection instruments and emit the status to the Websocket session depending on the response
+    Republish the collection instruments and emit the status to the Socket IO session depending on the response
     from Author republish API.
     """
     session_id = current_app.config.get("session_id", "")
