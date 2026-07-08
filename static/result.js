@@ -4,14 +4,14 @@ localStorage.setItem("session_id", sessionId);
 const socket = io({ transports: ["polling"], auth: { session_id: sessionId } });
 
 socket.on("cell_update", (data) => {
-  console.log(data.guid);
   const statusElement = document.getElementById(`result-${data.guid}`);
-  statusElement.innerHTML = data.status;
-  console.log(data.status);
+  if (statusElement) {
+    statusElement.innerHTML = data.status;
 
-  const validatorVersionElement = document.getElementById(`result-validator-${data.guid}`);
-  validatorVersionElement.innerHTML = data.validator_version;
+    const validatorVersionElement = document.getElementById(`result-validator-${data.guid}`);
+    validatorVersionElement.innerHTML = data.validator_version;
 
-  const errorMessageElement = document.getElementById(`result-error-${data.guid}`);
-  errorMessageElement.innerHTML = data.error_message
+    const errorMessageElement = document.getElementById(`result-error-${data.guid}`);
+    errorMessageElement.innerHTML = data.error_message
+  }
 });
