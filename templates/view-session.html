@@ -44,6 +44,12 @@
           else "error" if metadata["status"] == "Failure"
           else "success" if metadata["status"] == "Success"
           else "dead" %}
+        {% set status_link = '<a href="'
+            ~ url_for('main.get_result', guid=metadata['cir_id'])
+            ~ '" data-testid="ci-status-link-' ~ metadata['cir_id'] ~ '">'
+            ~ '<span class="ons-status ons-status--' ~ suffix ~ '">'
+            ~ metadata['status'] ~ '</span></a>' %}
+
         {% set item = {
             "tds": [
                 {"value": metadata["survey_id"]},
@@ -52,7 +58,7 @@
                 {"value": metadata["cir_version"]},
                 {"value": metadata["validator_version"]},
                 {
-                  "value": '<a href=result/' + metadata["cir_id"] + ' data-testid=ci-status-link-' + metadata["cir_id"] + '><span class="ons-status ons-status--' + suffix + '">' + metadata["status"] + '</span></a>',
+                  "value": status_link,
                   "dataSort": "0",
                 }
             ], "id": metadata["cir_id"]
