@@ -1,7 +1,7 @@
 const sessionId = localStorage.getItem("session_id") || crypto.randomUUID();
 localStorage.setItem("session_id", sessionId);
 
-const socket = io({ transports: ["polling"], auth: { session_id: sessionId } });
+const socket = io({ transports: ["polling", "websocket"], auth: { session_id: sessionId } });
 
 socket.on("cell_update", (data) => {
   const statusCell = document.getElementById(data.guid).cells[data.index];
