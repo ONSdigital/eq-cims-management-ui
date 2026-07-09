@@ -48,7 +48,12 @@ view_session_blueprint = Blueprint(
 
 logger = logging.getLogger(__name__)
 
-STATUS_TO_SUFFIX = {"Started": "info", "Success": "success", "Failure": "error", "Not Started": "dead"}
+STATUS_TO_SUFFIX = {
+    CIStatus.STARTED.value: "info",
+    CIStatus.SUCCESS.value: "success",
+    CIStatus.FAILURE.value: "error",
+    CIStatus.NOT_STARTED.value: "dead",
+}
 
 
 @main_blueprint.before_request
@@ -60,7 +65,7 @@ def before_request_func() -> None:
 
 @socketio.on("connect")
 def handle_connect(auth: dict) -> None:
-    """Create a new Socket IO session and join the room for the session."""
+    """Create a new SocketIO session and join the room for the session."""
     session_id = auth.get("session_id")
     current_app.config["session_id"] = session_id
     if session_id:
@@ -87,7 +92,7 @@ def emit_status(guid: str, ci_status: str, session_id: str, validator_version: s
 @socketio.on("republish")
 def handle_republish() -> None:
     """
-    Republish the collection instruments and emit the status to the Socket IO session depending on the response
+    Republish the collection instruments and emit the status to the SocketIO session depending on the response
     from Author republish API.
     """
     session_id = current_app.config.get("session_id", "")
@@ -107,11 +112,15 @@ def handle_republish() -> None:
                 f"http://{os.getenv("AUTHOR_REPUBLISH_API_URL")}/republishschema/{guid}/cirversion/{ci['cir_version']}",
                 timeout=15,
             )
-            ci_status = CIStatus.SUCCESS.value if response.json()["success"] else CIStatus.FAILURE.value
-            logger.info("Successfully republished CI: %s", guid)
+            if response.json()["success"]:
+                ci_status = CIStatus.SUCCESS.value
+                logger.info("Successfully republished CI: %s", guid)
+            else:
+                ci_status = CIStatus.FAILURE.value
+                logger.error("Failed to republish CI: %s", guid)
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, KeyError, ValueError):
             ci_status = CIStatus.FAILURE.value
-            logger.exception("Failed to republish CI: %s", guid)
+            logger.exception("Failed while trying to republish CI: %s", guid)
 
         emit_status(guid, ci_status, session_id, ci["validator_version"], ci["error_message"])
 
