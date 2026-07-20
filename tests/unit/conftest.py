@@ -452,12 +452,18 @@ def mock_update_ci_status_fails(monkeypatch):
 class MockCirResponse:
     """Class to mock the response from the CIR API."""
 
-    def __init__(self, response):
+    def __init__(self, response, status_code):
         self.response = response
+        self.status_code = status_code
 
     def json(self) -> dict:
         """Return the mocked response as a JSON object."""
         return self.response
+
+    def raise_for_status(self):
+        """Raise an exception if the status code is not 200."""
+        if self.status_code != 200:
+            raise requests.HTTPError("HTTP Error " + self.status_code + ": " + self.response["message"])
 
 
 # pylint: disable=too-few-public-methods
@@ -466,6 +472,11 @@ class MockStatus:
 
     def __init__(self, status_code):
         self.status_code = status_code
+
+    def raise_for_status(self):
+        """Raise an exception if the status code is not 200."""
+        if self.status_code != 200:
+            raise requests.HTTPError("HTTP Error: " + self.status_code)
 
 
 @pytest.fixture()
@@ -482,7 +493,7 @@ def mock_valid_cir_requests(monkeypatch):
         return MockStatus(200)
 
     def mock_cir_metadata(*_args, **_kwargs):
-        return MockCirResponse(test_cir_metadata)
+        return MockCirResponse(test_cir_metadata, 200)
 
     responses = iter([mock_status(), mock_cir_metadata()])
 
@@ -506,7 +517,7 @@ def mock_invalid_cir_metadata_requests(monkeypatch):
         return MockStatus(200)
 
     def mock_cir_metadata_empty(*_args, **_kwargs):
-        return MockCirResponse({"status": "error", "message": "No CI found"})
+        return MockCirResponse({"status": "error", "message": "No CI found"}, 404)
 
     responses = iter([mock_status(), mock_cir_metadata_empty()])
 
@@ -530,3 +541,32 @@ def mock_erroneous_cir_status(monkeypatch):
         raise requests.exceptions.ConnectionError
 
     monkeypatch.setattr(requests, "get", mock_status)
+
+
+@pytest.fixture()
+def mock_bad_cir_status(monkeypatch):
+    """
+    Fixture to mock the requests library and return a predefined response for CIR status requests where the CIR API is
+    not available.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the requests library.
+    """
+
+    def mock_status(*_args, **_kwargs):
+        return MockStatus(500)
+
+    monkeypatch.setattr(requests, "get", mock_status)
+
+
+@pytest.fixture()
+def mock_cir_connectivity_issue(monkeypatch):
+    call_count = [0]
+
+    def mock_get(*_args, **_kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return MockStatus(200)
+        raise requests.exceptions.ConnectionError
+
+    monkeypatch.setattr(requests, "get", mock_get)
