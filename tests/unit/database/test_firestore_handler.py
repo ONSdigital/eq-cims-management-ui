@@ -6,6 +6,7 @@ are working as expected.
 import pytest
 import requests
 from google.api_core.exceptions import RetryError
+from requests import HTTPError
 
 from eq_cims_management_ui.utils.database.firestore_handler import FirestoreHandler
 
@@ -61,7 +62,24 @@ def test_empty_cir_metadata_response():
     """
     firestore_handler = FirestoreHandler()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(HTTPError):
+        firestore_handler.create_database_session()
+        assert firestore_handler.latest_session_document_ref is None
+
+
+@pytest.mark.usefixtures("mock_cir_connectivity_issue")
+def test_cir_connectivity_issue():
+    firestore_handler = FirestoreHandler()
+
+    with pytest.raises(requests.exceptions.ConnectionError):
+        firestore_handler.create_database_session()
+        assert firestore_handler.latest_session_document_ref is None
+
+
+@pytest.mark.usefixtures("mock_bad_cir_status")
+def test_bad_cir_status_response():
+    firestore_handler = FirestoreHandler()
+    with pytest.raises(HTTPError):
         firestore_handler.create_database_session()
         assert firestore_handler.latest_session_document_ref is None
 

@@ -14,8 +14,30 @@ import logging
 import os
 
 import requests
+from google.auth.transport.requests import Request
+from google.oauth2 import id_token
 
 logger = logging.getLogger(__name__)
+
+AUDIENCE = os.getenv("AUDIENCE")
+CLIENT_ID = os.getenv("CLIENT_ID")
+
+
+def make_authenticated_request(url: str) -> requests.Response:
+    """
+    Make an authenticated request to CIR using a token given it is protected by Identity-Aware Proxy.
+
+    Args:
+        url: The URL to which the authenticated GET request will be made.
+
+    Returns:
+        Response: The response object from the authenticated GET request.
+    """
+    open_id_connect_token = id_token.fetch_id_token(Request(), CLIENT_ID)  # type: ignore[no-untyped-call]
+
+    headers = {"Authorization": f"Bearer {open_id_connect_token}"}
+
+    return requests.get(url, headers=headers, timeout=15)
 
 
 def check_cir_status() -> None:
@@ -24,14 +46,22 @@ def check_cir_status() -> None:
     returns a non-200 status code, an exception is raised.
 
     Raises:
+        HTTPError: If the response from CIR is not 200.
         requests.exceptions.ConnectionError: If the request returns a non-200 status code.
     """
     try:
         logger.info("Checking CIR status endpoint...")
         cir_status_url = f"http://{os.getenv("CIR_API_BASE_URL")}/status"
-        status = requests.get(cir_status_url, timeout=15)
-        if status.status_code == 200:
+        status_response = (
+            make_authenticated_request(cir_status_url)
+            if (AUDIENCE and CLIENT_ID)
+            else requests.get(cir_status_url, timeout=15)
+        )
+        if status_response.status_code == 200:
             logger.info("Successfully checked CIR status endpoint.")
+        else:
+            logger.error("Failed to check CIR status endpoint.")
+            status_response.raise_for_status()
 
     except requests.exceptions.ConnectionError as error:
         logger.exception("Failed to connect to CIR.")
@@ -48,16 +78,26 @@ def get_ci_metadata() -> list[dict]:
         ci_metadata: A list of collection instrument metadata to be added to the Firestore database.
 
     Raises:
+        HTTPError: If the response from CIR is not 200.
         ValueError: If the response from CIR is empty.
+        ConnectionError: If the request to CIR fails.
     """
-    logger.info("Retrieving collection instrument metadata from CIR...")
-    cir_metadata_url = f"http://{os.getenv("CIR_API_BASE_URL")}/collection-instruments/metadata"
-    metadata_received = requests.get(cir_metadata_url, timeout=15)
-    ci_metadata = metadata_received.json()
+    try:
+        logger.info("Retrieving collection instrument metadata from CIR...")
+        cir_metadata_url = f"http://{os.getenv("CIR_API_BASE_URL")}/collection-instruments/metadata"
+        metadata_response = (
+            make_authenticated_request(cir_metadata_url)
+            if (AUDIENCE and CLIENT_ID)
+            else requests.get(cir_metadata_url, timeout=15)
+        )
 
-    # CI metadata is always returned as a list of dictionaries given CIs are published
-    if not isinstance(ci_metadata, list) or ci_metadata[0].get("message") == "No CI found":
-        logger.error("Failed to retrieve collection instrument metadata from CIR.")
-        raise ValueError
+        ci_metadata = metadata_response.json()
+        if metadata_response.status_code != 200:
+            logger.error("Failed to retrieve collection instrument metadata from CIR.")
+            metadata_response.raise_for_status()
 
-    return ci_metadata
+        return ci_metadata  # noqa: TRY300
+
+    except requests.exceptions.ConnectionError as error:
+        logger.exception("Failed to connect to CIR.")
+        raise requests.exceptions.ConnectionError from error
