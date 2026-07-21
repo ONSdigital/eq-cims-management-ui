@@ -91,7 +91,7 @@ def get_ci_metadata() -> list[dict]:
             else requests.get(cir_metadata_url, timeout=15)
         )
 
-        ci_metadata = metadata_response.json()
+        ci_metadata: list[dict] = metadata_response.json()
         if metadata_response.status_code != 200:
             logger.error("Failed to retrieve collection instrument metadata from CIR.")
             metadata_response.raise_for_status()

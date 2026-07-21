@@ -448,7 +448,6 @@ def mock_update_ci_status_fails(monkeypatch):
     return mock_document, mock_sub_collection
 
 
-# pylint: disable=too-few-public-methods
 class MockCirResponse:
     """Class to mock the response from the CIR API."""
 

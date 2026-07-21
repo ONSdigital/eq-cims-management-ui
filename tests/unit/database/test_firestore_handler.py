@@ -1,3 +1,4 @@
+# pylint: disable=missing-function-docstring
 """
 This module contains tests for the FirestoreHandler class to ensure interactions with Firestore instances
 are working as expected.

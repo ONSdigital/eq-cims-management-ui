@@ -1,8 +1,11 @@
+# pylint: disable=missing-function-docstring, missing-module-docstring
 from unittest import mock
 
 import pytest
 
-from eq_cims_management_ui.utils.database.cir_operations import make_authenticated_request
+from eq_cims_management_ui.utils.database.cir_operations import (
+    make_authenticated_request,
+)
 
 
 def test_get_cir_metadata():
