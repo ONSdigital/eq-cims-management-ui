@@ -16,8 +16,8 @@ services:
     environment:
       - PORT=5100
       - FIRESTORE_EMULATOR_HOST=firestore:8080
-      - CIR_API_BASE_URL=http://api-cir:3030
-      - AUTHOR_REPUBLISH_API_URL=http://author-api-republish-mock:8081
+      - CIR_API_BASE_URL=api-cir:3030
+      - AUTHOR_REPUBLISH_API_URL=author-api-republish-mock:8081
     restart: on-failure
     depends_on:
       - firestore
