@@ -51,7 +51,7 @@ def check_cir_status() -> None:
     """
     try:
         logger.info("Checking CIR status endpoint...")
-        cir_status_url = f"http://{os.getenv("CIR_API_BASE_URL")}/status"
+        cir_status_url = f"{os.getenv("CIR_API_BASE_URL")}/status"
         status_response = (
             make_authenticated_request(cir_status_url)
             if (AUDIENCE and CLIENT_ID)
@@ -84,7 +84,7 @@ def get_ci_metadata() -> list[dict]:
     """
     try:
         logger.info("Retrieving collection instrument metadata from CIR...")
-        cir_metadata_url = f"http://{os.getenv("CIR_API_BASE_URL")}/collection-instruments/metadata"
+        cir_metadata_url = f"{os.getenv("CIR_API_BASE_URL")}/collection-instruments/metadata"
         metadata_response = (
             make_authenticated_request(cir_metadata_url)
             if (AUDIENCE and CLIENT_ID)

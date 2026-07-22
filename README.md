@@ -141,9 +141,9 @@ before proceeding.
 - Create or update a `.env` file to contain the following environment variables:
 
 ```text
-FIRESTORE_EMULATOR_HOST="localhost:8080"
-CIR_API_BASE_URL="localhost:3030"
-AUTHOR_REPUBLISH_API_URL=localhost:8081
+FIRESTORE_EMULATOR_HOST="http://localhost:8080"
+CIR_API_BASE_URL="http://localhost:3030"
+AUTHOR_REPUBLISH_API_URL="http://localhost:8081"
 ```
 
 - To run the application locally with a Firestore emulator, use the following commands:
