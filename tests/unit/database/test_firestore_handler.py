@@ -146,6 +146,7 @@ def test_update_session_status(mock_update_session_status):
     firestore_handler = FirestoreHandler()
     firestore_handler.latest_session_document_ref = mock_update_session_status
 
+    assert firestore_handler.latest_session_document_ref is not None
     assert firestore_handler.latest_session_document_ref.get().to_dict()["status"] == "Not started"
 
     firestore_handler.update_firestore_session_status("Running")
@@ -162,6 +163,7 @@ def test_update_session_status_failure(mock_update_session_status_fails):
     firestore_handler = FirestoreHandler()
     firestore_handler.latest_session_document_ref = mock_update_session_status_fails
 
+    assert firestore_handler.latest_session_document_ref is not None
     assert firestore_handler.latest_session_document_ref.get().to_dict()["status"] == "Not started"
     with pytest.raises(RetryError):
         firestore_handler.update_firestore_session_status("Running")
