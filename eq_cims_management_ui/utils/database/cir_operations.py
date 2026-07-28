@@ -19,7 +19,6 @@ from google.oauth2 import id_token
 
 logger = logging.getLogger(__name__)
 
-AUDIENCE = os.getenv("AUDIENCE")
 CLIENT_ID = os.getenv("CLIENT_ID")
 
 
@@ -51,11 +50,9 @@ def check_cir_status() -> None:
     """
     try:
         logger.info("Checking CIR status endpoint...")
-        cir_status_url = f"http://{os.getenv("CIR_API_BASE_URL")}/status"
+        cir_status_url = f"{os.getenv("CIR_API_BASE_URL")}/status"
         status_response = (
-            make_authenticated_request(cir_status_url)
-            if (AUDIENCE and CLIENT_ID)
-            else requests.get(cir_status_url, timeout=15)
+            make_authenticated_request(cir_status_url) if CLIENT_ID else requests.get(cir_status_url, timeout=15)
         )
         if status_response.status_code == 200:
             logger.info("Successfully checked CIR status endpoint.")
@@ -84,17 +81,16 @@ def get_ci_metadata() -> list[dict]:
     """
     try:
         logger.info("Retrieving collection instrument metadata from CIR...")
-        cir_metadata_url = f"http://{os.getenv("CIR_API_BASE_URL")}/collection-instruments/metadata"
+        cir_metadata_url = f"{os.getenv("CIR_API_BASE_URL")}/collection-instruments/metadata"
         metadata_response = (
-            make_authenticated_request(cir_metadata_url)
-            if (AUDIENCE and CLIENT_ID)
-            else requests.get(cir_metadata_url, timeout=15)
+            make_authenticated_request(cir_metadata_url) if CLIENT_ID else requests.get(cir_metadata_url, timeout=15)
         )
 
-        ci_metadata = metadata_response.json()
         if metadata_response.status_code != 200:
             logger.error("Failed to retrieve collection instrument metadata from CIR.")
             metadata_response.raise_for_status()
+
+        ci_metadata: list[dict] = metadata_response.json()
 
         return ci_metadata  # noqa: TRY300
 

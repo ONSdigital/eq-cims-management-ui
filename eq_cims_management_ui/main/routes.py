@@ -109,7 +109,7 @@ def handle_republish() -> None:
         emit_status(guid, CIStatus.STARTED.value, session_id, ci["validator_version"], ci["error_message"])
         try:
             response = requests.get(
-                f"http://{os.getenv("AUTHOR_REPUBLISH_API_URL")}/republishschema/{guid}/cirversion/{ci['cir_version']}",
+                f"{os.getenv("AUTHOR_REPUBLISH_API_URL")}/republishschema/{guid}/cirversion/{ci['cir_version']}",
                 timeout=15,
             )
             if response.json()["success"]:

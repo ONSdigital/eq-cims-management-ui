@@ -1,3 +1,4 @@
+# pylint: disable=missing-function-docstring
 """
 This module contains tests for the FirestoreHandler class to ensure interactions with Firestore instances
 are working as expected.
@@ -38,7 +39,8 @@ def test_create_session_fails():
 
     with pytest.raises(RetryError):
         firestore_handler.create_database_session()
-        assert firestore_handler.latest_session_document_ref is None
+
+    assert firestore_handler.latest_session_document_ref is None
 
 
 @pytest.mark.usefixtures("mock_erroneous_cir_status")
@@ -51,7 +53,8 @@ def test_create_session_fails_with_cir_connection_error():
 
     with pytest.raises(requests.exceptions.ConnectionError):
         firestore_handler.create_database_session()
-        assert firestore_handler.latest_session_document_ref is None
+
+    assert firestore_handler.latest_session_document_ref is None
 
 
 @pytest.mark.usefixtures("mock_invalid_cir_metadata_requests")
@@ -64,7 +67,8 @@ def test_empty_cir_metadata_response():
 
     with pytest.raises(HTTPError):
         firestore_handler.create_database_session()
-        assert firestore_handler.latest_session_document_ref is None
+
+    assert firestore_handler.latest_session_document_ref is None
 
 
 @pytest.mark.usefixtures("mock_cir_connectivity_issue")
@@ -73,15 +77,18 @@ def test_cir_connectivity_issue():
 
     with pytest.raises(requests.exceptions.ConnectionError):
         firestore_handler.create_database_session()
-        assert firestore_handler.latest_session_document_ref is None
+
+    assert firestore_handler.latest_session_document_ref is None
 
 
 @pytest.mark.usefixtures("mock_bad_cir_status")
 def test_bad_cir_status_response():
     firestore_handler = FirestoreHandler()
+
     with pytest.raises(HTTPError):
         firestore_handler.create_database_session()
-        assert firestore_handler.latest_session_document_ref is None
+
+    assert firestore_handler.latest_session_document_ref is None
 
 
 @pytest.mark.usefixtures("mock_retrieve_latest_session")
@@ -114,10 +121,12 @@ def test_retrieve_latest_session_failure():
     Test that the retrieve_latest_session method returns None when a RetryError occurs while retrieving the
     latest session.
     """
+    firestore_handler = FirestoreHandler()
+    latest_session = None
     with pytest.raises(RetryError):
-        firestore_handler = FirestoreHandler()
         latest_session = firestore_handler.retrieve_latest_session()
-        assert latest_session is None
+
+    assert latest_session is None
 
 
 @pytest.mark.usefixtures("mock_document_reference")
@@ -137,6 +146,7 @@ def test_update_session_status(mock_update_session_status):
     firestore_handler = FirestoreHandler()
     firestore_handler.latest_session_document_ref = mock_update_session_status
 
+    assert firestore_handler.latest_session_document_ref is not None
     assert firestore_handler.latest_session_document_ref.get().to_dict()["status"] == "Not started"
 
     firestore_handler.update_firestore_session_status("Running")
@@ -153,6 +163,7 @@ def test_update_session_status_failure(mock_update_session_status_fails):
     firestore_handler = FirestoreHandler()
     firestore_handler.latest_session_document_ref = mock_update_session_status_fails
 
+    assert firestore_handler.latest_session_document_ref is not None
     assert firestore_handler.latest_session_document_ref.get().to_dict()["status"] == "Not started"
     with pytest.raises(RetryError):
         firestore_handler.update_firestore_session_status("Running")
@@ -184,3 +195,22 @@ def test_update_ci_status_failure(mock_update_ci_status_fails):
 
     with pytest.raises(RetryError):
         firestore_handler.update_firestore_ci_status("xyz", "Started")
+
+
+def test_update_ci_status_no_document_reference():
+    """Test that the update_firestore_ci_status method raises ValueError when latest_session_document_ref is None."""
+    firestore_handler = FirestoreHandler()
+
+    assert firestore_handler.latest_session_document_ref is None
+
+    with pytest.raises(ValueError):
+        firestore_handler.update_firestore_ci_status("xyz", "Started")
+
+
+def test_update_session_status_no_document_reference():
+    firestore_handler = FirestoreHandler()
+
+    assert firestore_handler.latest_session_document_ref is None
+
+    with pytest.raises(ValueError):
+        firestore_handler.update_firestore_session_status("Started")

@@ -469,7 +469,6 @@ def mock_update_ci_status_fails(monkeypatch):
     return mock_document, mock_sub_collection
 
 
-# pylint: disable=too-few-public-methods
 class MockCirResponse:
     """Class to mock the response from the CIR API."""
 
@@ -484,7 +483,7 @@ class MockCirResponse:
     def raise_for_status(self):
         """Raise an exception if the status code is not 200."""
         if self.status_code != 200:
-            raise requests.HTTPError("HTTP Error " + self.status_code + ": " + self.response["message"])
+            raise requests.HTTPError("HTTP Error " + str(self.status_code) + ": " + self.response["message"])
 
 
 # pylint: disable=too-few-public-methods
@@ -497,7 +496,7 @@ class MockStatus:
     def raise_for_status(self):
         """Raise an exception if the status code is not 200."""
         if self.status_code != 200:
-            raise requests.HTTPError("HTTP Error: " + self.status_code)
+            raise requests.HTTPError("HTTP Error: " + str(self.status_code))
 
 
 @pytest.fixture()

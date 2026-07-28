@@ -40,7 +40,7 @@ class FirestoreHandler:
 
     def __init__(self) -> None:
         self.client: Client = Client()
-        self.latest_session_document_ref: BaseDocumentReference
+        self.latest_session_document_ref: BaseDocumentReference | None = None
 
     def create_database_session(self) -> None:
         """
@@ -143,6 +143,8 @@ class FirestoreHandler:
         """
         try:
             session = self.latest_session_document_ref
+            if session is None:
+                raise ValueError()
             session.collection("metadata").document(ci_guid).update({"status": status}, retry=Retry(timeout=15))
             logger.info(
                 "Updated CI status in Firestore database for CI guid: %s to status: %s",
@@ -167,6 +169,8 @@ class FirestoreHandler:
             RetryError: If the Firestore operation fails.
         """
         try:
+            if self.latest_session_document_ref is None:
+                raise ValueError()
             self.latest_session_document_ref.update({"status": status}, retry=Retry(timeout=15))
             logger.info(
                 "Updated session status in Firestore database to status: %s",
