@@ -23,6 +23,7 @@ from eq_cims_management_ui.utils.database.cir_operations import (
     check_cir_status,
     get_ci_metadata,
 )
+from eq_cims_management_ui.utils.socketio import socketio
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +71,10 @@ class FirestoreHandler:
                         "form_type": ci_metadata_item["classifier_value"],
                         "cir_id": ci_metadata_item["guid"],
                         "cir_version": ci_metadata_item["ci_version"],
+                        "publish_date": ci_metadata_item["published_at"],
                         "validator_version": ci_metadata_item["validator_version"],
                         "status": "Not started",
+                        "error_message": "",
                     },
                     retry=Retry(timeout=15),
                 )
@@ -84,6 +87,7 @@ class FirestoreHandler:
             ) from error  # type: ignore[no-untyped-call]
 
         logger.info("Session created successfully: %s", session_id)
+        socketio.emit("button_enable", namespace="/")
         self.latest_session_document_ref = latest_session_document_ref
 
     def retrieve_latest_session(self) -> BaseDocumentReference | None:
@@ -125,3 +129,56 @@ class FirestoreHandler:
     def close_connection(self) -> None:
         """Closes the connection to the Firestore database by deleting the client instance."""
         self.client.close()  # type: ignore[no-untyped-call]
+
+    def update_firestore_ci_status(self, ci_guid: str, status: str) -> None:
+        """
+        Updates the status of a collection instrument in the Firestore database during the republishing process.
+
+        Args:
+            ci_guid: The GUID of the collection instrument to update.
+            status: The new status to set for the collection instrument.
+
+        Raises:
+            RetryError: If the Firestore operation fails.
+        """
+        try:
+            session = self.latest_session_document_ref
+            if session is None:
+                raise ValueError()
+            session.collection("metadata").document(ci_guid).update({"status": status}, retry=Retry(timeout=15))
+            logger.info(
+                "Updated CI status in Firestore database for CI guid: %s to status: %s",
+                ci_guid,
+                status,
+            )
+        except RetryError as error:
+            logger.exception("Failed to update CI status in Firestore database.")
+            raise RetryError(
+                cause=error,
+                message="Failed to update CI status in Firestore database.",
+            ) from error  # type: ignore[no-untyped-call]
+
+    def update_firestore_session_status(self, status: str) -> None:
+        """
+        Updates the status of the current user session in the Firestore database during the republishing process.
+
+        Args:
+            status: The new status to set for the session during the republishing process.
+
+        Raises:
+            RetryError: If the Firestore operation fails.
+        """
+        try:
+            if self.latest_session_document_ref is None:
+                raise ValueError()
+            self.latest_session_document_ref.update({"status": status}, retry=Retry(timeout=15))
+            logger.info(
+                "Updated session status in Firestore database to status: %s",
+                status,
+            )
+        except RetryError as error:
+            logger.exception("Failed to update session status in Firestore database.")
+            raise RetryError(
+                cause=error,
+                message="Failed to update session status in Firestore database.",
+            ) from error  # type: ignore[no-untyped-call]

@@ -6,21 +6,28 @@
 {%- block main -%}
 
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
+    {% set variants = "small"if session_status == "Failure" or session_status == "Not started"
+      else ["disabled", "small"] %}
 
     {{
         onsButton({
             "type": "submit",
             "text": "Republish",
-            "variants": "small",
+            "variants": variants,
             "classes": "ons-u-mt-m ons-u-mb-m",
             "attributes": {
-                "data-testid": "republish-btn"
+                "data-testid": "republish-btn",
+                "id": "republish-btn"
             }
         })
     }}
 
     {% set tds = [] %}
     {% for metadata in ci_metadata %}
+        {% set suffix = "info" if metadata["status"] == "Started"
+          else "error" if metadata["status"] == "Failure"
+          else "success" if metadata["status"] == "Success"
+          else "dead" %}
         {% set item = {
             "tds": [
                 {"value": metadata["survey_id"]},
@@ -29,10 +36,10 @@
                 {"value": metadata["cir_version"]},
                 {"value": metadata["validator_version"]},
                 {
-                  "value": '<span class="ons-status ons-status--dead">' + metadata["status"] + '</span>',
+                  "value": '<span class="ons-status ons-status--' + suffix + '">' + metadata["status"] + '</span>',
                   "dataSort": "0"
                 }
-            ]
+            ], "id": metadata["cir_id"]
         } %}
         {% do tds.append(item) %}
     {% endfor %}
@@ -62,8 +69,11 @@
                     "value": "Status"
                 }
             ],
-            "trs": tds
+            "trs": tds,
         })
     }}
+
+  <script src="{{ url_for('static', filename='view-session.js') }}" defer></script>
+
 
 {%- endblock main -%}

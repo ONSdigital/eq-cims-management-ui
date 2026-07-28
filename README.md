@@ -24,7 +24,7 @@ eq-cims-management-ui
     - [Pre-requisites](#pre-requisites)
     - [Installation](#installation)
 - [Development](#development)
-    - [Run Application with Database and CIR FastAPI](#run-application-with-database-and-cir-fastapi)
+    - [Run Application with Database, CIR FastAPI and Mock Author Republish](#run-application-with-database-cir-fastapi--mock-author-republish-api)
     - [Run All Tests](#run-all-tests)
     - [Run Unit Tests with Coverage](#run-unit-tests-with-coverage)
     - [Run Functional Tests](#run-functional-tests)
@@ -128,20 +128,22 @@ The `@ons/design-system` package is then automatically added to the jinja config
 The used design system version is pulled directly from the version in package.json.
 A fallback version is set in `templates/base.html`.
 
-### Run Application with Database and CIR FastAPI
+### Run Application with Database, CIR FastAPI & Mock Author Republish API
 
 To run the application with a local database and to point to CIR, you will need to complete the following steps:
 
-- Clone the [CIR FastAPI](https://github.com/ONSdigital/eq-cir-fastapi) repository and follow their README to
-[run the application](https://github.com/ONSdigital/eq-cir-fastapi/blob/main/README.md#running-the-application-locally).
+- Clone the [CIR FastAPI](https://github.com/ONSdigital/eq-cir-fastapi) and
+[Author API Republish Mock](https://github.com/ONSdigital/author-api-republish-mock) repository and follow the
+relevant READMEs to run the applications.
 **Note**: The CIR application must be running for the UI to work as expected, so ensure you have completed this step
 before proceeding.
 
 - Create or update a `.env` file to contain the following environment variables:
 
 ```text
-FIRESTORE_EMULATOR_HOST="localhost:8080"
-CIR_API_BASE_URL="localhost:3030"
+FIRESTORE_EMULATOR_HOST="http://localhost:8080"
+CIR_API_BASE_URL="http://localhost:3030"
+AUTHOR_REPUBLISH_API_URL="http://localhost:8081"
 ```
 
 - To run the application locally with a Firestore emulator, use the following commands:
@@ -161,7 +163,7 @@ docker-compose up -d
 ### Run All Tests
 
 To run all functional and unit tests, run the following commands (*Note: Functional tests require an instance
-of the Firestore Emulator and a local instance of CIR to be running*):
+of the Firestore Emulator and local instances of CIR and the Author API Republish Mock to be running*):
 
 ```bash
 make dev-compose-up

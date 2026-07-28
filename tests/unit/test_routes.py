@@ -1,6 +1,7 @@
 """Module testing a basic flask instance."""
 
 import pytest
+from requests import HTTPError
 
 from app import create_app
 from eq_cims_management_ui.config import config
@@ -100,9 +101,29 @@ def test_create_session_route_failure_on_empty_cir_response(test_client):
     This test sends a GET request to the "/create-session" URL using the test client and verifies that a 500 status
     code is returned alongside an error page given CIR Metadata is not available/retrievable.
     """
+    with pytest.raises(HTTPError):
+        response = test_client.get("/create-session", follow_redirects=True)
+        assert response.status_code == 500
+        assert response.data  # Ensure it's not empty
+
+
+@pytest.mark.usefixtures(
+    "mock_firestore_session",
+    "mock_retrieve_latest_session",
+    "mock_firestore_get_session_in_progress",
+)
+def test_create_session_route_existing_session(test_client):
+    """
+    Test the create session route when the Database instance is present, the batch process has started and the user
+    returns to the previous page.
+
+    This test sends a GET request to the "/create-session" URL using the test client and verifies that the user is
+    redirected to the "/view-session" endpoint.
+    """
     response = test_client.get("/create-session", follow_redirects=True)
-    assert response.status_code == 500
-    assert response.data  # Ensure it's not empty
+
+    assert response.status_code == 200
+    assert response.request.path == "/view-session"
 
 
 def test_status_check(test_client):

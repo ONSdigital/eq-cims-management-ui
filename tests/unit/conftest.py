@@ -1,4 +1,4 @@
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name, missing-function-docstring
 
 """
 Fixtures for testing the EQ CIR Management UI application.
@@ -15,7 +15,7 @@ from google.api_core.exceptions import RetryError
 from app import create_app
 from eq_cims_management_ui.config.config import DefaultConfig
 
-test_metadata = [
+test_cir_metadata = [
     {
         "ci_version": 1,
         "data_version": "0.0.1",
@@ -44,6 +44,28 @@ test_metadata = [
     },
 ]
 
+ci_metadata = {
+    "survey_id": "999",
+    "form_type": "1234",
+    "cir_id": "xyz",
+    "cir_version": 1,
+    "publish_date": "2026-05-21T13:59:24.276672Z",
+    "validator_version": "0.0.1",
+    "status": "Not started",
+    "error_message": "",
+}
+
+republished_ci_metadata = {
+    "survey_id": "999",
+    "form_type": "1234",
+    "cir_id": "xyz",
+    "cir_version": 1,
+    "publish_date": "2026-05-21T13:59:24.276672Z",
+    "validator_version": "0.0.1",
+    "status": "Success",
+    "error_message": "",
+}
+
 
 def setup_mock_firestore():
     """
@@ -51,25 +73,26 @@ def setup_mock_firestore():
 
     Returns:
         mock_session_doc_ref (MagicMock): A mock instance of a Firestore document reference.
-        mock_flask_g (MagicMock): A mock instance of the current Flask app with the global variable for Firestore set.
+        mock_flask_current_app (MagicMock): A mock instance of the current Flask app with the global variable for
+        Firestore set.
     """
-    mock_flask_g = MagicMock()
+    mock_flask_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
     mock_session_doc_ref = MagicMock()
 
-    mock_flask_g.firestore_handler = mock_firestore_handler
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
 
     mock_firestore_handler.retrieve_latest_session.return_value = mock_session_doc_ref
 
-    return mock_session_doc_ref, mock_flask_g
+    return mock_session_doc_ref, mock_flask_current_app
 
 
 def mock_setup_app_with_firestore_handler():
     """Create a mocked Flask global with a mocked firestore_handler in config."""
-    mock_flask_g = MagicMock()
+    mock_flask_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
-    mock_flask_g.firestore_handler = mock_firestore_handler
-    return mock_flask_g, mock_firestore_handler
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
+    return mock_flask_current_app, mock_firestore_handler
 
 
 def setup_firestore_query_mock():
@@ -167,24 +190,24 @@ def mock_erroneous_firestore_session(monkeypatch):
 @pytest.fixture
 def mock_firestore_ci_metadata_stream(monkeypatch):
     """Mock the Firestore client to simulate streaming collection instrument metadata."""
-    mock_flask_g, mock_firestore_handler = mock_setup_app_with_firestore_handler()
+    mock_flask_current_app, mock_firestore_handler = mock_setup_app_with_firestore_handler()
     mock_session_ref = MagicMock()
     mock_collection = MagicMock()
 
-    mock_ci_metadata = [MagicMock(to_dict=lambda d=ci_metadata: d) for ci_metadata in test_metadata]
+    mock_ci_metadata = [MagicMock(to_dict=lambda d=ci_metadata: d) for ci_metadata in test_cir_metadata]
 
     mock_firestore_handler.latest_session_document_ref = mock_session_ref
 
     mock_session_ref.collection.return_value = mock_collection
     mock_collection.stream.return_value = mock_ci_metadata
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
 def mock_invalid_firestore_metadata_stream(monkeypatch):
     """Mock the Firestore client to simulate a RetryError when failing to stream collection instrument metadata."""
-    mock_flask_g, mock_firestore_handler = mock_setup_app_with_firestore_handler()
+    mock_flask_current_app, mock_firestore_handler = mock_setup_app_with_firestore_handler()
     mock_session_ref = MagicMock()
     mock_collection = MagicMock()
 
@@ -195,7 +218,7 @@ def mock_invalid_firestore_metadata_stream(monkeypatch):
         message="Mock RetryError Exception raise",
     )
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
@@ -236,55 +259,80 @@ def mock_retrieve_latest_session_failure(monkeypatch):
 @pytest.fixture
 def mock_create_database_session(monkeypatch):
     """Fixture to mock the create_database_session method."""
-    mock_flask_g = MagicMock()
-    mock_firestore_handler = MagicMock()
+    mock_flask_current_app, _mock_firestore_handler = mock_setup_app_with_firestore_handler()
 
-    mock_flask_g.firestore_handler = mock_firestore_handler
-
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
     with mock.patch.object(
-        mock_flask_g.firestore_handler,
+        mock_flask_current_app.config["firestore_handler"],
         "create_database_session",
     ) as mock_create_database_session_test:
         yield mock_create_database_session_test
 
 
 @pytest.fixture
+def mock_firestore_update_session_status(monkeypatch):
+    """Mock updating the status of a session in Firestore."""
+    mock_flask_current_app, _mock_firestore_handler = mock_setup_app_with_firestore_handler()
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
+
+    with mock.patch.object(
+        mock_flask_current_app.config["firestore_handler"],
+        "update_firestore_session_status",
+    ) as mock_update_session_status_test:
+        yield mock_update_session_status_test
+
+
+@pytest.fixture
+def mock_firestore_update_ci_status(monkeypatch):
+    """Mock updating the status of a session in Firestore."""
+    mock_flask_current_app, _mock_firestore_handler = mock_setup_app_with_firestore_handler()
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
+
+    with mock.patch.object(
+        mock_flask_current_app.config["firestore_handler"],
+        "update_firestore_ci_status",
+    ) as mock_update_ci_status_test:
+        yield mock_update_ci_status_test
+
+
+@pytest.fixture
 def mock_firestore_get_session(monkeypatch):
     """Mock getting latest session doc reference from Firestore, simulating a session with 'Not started' status."""
-    mock_session_doc_ref, mock_flask_g = setup_mock_firestore()
+    mock_session_doc_ref, mock_flask_current_app = setup_mock_firestore()
 
     mock_session_doc_ref.get.return_value = MagicMock(
         to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
     )
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
 def mock_firestore_get_session_in_progress(monkeypatch):
     """Mock getting latest session doc reference from Firestore, simulating a session with 'Running' status."""
-    mock_session_doc_ref, mock_flask_g = setup_mock_firestore()
+    mock_session_doc_ref, mock_flask_current_app = setup_mock_firestore()
 
     mock_session_doc_ref.get.return_value = MagicMock(
         to_dict=lambda: {"status": "Running", "created_at": "2026-05-05T15:00:43.198172+01:00"},
     )
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
 def mock_firestore_get_session_no_session(monkeypatch):
     """Mock getting latest session doc reference from Firestore, simulating no session being present."""
-    mock_flask_g = MagicMock()
+    mock_flask_current_app = MagicMock()
     mock_firestore_handler = MagicMock()
 
-    mock_flask_g.firestore_handler = mock_firestore_handler
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
 
     mock_firestore_handler.retrieve_latest_session.return_value = None
 
-    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.g", mock_flask_g)
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 
 
 @pytest.fixture
@@ -301,16 +349,120 @@ def mock_document_reference():
     return mock_doc_ref
 
 
-# pylint: disable=too-few-public-methods
+def setup_mock_initial_firestore_session():
+    mock_client = MagicMock()
+    mock_collection = MagicMock()
+    mock_document = MagicMock()
+
+    mock_client.collection.return_value = mock_collection
+    mock_collection.document.return_value = mock_document
+
+    return mock_client, mock_document
+
+
+@pytest.fixture
+def mock_update_session_status(monkeypatch):
+    mock_client, mock_document = setup_mock_initial_firestore_session()
+
+    mock_document.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+    )
+
+    def mock_update(*_args, **_kwargs):
+        mock_document.get.return_value = MagicMock(
+            to_dict=lambda: {"status": "Running", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+        )
+
+    mock_document.update.side_effect = mock_update
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+    return mock_document
+
+
+@pytest.fixture
+def mock_update_session_status_fails(monkeypatch):
+    mock_client, mock_document = setup_mock_initial_firestore_session()
+
+    mock_document.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Not started", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+    )
+
+    mock_document.update.side_effect = RetryError(
+        cause=Exception("RetryError"),
+        message="Mock RetryError Exception raise",
+    )
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+    return mock_document
+
+
+@pytest.fixture
+def mock_update_ci_status(monkeypatch):
+    mock_client, mock_document = setup_mock_initial_firestore_session()
+
+    mock_sub_collection = MagicMock()
+    mock_sub_document = MagicMock()
+    mock_document_id = "abc-def-ghi"
+
+    mock_document.collection.return_value = mock_sub_collection
+    mock_sub_collection.document.return_value = mock_sub_document
+    mock_sub_document.id = mock_document_id
+
+    mock_sub_document.get.return_value = MagicMock(
+        to_dict=lambda: ci_metadata,
+    )
+
+    def mock_update(*_args, **_kwargs):
+        mock_sub_document.get.return_value = MagicMock(
+            to_dict=lambda: republished_ci_metadata,
+        )
+
+    mock_sub_document.update.side_effect = mock_update
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+    return mock_document, mock_sub_collection
+
+
+@pytest.fixture
+def mock_update_ci_status_fails(monkeypatch):
+    mock_client, mock_document = setup_mock_initial_firestore_session()
+
+    mock_sub_collection = MagicMock()
+    mock_sub_document = MagicMock()
+    mock_document_id = "abc-def-ghi"
+
+    mock_document.collection.return_value = mock_sub_collection
+    mock_sub_collection.document.return_value = mock_sub_document
+    mock_sub_document.id = mock_document_id
+
+    mock_sub_document.get.return_value = MagicMock(
+        to_dict=lambda: ci_metadata,
+    )
+
+    mock_sub_document.update.side_effect = RetryError(
+        cause=Exception("RetryError"),
+        message="Mock RetryError Exception raise",
+    )
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+    return mock_document, mock_sub_collection
+
+
 class MockCirResponse:
     """Class to mock the response from the CIR API."""
 
-    def __init__(self, response):
+    def __init__(self, response, status_code):
         self.response = response
+        self.status_code = status_code
 
     def json(self) -> dict:
         """Return the mocked response as a JSON object."""
         return self.response
+
+    def raise_for_status(self):
+        """Raise an exception if the status code is not 200."""
+        if self.status_code != 200:
+            raise requests.HTTPError("HTTP Error " + str(self.status_code) + ": " + self.response["message"])
 
 
 # pylint: disable=too-few-public-methods
@@ -319,6 +471,11 @@ class MockStatus:
 
     def __init__(self, status_code):
         self.status_code = status_code
+
+    def raise_for_status(self):
+        """Raise an exception if the status code is not 200."""
+        if self.status_code != 200:
+            raise requests.HTTPError("HTTP Error: " + str(self.status_code))
 
 
 @pytest.fixture()
@@ -335,7 +492,7 @@ def mock_valid_cir_requests(monkeypatch):
         return MockStatus(200)
 
     def mock_cir_metadata(*_args, **_kwargs):
-        return MockCirResponse(test_metadata)
+        return MockCirResponse(test_cir_metadata, 200)
 
     responses = iter([mock_status(), mock_cir_metadata()])
 
@@ -359,7 +516,7 @@ def mock_invalid_cir_metadata_requests(monkeypatch):
         return MockStatus(200)
 
     def mock_cir_metadata_empty(*_args, **_kwargs):
-        return MockCirResponse({"status": "error", "message": "No CI found"})
+        return MockCirResponse({"status": "error", "message": "No CI found"}, 404)
 
     responses = iter([mock_status(), mock_cir_metadata_empty()])
 
@@ -383,3 +540,32 @@ def mock_erroneous_cir_status(monkeypatch):
         raise requests.exceptions.ConnectionError
 
     monkeypatch.setattr(requests, "get", mock_status)
+
+
+@pytest.fixture()
+def mock_bad_cir_status(monkeypatch):
+    """
+    Fixture to mock the requests library and return a predefined response for CIR status requests where the CIR API is
+    not available.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the requests library.
+    """
+
+    def mock_status(*_args, **_kwargs):
+        return MockStatus(500)
+
+    monkeypatch.setattr(requests, "get", mock_status)
+
+
+@pytest.fixture()
+def mock_cir_connectivity_issue(monkeypatch):
+    call_count = [0]
+
+    def mock_get(*_args, **_kwargs):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return MockStatus(200)
+        raise requests.exceptions.ConnectionError
+
+    monkeypatch.setattr(requests, "get", mock_get)

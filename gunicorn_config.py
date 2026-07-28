@@ -2,7 +2,7 @@
 
 import os
 
-import gunicorn
+import gunicorn  # pyright: ignore
 
 workers = int(os.getenv("WEB_SERVER_WORKERS", "3"))
 threads = int(os.getenv("WEB_SERVER_THREADS", "10"))

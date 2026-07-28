@@ -8,8 +8,9 @@ Functions:
 """
 
 import logging
+from typing import Any
 
-from flask import g
+from flask import current_app
 from google.api_core.exceptions import RetryError
 
 from eq_cims_management_ui.utils.database.status import Status
@@ -22,7 +23,7 @@ def create_new_session() -> None:
     Creates a new session in the Firestore database by calling the create_database_session
     method of the FirestoreHandler class.
     """
-    firestore_handler = g.firestore_handler
+    firestore_handler = current_app.config["firestore_handler"]
     firestore_handler.create_database_session()
 
 
@@ -38,7 +39,7 @@ def get_collection_instruments() -> list[dict]:
         RetryError: If the Firestore operation fails
     """
     try:
-        firestore_handler = g.firestore_handler
+        firestore_handler = current_app.config["firestore_handler"]
         latest_session = firestore_handler.latest_session_document_ref
         ci_metadata_documents = latest_session.collection("metadata").stream()
 
@@ -51,21 +52,50 @@ def get_collection_instruments() -> list[dict]:
         ) from error  # type: ignore[no-untyped-call]
 
 
-def is_latest_session_present() -> bool:
+def get_session_status() -> Any:
     """
-    Checks if there is a session present in the Firestore database and that its status is not "Not started".
+    Retrieves the status of the latest session in the Firestore database.
 
     Returns:
-        bool: True if there is a session present with its status as not "Not started", False otherwise.
+        str: The status of the latest session.
     """
-    firestore_handler = g.firestore_handler
+    firestore_handler = current_app.config["firestore_handler"]
+
+    if session_doc_ref := firestore_handler.retrieve_latest_session():
+        current_session = session_doc_ref.get().to_dict()
+        return current_session["status"]
+
+    return None
+
+
+def is_latest_session_in_progress() -> bool:
+    """
+    Checks if there is a session in progress in the Firestore database by retrieving the latest session and checking its
+    status.
+
+    Returns:
+        bool: True if there is a session in progress with its status as not "Not started" or "Success", False otherwise.
+    """
+    firestore_handler = current_app.config["firestore_handler"]
 
     if session_doc_ref := firestore_handler.retrieve_latest_session():
         current_session = session_doc_ref.get().to_dict()
 
-        if current_session["status"] != Status.NOT_STARTED.value:
+        if current_session["status"] == Status.RUNNING.value or current_session["status"] == Status.FAILURE.value:
             firestore_handler.set_document_reference(session_doc_ref)
             return True
         return False
 
     return False
+
+
+def update_ci_status(guid: str, status: str) -> None:
+    """Updates the status of a collection instrument in the Firestore database."""
+    firestore_handler = current_app.config["firestore_handler"]
+    firestore_handler.update_firestore_ci_status(guid, status)
+
+
+def update_session_status(status: str) -> None:
+    """Updates the status of the session in the Firestore database."""
+    firestore_handler = current_app.config["firestore_handler"]
+    firestore_handler.update_firestore_session_status(status)
