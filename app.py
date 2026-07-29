@@ -19,7 +19,7 @@ from pathlib import Path
 
 import structlog
 from dotenv import load_dotenv
-from flask import Flask, g
+from flask import Flask
 from flask_talisman import Talisman
 from jinja2 import ChainableUndefined, FileSystemLoader
 from semver.version import Version
@@ -46,8 +46,6 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     """
     application = Flask(__name__)
 
-    initialise_firestore_handler(application)
-
     application.config.from_object(app_config)
     application.static_folder = Path("static")
     application.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "secret!")
@@ -63,21 +61,6 @@ def create_app(app_config: type[DefaultConfig]) -> Flask:
     configure_secure_headers(application)
 
     return application
-
-
-def initialise_firestore_handler(application: Flask) -> None:
-    """Initialise FirestoreHandler and add it to the Flask global context so it can be accessed across the app."""
-    firestore_handler = FirestoreHandler()
-
-    @application.before_request
-    def before_request_func() -> None:
-        g.firestore_handler = firestore_handler
-
-    @application.teardown_appcontext
-    def teardown_firestore(_exception: Exception | None = None) -> None:
-        firestore_handler_teardown = g.pop("firestore_handler", None)
-        if firestore_handler_teardown is not None:
-            firestore_handler.close_connection()
 
 
 def env_override(value: str, key: str) -> str:

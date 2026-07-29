@@ -28,7 +28,7 @@ socket.on("button_enable", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const republishBtn = document.getElementById("republish-btn");
   if (republishBtn) {
-     republishBtn.addEventListener("click", republish);
+    republishBtn.addEventListener("click", republish);
   }
 });
 
