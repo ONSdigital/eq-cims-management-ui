@@ -126,7 +126,6 @@ class FirestoreHandler:
         """
         self.latest_session_document_ref = document_reference
 
-
     def update_firestore_ci_status(self, ci_guid: str, status: str) -> None:
         """
         Updates the status of a collection instrument in the Firestore database during the republishing process.
