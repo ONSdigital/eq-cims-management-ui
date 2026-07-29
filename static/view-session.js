@@ -10,25 +10,26 @@ socket.on("cell_update", (data) => {
 });
 
 socket.on("button_disable", () => {
-    const republishBtn = document.getElementById("republish-btn");
-    if (republishBtn) {
-        republishBtn.classList.add("ons-btn--disabled");
-        republishBtn.setAttribute("disabled", "");
-    }
+  const republishBtn = document.getElementById("republish-btn");
+  if (republishBtn) {
+    republishBtn.classList.add("ons-btn--disabled");
+    republishBtn.setAttribute("disabled", "");
   }
-)
+});
 
 socket.on("button_enable", () => {
-    const republishBtn = document.getElementById("republish-btn");
-    if (republishBtn) {
-        republishBtn.classList.remove("ons-btn--disabled");
-        republishBtn.removeAttribute("disabled");
-    }
+  const republishBtn = document.getElementById("republish-btn");
+  if (republishBtn) {
+    republishBtn.classList.remove("ons-btn--disabled");
+    republishBtn.removeAttribute("disabled");
+  }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
   const republishBtn = document.getElementById("republish-btn");
-  republishBtn.addEventListener("click", republish);
+  if (republishBtn) {
+     republishBtn.addEventListener("click", republish);
+  }
 });
 
 function republish() {
