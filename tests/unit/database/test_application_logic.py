@@ -30,7 +30,7 @@ def test_get_collection_instruments():
     assert test_ci_metadata[0] == {
         "survey_id": "999",
         "form_type": "1234",
-        "cir_id": "xyz",
+        "cir_id": "275229fc-9b2e-438d-8a21-4a69b272575a",
         "cir_version": 1,
         "publish_date": "2026-05-21T13:59:24.276672Z",
         "validator_version": "0.0.1",
@@ -41,7 +41,7 @@ def test_get_collection_instruments():
     assert test_ci_metadata[1] == {
         "survey_id": "999",
         "form_type": "1234",
-        "cir_id": "abc",
+        "cir_id": "64faab81-b4e1-4c3d-9c54-1632ad34af4e",
         "cir_version": 2,
         "publish_date": "2026-05-21T13:59:24.276672Z",
         "validator_version": "0.0.1",
@@ -89,6 +89,6 @@ def test_update_session_status(mock_firestore_update_session_status):
 @pytest.mark.usefixtures("mock_firestore_update_ci_status")
 def test_update_ci_status(mock_firestore_update_ci_status):
     """Test that the update_ci_status function updates the collection instrument status correctly."""
-    update_ci_status("abc", "Success")
+    update_ci_status("64faab81-b4e1-4c3d-9c54-1632ad34af4e", "Success")
 
     assert mock_firestore_update_ci_status.call_count == 1

@@ -22,7 +22,7 @@ test_cir_metadata = [
         "validator_version": "0.0.1",
         "classifier_type": "form_type",
         "classifier_value": "1234",
-        "guid": "xyz",
+        "guid": "275229fc-9b2e-438d-8a21-4a69b272575a",
         "language": "en",
         "published_at": "2026-05-21T13:57:24.276672Z",
         "survey_id": "999",
@@ -34,7 +34,7 @@ test_cir_metadata = [
         "validator_version": "0.0.1",
         "classifier_type": "form_type",
         "classifier_value": "1234",
-        "guid": "abc",
+        "guid": "64faab81-b4e1-4c3d-9c54-1632ad34af4e",
         "language": "en",
         "published_at": "2026-05-21T13:56:55.905000Z",
         "survey_id": "999",
@@ -46,7 +46,7 @@ test_firestore_ci_metadata = [
     {
         "survey_id": "999",
         "form_type": "1234",
-        "cir_id": "xyz",
+        "cir_id": "275229fc-9b2e-438d-8a21-4a69b272575a",
         "cir_version": 1,
         "publish_date": "2026-05-21T13:59:24.276672Z",
         "validator_version": "0.0.1",
@@ -56,7 +56,7 @@ test_firestore_ci_metadata = [
     {
         "survey_id": "999",
         "form_type": "1234",
-        "cir_id": "abc",
+        "cir_id": "64faab81-b4e1-4c3d-9c54-1632ad34af4e",
         "cir_version": 2,
         "publish_date": "2026-05-21T13:59:24.276672Z",
         "validator_version": "0.0.1",
@@ -68,7 +68,7 @@ test_firestore_ci_metadata = [
 ci_metadata = {
     "survey_id": "999",
     "form_type": "1234",
-    "cir_id": "xyz",
+    "cir_id": "275229fc-9b2e-438d-8a21-4a69b272575a",
     "cir_version": 1,
     "publish_date": "2026-05-21T13:59:24.276672Z",
     "validator_version": "0.0.1",
@@ -79,7 +79,7 @@ ci_metadata = {
 republished_ci_metadata = {
     "survey_id": "999",
     "form_type": "1234",
-    "cir_id": "xyz",
+    "cir_id": "275229fc-9b2e-438d-8a21-4a69b272575a",
     "cir_version": 1,
     "publish_date": "2026-05-21T13:59:24.276672Z",
     "validator_version": "0.0.1",

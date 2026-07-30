@@ -176,10 +176,10 @@ def test_get_results(test_client):
     GIVEN a call to the get-results endpoint.
     THEN 200 is returned.
     """
-    response = test_client.get("/result/abc")
+    response = test_client.get("/result/64faab81-b4e1-4c3d-9c54-1632ad34af4e")
 
     assert response.status_code == 200
-    assert 'id="result-abc"' in str(response.data)
+    assert 'id="result-64faab81-b4e1-4c3d-9c54-1632ad34af4e"' in str(response.data)
     assert "Not started" in str(response.data)
 
 
