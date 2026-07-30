@@ -93,7 +93,7 @@ def jinja_config(application: Flask) -> None:
     # Clean up white space.
     application.jinja_env.trim_blocks = True
     application.jinja_env.lstrip_blocks = True
-    application.jinja_env.filters['uuid_to_int'] = lambda value: uuid.UUID(value.strip()).int
+    application.jinja_env.filters["uuid_to_int"] = lambda value: uuid.UUID(value.strip()).int
 
 
 def design_system_config() -> None:
