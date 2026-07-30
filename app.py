@@ -125,12 +125,12 @@ def design_system_config() -> None:
         design_system_version = package_json.get("dependencies", {}).get("@ons/design-system")
 
         if not design_system_version:
-            logger.exception(
+            logger.error(
                 "The '@ons/design-system' dependency is not found in package.json. "
                 "Please ensure it is listed under 'dependencies'.",
             )
         elif not Version.is_valid(design_system_version):
-            logger.exception(
+            logger.error(
                 "The '@ons/design-system' dependency version is invalid. Please ensure it follows semantic versioning.",
             )
         else:
@@ -217,6 +217,6 @@ socketio.init_app(app)
 
 if __name__ == "__main__":
     host = os.environ.get("HOST", "127.0.0.1")
-    port = int(os.environ.get("PORT", 5100))
+    port = int(os.environ.get("PORT", "5100"))
     debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
     socketio.run(app, host=host, port=port, debug=debug_mode, allow_unsafe_werkzeug=True)
