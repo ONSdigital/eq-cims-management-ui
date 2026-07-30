@@ -54,12 +54,12 @@
             "tds": [
                 {"value": metadata["survey_id"]},
                 {"value": metadata["form_type"]},
-                {"value": metadata["cir_id"]},
+                {"value": metadata["cir_id"] | trim, "dataSort": metadata["cir_id"] | uuid_to_int},
                 {"value": metadata["cir_version"]},
                 {"value": metadata["validator_version"]},
                 {
                   "value": status_link,
-                  "dataSort": "0",
+                  "dataSort": metadata["status"] | trim,
                 }
             ], "id": metadata["cir_id"]
         } %}
