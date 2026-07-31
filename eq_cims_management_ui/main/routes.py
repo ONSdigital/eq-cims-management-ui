@@ -27,6 +27,7 @@ from flask import (
 from flask.typing import ResponseReturnValue
 from flask_socketio import emit, join_room  # pyright: ignore
 from google.api_core.exceptions import RetryError
+from requests import HTTPError
 
 from eq_cims_management_ui.errors.routes import error_content_404, error_content_500
 from eq_cims_management_ui.utils.database.application_logic import (
@@ -165,7 +166,7 @@ def create_session() -> Response | ResponseReturnValue:
     try:
         create_new_session()
         return redirect(url_for("main.get_view_session"))
-    except (RetryError, requests.exceptions.ConnectionError, ValueError):
+    except (RetryError, requests.exceptions.ConnectionError, ValueError, HTTPError):
         return render_template("error.html", error_content=error_content_500), 500
 
 

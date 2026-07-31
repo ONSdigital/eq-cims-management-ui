@@ -1,7 +1,6 @@
 """Module testing a basic flask instance."""
 
 import pytest
-from requests import HTTPError
 
 from app import create_app
 from eq_cims_management_ui.config import config
@@ -101,10 +100,10 @@ def test_create_session_route_failure_on_empty_cir_response(test_client):
     This test sends a GET request to the "/create-session" URL using the test client and verifies that a 500 status
     code is returned alongside an error page given CIR Metadata is not available/retrievable.
     """
-    with pytest.raises(HTTPError):
-        response = test_client.get("/create-session", follow_redirects=True)
-        assert response.status_code == 500
-        assert response.data  # Ensure it's not empty
+    response = test_client.get("/create-session", follow_redirects=True)
+    assert response.status_code == 500
+    assert response.data  # Ensure it's not empty
+    assert "Sorry, there is a problem with the service" in str(response.data)
 
 
 @pytest.mark.usefixtures(
