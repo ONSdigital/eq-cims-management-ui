@@ -6,12 +6,12 @@ const socket = io({ transports: ["polling", "websocket"], auth: { session_id: se
 socket.on("cell_update", (data) => {
   const statusElement = document.getElementById(`result-${data.guid}`);
   if (statusElement) {
-    statusElement.innerHTML = data.status;
+    statusElement.textContent = data.status;
 
     const validatorVersionElement = document.getElementById(`result-validator-${data.guid}`);
-    validatorVersionElement.innerHTML = data.validator_version;
+    validatorVersionElement.textContent = data.validator_version;
 
     const errorMessageElement = document.getElementById(`result-error-${data.guid}`);
-    errorMessageElement.innerHTML = data.error_message
+    errorMessageElement.textContent = data.error_message
   }
 });
