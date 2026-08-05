@@ -1,9 +1,25 @@
 {%- extends "base.html" -%}
 
+{% from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs %}
 {%- from "components/button/_macro.njk" import onsButton -%}
 {%- from "components/table/_macro.njk" import onsTable -%}
 
 {%- block main -%}
+
+  {{
+      onsBreadcrumbs({
+          "ariaLabel": "Breadcrumbs",
+          "itemsList": [
+              {
+                  "url": "/",
+                  "text": "Back",
+                  "attributes": {
+                      "data-testid": "view-session-back-button"
+                  }
+              }
+          ]
+      })
+  }}
 
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
     {% set variants = "small"if session_status == "Failure" or session_status == "Not started"
@@ -28,16 +44,22 @@
           else "error" if metadata["status"] == "Failure"
           else "success" if metadata["status"] == "Success"
           else "dead" %}
+        {% set status_link = '<a href="'
+            ~ url_for('main.get_result', guid=metadata['cir_id'])
+            ~ '" data-testid="ci-status-link-' ~ metadata['cir_id'] ~ '">'
+            ~ '<span class="ons-status ons-status--' ~ suffix ~ '">'
+            ~ metadata['status'] ~ '</span></a>' %}
+
         {% set item = {
             "tds": [
                 {"value": metadata["survey_id"]},
                 {"value": metadata["form_type"]},
-                {"value": metadata["cir_id"]},
+                {"value": metadata["cir_id"] | trim, "dataSort": metadata["cir_id"] | uuid_to_int},
                 {"value": metadata["cir_version"]},
                 {"value": metadata["validator_version"]},
                 {
-                  "value": '<span class="ons-status ons-status--' + suffix + '">' + metadata["status"] + '</span>',
-                  "dataSort": "0"
+                  "value": status_link,
+                  "dataSort": metadata["status"] | trim,
                 }
             ], "id": metadata["cir_id"]
         } %}

@@ -71,7 +71,7 @@ megalint: clean ## Run the mega-linter.
 	docker run --platform linux/amd64 --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock:rw \
 		-v $(shell pwd):/tmp/lint:rw \
-		ghcr.io/oxsecurity/megalinter-python:v9.4.0
+		ghcr.io/oxsecurity/megalinter-python:v9.6.0
 
 .PHONY: dev-compose-up
 dev-compose-up:

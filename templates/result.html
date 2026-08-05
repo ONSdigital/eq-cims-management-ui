@@ -1,0 +1,88 @@
+{%- extends "base.html" -%}
+
+{% from "components/description-list/_macro.njk" import onsDescriptionList %}
+{% from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs %}
+
+{%- block main -%}
+
+  {{
+      onsBreadcrumbs({
+          "ariaLabel": "Breadcrumbs",
+          "itemsList": [
+              {
+                  "url": "/view-session",
+                  "text": "Back",
+                  "attributes": {
+                      "data-testid": "result-back-button"
+                  }
+              }
+          ]
+      })
+  }}
+
+  <h1>{{ guid }}</h1>
+
+  {{
+    onsDescriptionList({
+        "classes": "ons-u-mb-no ons-u-mb-l",
+        "termCol": "2",
+        "descriptionCol": "10",
+        "itemsList": [
+            {
+                "term": "Status:",
+                "descriptions": [
+                    {
+                        "description": status,
+                        "id": "result-" + guid
+                    }
+                ]
+            },
+            {
+                "term": "Survey ID:",
+                "descriptions": [
+                    {
+                        "description": survey_id
+                    }
+                ]
+            },
+            {
+                "term": "Form type:",
+                "descriptions": [
+                    {
+                        "description": form_type
+                    }
+                ]
+            },
+            {
+                "term": "CI version:",
+                "descriptions": [
+                    {
+                        "description": version
+                    }
+                ]
+            },
+            {
+                "term": "Validator version:",
+                "descriptions": [
+                    {
+                        "description": validator_version,
+                        "id": "result-validator-" + guid
+                    }
+                ]
+            },
+            {
+                "term": "Error message:",
+                "descriptions": [
+                    {
+                        "description": error_message,
+                        "id": "result-error-" + guid
+                    }
+                ]
+            }
+        ]
+    })
+  }}
+
+  <script src="{{ url_for('static', filename='result.js') }}" defer></script>
+
+{%- endblock main -%}

@@ -74,7 +74,7 @@ class FirestoreHandler:
                         "publish_date": ci_metadata_item["published_at"],
                         "validator_version": ci_metadata_item["validator_version"],
                         "status": "Not started",
-                        "error_message": "",
+                        "error_message": "None",
                     },
                     retry=Retry(timeout=15),
                 )
@@ -125,10 +125,6 @@ class FirestoreHandler:
             document_reference: The document reference of the latest session found.
         """
         self.latest_session_document_ref = document_reference
-
-    def close_connection(self) -> None:
-        """Closes the connection to the Firestore database by deleting the client instance."""
-        self.client.close()  # type: ignore[no-untyped-call]
 
     def update_firestore_ci_status(self, ci_guid: str, status: str) -> None:
         """

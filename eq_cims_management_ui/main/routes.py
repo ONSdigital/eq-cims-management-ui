@@ -27,8 +27,9 @@ from flask import (
 from flask.typing import ResponseReturnValue
 from flask_socketio import emit, join_room  # pyright: ignore
 from google.api_core.exceptions import RetryError
+from requests import HTTPError
 
-from eq_cims_management_ui.errors.routes import error_content_500
+from eq_cims_management_ui.errors.routes import error_content_404, error_content_500
 from eq_cims_management_ui.utils.database.application_logic import (
     create_new_session,
     get_collection_instruments,
@@ -72,11 +73,18 @@ def handle_connect(auth: dict) -> None:
         join_room(session_id)
 
 
-def emit_status(guid: str, ci_status: str, session_id: str) -> None:
+def emit_status(guid: str, ci_status: str, session_id: str, validator_version: str, error_message: str) -> None:
     """Emit the status of a collection instrument and update the status in the database."""
     emit(
         "cell_update",
-        {"guid": guid, "status": ci_status, "index": 5, "suffix": STATUS_TO_SUFFIX[ci_status]},
+        {
+            "guid": guid,
+            "status": ci_status,
+            "index": 5,
+            "suffix": STATUS_TO_SUFFIX[ci_status],
+            "validator_version": validator_version,
+            "error_message": error_message,
+        },
         to=session_id,
     )
     update_ci_status(guid, ci_status)
@@ -96,10 +104,10 @@ def handle_republish() -> None:
     for ci in ci_metadata:
         guid = ci["cir_id"]
         if ci["status"] == CIStatus.SUCCESS.value:
-            emit_status(guid, CIStatus.SUCCESS.value, session_id)
+            emit_status(guid, CIStatus.SUCCESS.value, session_id, ci["validator_version"], ci["error_message"])
             continue
 
-        emit_status(guid, CIStatus.STARTED.value, session_id)
+        emit_status(guid, CIStatus.STARTED.value, session_id, ci["validator_version"], ci["error_message"])
         try:
             response = requests.get(
                 f"{os.getenv("AUTHOR_REPUBLISH_API_URL")}/republishschema/{guid}/cirversion/{ci['cir_version']}",
@@ -115,7 +123,7 @@ def handle_republish() -> None:
             ci_status = CIStatus.FAILURE.value
             logger.exception("Failed while trying to republish CI: %s", guid)
 
-        emit_status(guid, ci_status, session_id)
+        emit_status(guid, ci_status, session_id, ci["validator_version"], ci["error_message"])
 
     updated_ci_metadata = get_collection_instruments()
     if all(ci["status"] == CIStatus.SUCCESS.value for ci in updated_ci_metadata):
@@ -158,7 +166,7 @@ def create_session() -> Response | ResponseReturnValue:
     try:
         create_new_session()
         return redirect(url_for("main.get_view_session"))
-    except (RetryError, requests.exceptions.ConnectionError, ValueError):
+    except (RetryError, requests.exceptions.ConnectionError, ValueError, HTTPError):
         return render_template("error.html", error_content=error_content_500), 500
 
 
@@ -191,3 +199,41 @@ def get_view_session() -> ResponseReturnValue:
         return render_template("view-session.html", ci_metadata=ci_metadata, session_status=get_session_status())
     except AttributeError:
         return render_template("error.html", error_content=error_content_500), 500
+
+
+@main_blueprint.route("/result/<guid>", methods=["GET"])
+def get_result(guid: str) -> ResponseReturnValue:
+    """
+    Retrieves the metadata for a specific collection instrument which is then rendered on the result page.
+
+    Args:
+        guid: The unique identifier of the collection instrument.
+
+    Returns:
+        ResponseReturnValue: The rendered result page.
+        ResponseReturnValue: An error page with a 404 status code if the collection instrument is not found.
+    """
+    ci_metadata = get_collection_instruments()
+
+    ci = next((ci for ci in ci_metadata if ci["cir_id"] == guid), None)
+
+    if not ci:
+        return render_template("error.html", error_content=error_content_404, url="/view-session"), 404
+
+    ci_status = ci["status"] if ci else "Not found"
+    survey_id = ci["survey_id"] if ci else "Not found"
+    form_type = ci["form_type"] if ci else "Not found"
+    version = ci["cir_version"] if ci else "Not found"
+    validator_version = ci["validator_version"] if ci else "Not found"
+    error_message = ci["error_message"] if ci else "Not found"
+
+    return render_template(
+        "result.html",
+        guid=guid,
+        status=ci_status,
+        survey_id=survey_id,
+        form_type=form_type,
+        version=str(version),
+        validator_version=validator_version,
+        error_message=error_message,
+    )

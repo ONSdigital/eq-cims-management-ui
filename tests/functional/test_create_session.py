@@ -19,7 +19,7 @@ def setup_cir():
 
     requests.post(
         url="http://localhost:3030/collection-instruments",
-        params={"guid": "abcd", "validator_version": "0.0.1", "ci_version": "1"},
+        params={"guid": "67f9d538-dda2-4852-ab6d-729391da2cdc", "validator_version": "0.0.1", "ci_version": "1"},
         json=test_schema,
         timeout=15,
     )
@@ -52,7 +52,7 @@ def test_create_session_displays_content(page: Page):
     expect(page.get_by_role("heading", name=re.compile(r"Collection instruments"))).to_be_visible()
 
     expect(page.get_by_role("table")).to_be_visible()
-    expect(page.get_by_text("abcd")).to_be_visible()
+    expect(page.get_by_text("67f9d538-dda2-4852-ab6d-729391da2cdc")).to_be_visible()
 
     # Asserts that all column headers are visible in the table
     for header in table_column_headers:

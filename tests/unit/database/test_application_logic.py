@@ -28,31 +28,25 @@ def test_get_collection_instruments():
     assert test_ci_metadata is not None
     assert len(test_ci_metadata) == 2
     assert test_ci_metadata[0] == {
-        "ci_version": 1,
-        "data_version": "0.0.1",
-        "validator_version": "0.0.1",
-        "classifier_type": "form_type",
-        "classifier_value": "1234",
-        "guid": "xyz",
-        "language": "en",
-        "published_at": "2026-05-21T13:57:24.276672Z",
         "survey_id": "999",
-        "title": "Test Survey",
+        "form_type": "1234",
+        "cir_id": "275229fc-9b2e-438d-8a21-4a69b272575a",
+        "cir_version": 1,
+        "publish_date": "2026-05-21T13:59:24.276672Z",
+        "validator_version": "0.0.1",
         "status": "Not started",
+        "error_message": "None",
     }
 
     assert test_ci_metadata[1] == {
-        "ci_version": 1,
-        "data_version": "0.0.1",
-        "validator_version": "0.0.1",
-        "classifier_type": "form_type",
-        "classifier_value": "1234",
-        "guid": "abc",
-        "language": "en",
-        "published_at": "2026-05-21T13:56:55.905000Z",
         "survey_id": "999",
-        "title": "Test Survey 2",
+        "form_type": "1234",
+        "cir_id": "64faab81-b4e1-4c3d-9c54-1632ad34af4e",
+        "cir_version": 2,
+        "publish_date": "2026-05-21T13:59:24.276672Z",
+        "validator_version": "0.0.1",
         "status": "Not started",
+        "error_message": "None",
     }
 
 
@@ -95,6 +89,6 @@ def test_update_session_status(mock_firestore_update_session_status):
 @pytest.mark.usefixtures("mock_firestore_update_ci_status")
 def test_update_ci_status(mock_firestore_update_ci_status):
     """Test that the update_ci_status function updates the collection instrument status correctly."""
-    update_ci_status("abc", "Success")
+    update_ci_status("64faab81-b4e1-4c3d-9c54-1632ad34af4e", "Success")
 
     assert mock_firestore_update_ci_status.call_count == 1

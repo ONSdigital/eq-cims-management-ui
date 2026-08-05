@@ -147,7 +147,7 @@ class TestSocketIO(unittest.TestCase):
         ):
             flask.current_app.extensions["socketio"] = socketio
             flask.request.namespace = "/"
-            emit_status("f3bb3302-04a1-4bea-9c32-9c46a9a93306", "Not started", "test-session-123")
+            emit_status("f3bb3302-04a1-4bea-9c32-9c46a9a93306", "Not started", "test-session-123", "0.0.1", "None")
             mock_update_ci_status.assert_called()
 
     def test_republish(self):
