@@ -56,6 +56,8 @@ STATUS_TO_SUFFIX = {
     CIStatus.NOT_STARTED.value: "dead",
 }
 
+FAILED_CIS = []
+
 
 @main_blueprint.before_request
 def before_request_func() -> None:
@@ -100,6 +102,7 @@ def handle_republish() -> None:
     ci_metadata = get_collection_instruments()
     update_session_status(Status.RUNNING.value)
     emit("button_disable", to=session_id)
+    reset_failed_instruments(session_id)
 
     for ci in ci_metadata:
         guid = ci["cir_id"]
@@ -118,9 +121,11 @@ def handle_republish() -> None:
                 logger.info("Successfully republished CI: %s", guid)
             else:
                 ci_status = CIStatus.FAILURE.value
+                FAILED_CIS.append(ci)
                 logger.error("Failed to republish CI: %s", guid)
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, KeyError, ValueError):
             ci_status = CIStatus.FAILURE.value
+            FAILED_CIS.append(ci)
             logger.exception("Failed while trying to republish CI: %s", guid)
 
         emit_status(guid, ci_status, session_id, ci["validator_version"], ci["error_message"])
@@ -131,6 +136,28 @@ def handle_republish() -> None:
     else:
         update_session_status(Status.FAILURE.value)
         emit("button_enable", to=session_id)
+
+
+def reset_failed_instruments(session_id: str) -> None:
+    """
+    Reset the status of failed collection instruments to "Not started" before republishing.
+    Two loops are used for performance reasons, as the first loop emits the status to the UI and the second loop updates
+    the status in the database which can be a time-consuming operation.
+
+    Args:
+        session_id: The unique identifier of the current session.
+    """
+    for ci in FAILED_CIS:
+        guid = ci["cir_id"]
+        ci_status = CIStatus.NOT_STARTED.value
+        emit_status(guid, ci_status, session_id, ci["validator_version"], ci["error_message"])
+
+    for ci in FAILED_CIS:
+        guid = ci["cir_id"]
+        ci_status = CIStatus.NOT_STARTED.value
+        update_ci_status(guid, ci_status)
+
+    FAILED_CIS.clear()
 
 
 @main_blueprint.route("/", methods=["GET"])

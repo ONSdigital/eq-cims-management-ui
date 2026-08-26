@@ -244,3 +244,60 @@ class TestSocketIO(unittest.TestCase):
                 mock_update_ci.assert_any_call("xyz", "Failure")
 
             client.disconnect()
+
+    def test_reset_failed_instruments(self):
+        app = create_app(DefaultConfig)
+        session_id = "test-session-123"
+
+        with app.app_context():
+            flask.current_app.extensions["socketio"] = socketio
+            client = socketio.test_client(app, auth={"session_id": session_id})
+
+            with (
+                patch("eq_cims_management_ui.main.routes.get_collection_instruments") as mock_get_cis,
+                patch("eq_cims_management_ui.main.routes.update_session_status"),
+                patch(
+                    "eq_cims_management_ui.main.routes.update_ci_status",
+                ) as mock_update_ci,
+                patch(
+                    "eq_cims_management_ui.main.routes.requests.get",
+                ) as mock_requests_get,
+                patch(
+                    "eq_cims_management_ui.main.routes.FAILED_CIS",
+                    [failed_republished_ci_metadata[0]],
+                ) as mock_failed_cis,
+            ):
+                mock_get_cis.side_effect = [ci_metadata, failed_republished_ci_metadata]
+                mock_requests_get.return_value.json.return_value = {"success": True}
+
+                client.emit("republish")
+
+                self.assertEqual(mock_update_ci.call_count, 5)
+                self.assertEqual(mock_failed_cis, [])
+                self.assertEqual(
+                    ci_metadata,
+                    [
+                        {
+                            "cir_id": "xyz",
+                            "cir_version": 1,
+                            "error_message": "",
+                            "form_type": "1234",
+                            "publish_date": "2026-05-21T13:59:24.276672Z",
+                            "status": "Not started",
+                            "survey_id": "999",
+                            "validator_version": "0.0.1",
+                        },
+                        {
+                            "cir_id": "abc",
+                            "cir_version": 1,
+                            "error_message": "",
+                            "form_type": "1234",
+                            "publish_date": "2026-05-21T13:59:24.276672Z",
+                            "status": "Success",
+                            "survey_id": "999",
+                            "validator_version": "0.0.1",
+                        },
+                    ],
+                )
+
+            client.disconnect()
