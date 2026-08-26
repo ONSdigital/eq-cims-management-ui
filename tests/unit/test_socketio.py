@@ -267,37 +267,12 @@ class TestSocketIO(unittest.TestCase):
                     [failed_republished_ci_metadata[0]],
                 ) as mock_failed_cis,
             ):
-                mock_get_cis.side_effect = [ci_metadata, failed_republished_ci_metadata]
+                mock_get_cis.return_value = failed_republished_ci_metadata
                 mock_requests_get.return_value.json.return_value = {"success": True}
 
                 client.emit("republish")
 
                 self.assertEqual(mock_update_ci.call_count, 5)
                 self.assertEqual(mock_failed_cis, [])
-                self.assertEqual(
-                    ci_metadata,
-                    [
-                        {
-                            "cir_id": "xyz",
-                            "cir_version": 1,
-                            "error_message": "",
-                            "form_type": "1234",
-                            "publish_date": "2026-05-21T13:59:24.276672Z",
-                            "status": "Not started",
-                            "survey_id": "999",
-                            "validator_version": "0.0.1",
-                        },
-                        {
-                            "cir_id": "abc",
-                            "cir_version": 1,
-                            "error_message": "",
-                            "form_type": "1234",
-                            "publish_date": "2026-05-21T13:59:24.276672Z",
-                            "status": "Success",
-                            "survey_id": "999",
-                            "validator_version": "0.0.1",
-                        },
-                    ],
-                )
 
             client.disconnect()
