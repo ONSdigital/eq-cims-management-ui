@@ -1,3 +1,4 @@
+import os
 import random
 import secrets
 import string
@@ -11,7 +12,7 @@ logger = get_logger()
 guids = [str(uuid.uuid4()) for _ in range(5)]
 survey_ids = random.sample(range(100, 999), 5)
 
-url = "http://localhost:3030/collection-instruments"
+url = f"{os.getenv("CIR_API_BASE_URL")}/collection-instruments"
 headers = {"accept": "application/json", "Content-Type": "application/json"}
 
 for i, guid in enumerate(guids):
