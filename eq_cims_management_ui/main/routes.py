@@ -56,7 +56,7 @@ STATUS_TO_SUFFIX = {
     CIStatus.NOT_STARTED.value: "dead",
 }
 
-FAILED_CIS = []
+FAILED_CIS: list[dict] = []
 
 
 @main_blueprint.before_request
