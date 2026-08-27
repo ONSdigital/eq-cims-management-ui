@@ -244,3 +244,35 @@ class TestSocketIO(unittest.TestCase):
                 mock_update_ci.assert_any_call("xyz", "Failure")
 
             client.disconnect()
+
+    def test_reset_failed_instruments(self):
+        app = create_app(DefaultConfig)
+        session_id = "test-session-123"
+
+        with app.app_context():
+            flask.current_app.extensions["socketio"] = socketio
+            client = socketio.test_client(app, auth={"session_id": session_id})
+
+            with (
+                patch("eq_cims_management_ui.main.routes.get_collection_instruments") as mock_get_cis,
+                patch("eq_cims_management_ui.main.routes.update_session_status"),
+                patch(
+                    "eq_cims_management_ui.main.routes.update_ci_status",
+                ) as mock_update_ci,
+                patch(
+                    "eq_cims_management_ui.main.routes.requests.get",
+                ) as mock_requests_get,
+                patch(
+                    "eq_cims_management_ui.main.routes.FAILED_CIS",
+                    [failed_republished_ci_metadata[0]],
+                ) as mock_failed_cis,
+            ):
+                mock_get_cis.return_value = failed_republished_ci_metadata
+                mock_requests_get.return_value.json.return_value = {"success": True}
+
+                client.emit("republish")
+
+                self.assertEqual(mock_update_ci.call_count, 5)
+                self.assertEqual(mock_failed_cis, [])
+
+            client.disconnect()
