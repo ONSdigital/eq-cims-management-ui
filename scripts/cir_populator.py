@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+"""Script to populate the CIR API with randomly generated collection instruments for development purposes."""
+
 import os
-import random
 import secrets
 import string
 import uuid
@@ -11,9 +12,9 @@ from structlog import get_logger
 logger = get_logger()
 
 guids = [str(uuid.uuid4()) for _ in range(5)]
-survey_ids = random.sample(range(100, 999), 5)
+survey_ids = list({secrets.randbelow(900) + 100 for _ in range(50)})[:5]
 
-url = f"{os.getenv("CIR_API_BASE_URL")}/collection-instruments"
+URL = f"{os.getenv('CIR_API_BASE_URL')}/collection-instruments"
 headers = {"accept": "application/json", "Content-Type": "application/json"}
 
 for i, guid in enumerate(guids):
@@ -36,6 +37,6 @@ for i, guid in enumerate(guids):
         "theme": "",
     }
 
-    response = requests.post(url, params=params, headers=headers, json=payload, timeout=10)
+    response = requests.post(URL, params=params, headers=headers, json=payload, timeout=10)
     logger.info("GUID: %s | Survey ID: %s | Status: %s", guid, survey_ids[i], response.status_code)
     logger.info("Response: %s", response.json())
