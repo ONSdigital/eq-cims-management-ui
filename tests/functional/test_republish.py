@@ -230,6 +230,7 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
     expect(republish_button).to_be_enabled()
     expect(home_button).to_be_enabled()
 
+
 @pytest.mark.usefixtures("setup_cir")
 def test_display_content_republish_in_progress_after_closing_page(page: Page):
     """Verify that clicking the create session button displays the expected content after making a request to CIR."""
