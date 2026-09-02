@@ -101,6 +101,7 @@ def test_display_content_and_home_navigation(page: Page):
     expect(republish_button).to_be_disabled()
 
     expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
+
     expect(republish_button).to_be_disabled()
     expect(home_button).to_be_enabled()
 
@@ -135,6 +136,7 @@ def test_display_content_after_republish_in_progress(page: Page):
 
     expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
 
+    expect(republish_button).to_be_disabled()
     expect(home_button).to_be_enabled()
 
 

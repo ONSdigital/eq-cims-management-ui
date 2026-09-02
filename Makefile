@@ -80,3 +80,11 @@ dev-compose-up:
 .PHONY: dev-compose-down
 dev-compose-down:
 	docker compose -f docker-compose-dev.yml down
+
+.PHONY: reset-databases
+reset-databases: dev-compose-down dev-compose-up
+	 cd ../eq-cir-fastapi &&  docker-compose up
+
+PHONY: populate-cir
+populate-cir:
+	poetry run python ./scripts/ci_populator.py
