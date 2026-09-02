@@ -99,7 +99,7 @@ def handle_republish() -> None:
     session_id = current_app.config.get("session_id", "")
     ci_metadata = get_collection_instruments()
     update_session_status(Status.RUNNING.value)
-    emit("button_disable", to=session_id)
+    emit("buttons_disable", to=session_id)
 
     for ci in ci_metadata:
         guid = ci["cir_id"]
@@ -130,7 +130,9 @@ def handle_republish() -> None:
         update_session_status(Status.SUCCESS.value)
     else:
         update_session_status(Status.FAILURE.value)
-        emit("button_enable", to=session_id)
+        emit("button_republish_enable", to=session_id)
+
+    emit("button_home_enable", to=session_id)
 
 
 @main_blueprint.route("/", methods=["GET"])
