@@ -93,7 +93,7 @@ def test_display_content_and_home_navigation(page: Page):
         expect(page.get_by_role("columnheader", name=re.compile(header))).to_be_visible()
 
     republish_button = page.get_by_test_id("republish-btn")
-    home_button = page.get_by_test_id("republish-btn")
+    home_button = page.get_by_test_id("home-btn")
 
     expect(page.get_by_text("Not started")).to_have_count(3)
 
