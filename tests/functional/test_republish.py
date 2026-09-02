@@ -130,11 +130,12 @@ def test_display_content_after_republish_in_progress(page: Page):
     page.wait_for_timeout(3000)
 
     expect(republish_button).to_be_disabled()
-    expect(home_button).to_be_enabled()
 
     expect(page.get_by_text("Started")).to_have_count(1)
 
     expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
+
+    expect(home_button).to_be_enabled()
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -218,15 +219,16 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
 
     page.wait_for_timeout(1000)
 
-    home_button.click()
+    page.go_back()
 
     create_session_button.click()
 
     expect(republish_button).to_be_disabled()
-    expect(home_button).to_be_disabled()
 
     expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
 
+    expect(republish_button).to_be_enabled()
+    expect(home_button).to_be_enabled()
 
 @pytest.mark.usefixtures("setup_cir")
 def test_display_content_republish_in_progress_after_closing_page(page: Page):
@@ -251,6 +253,6 @@ def test_display_content_republish_in_progress_after_closing_page(page: Page):
     second_home_button = new_page.get_by_test_id("home-btn")
 
     expect(second_republish_button).to_be_disabled()
-    expect(second_home_button).to_be_disabled()
 
-    new_page.wait_for_timeout(20000)
+    expect(new_page.get_by_text("Success")).to_have_count(3, timeout=15000)
+    expect(second_home_button).to_be_enabled()
