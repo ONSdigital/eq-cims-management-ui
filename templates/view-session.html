@@ -38,6 +38,20 @@
         })
     }}
 
+    {{
+        onsButton({
+            "type": "submit",
+            "text": "Home",
+            "variants": variants,
+            "classes": "ons-u-mt-m ons-u-mb-m",
+            "url": url_for("main.index"),
+            "attributes": {
+                "data-testid": "home-btn",
+                "id": "home-btn"
+            }
+        })
+    }}
+
     {% set tds = [] %}
     {% for metadata in ci_metadata %}
         {% set suffix = "info" if metadata["status"] == "Started"
