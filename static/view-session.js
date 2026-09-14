@@ -9,7 +9,7 @@ socket.on("cell_update", (data) => {
     `<span class='ons-status ons-status--${data.suffix}'>${data.status}</span></a>`;
 });
 
-socket.on("buttons_disable", () => {
+socket.on("disable_buttons", () => {
   const republishBtn = document.getElementById("republish-btn");
   const homeBtn = document.getElementById("home-btn");
   if (republishBtn) {
@@ -22,7 +22,7 @@ socket.on("buttons_disable", () => {
   }
 });
 
-socket.on("button_home_enable", () => {
+socket.on("enable_home_button", () => {
   const homeBtn = document.getElementById("home-btn");
   if (homeBtn) {
     homeBtn.classList.remove("ons-btn--disabled");
@@ -30,7 +30,7 @@ socket.on("button_home_enable", () => {
   }
 });
 
-socket.on("button_republish_enable", () => {
+socket.on("enable_republish_button", () => {
   const republishBtn = document.getElementById("republish-btn");
   if (republishBtn) {
     republishBtn.classList.remove("ons-btn--disabled");

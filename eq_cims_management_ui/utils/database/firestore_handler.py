@@ -87,7 +87,7 @@ class FirestoreHandler:
             ) from error  # type: ignore[no-untyped-call]
 
         logger.info("Session created successfully: %s", session_id)
-        socketio.emit("button_republish_enable", namespace="/")
+        socketio.emit("enable_republish_button", namespace="/")
         self.latest_session_document_ref = latest_session_document_ref
 
     def retrieve_latest_session(self) -> BaseDocumentReference | None:
