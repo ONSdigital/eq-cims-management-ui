@@ -22,14 +22,15 @@
   }}
 
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
-    {% set variants = "small"if session_status == "Failure" or session_status == "Not started"
+    {% set republish_variants = "small" if session_status == "Failure" or session_status == "Not started"
       else ["disabled", "small"] %}
+    {% set home_variants = ["disabled", "small"] if session_status == "Running" else "small" %}
 
     {{
         onsButton({
             "type": "submit",
             "text": "Republish",
-            "variants": variants,
+            "variants": republish_variants,
             "classes": "ons-u-mt-m ons-u-mb-m",
             "attributes": {
                 "data-testid": "republish-btn",
@@ -42,7 +43,7 @@
         onsButton({
             "type": "submit",
             "text": "Home",
-            "variants": variants,
+            "variants": home_variants,
             "classes": "ons-u-mt-m ons-u-mb-m",
             "url": url_for("main.index"),
             "attributes": {
