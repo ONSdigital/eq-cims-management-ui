@@ -128,11 +128,10 @@ def handle_republish() -> None:
     updated_ci_metadata = get_collection_instruments()
     if all(ci["status"] == CIStatus.SUCCESS.value for ci in updated_ci_metadata):
         update_session_status(Status.SUCCESS.value)
+        emit("enable_home_button", to=session_id)
     else:
         update_session_status(Status.FAILURE.value)
         emit("enable_republish_button", to=session_id)
-
-    emit("enable_home_button", to=session_id)
 
 
 @main_blueprint.route("/", methods=["GET"])
