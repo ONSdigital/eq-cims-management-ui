@@ -152,11 +152,6 @@ def reset_failed_instruments(session_id: str) -> None:
         ci_status = CIStatus.NOT_STARTED.value
         emit_status(guid, ci_status, session_id, ci["validator_version"], ci["error_message"])
 
-    for ci in FAILED_CIS:
-        guid = ci["cir_id"]
-        ci_status = CIStatus.NOT_STARTED.value
-        update_ci_status(guid, ci_status)
-
     FAILED_CIS.clear()
 
 

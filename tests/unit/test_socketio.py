@@ -272,7 +272,7 @@ class TestSocketIO(unittest.TestCase):
 
                 client.emit("republish")
 
-                self.assertEqual(mock_update_ci.call_count, 5)
+                self.assertEqual(mock_update_ci.call_count, 4)
                 self.assertEqual(mock_failed_cis, [])
 
             client.disconnect()
