@@ -24,7 +24,8 @@
   <h1 class="ons-u-mb-xl">Collection instruments</h1>
     {% set republish_variants = "small" if session_status == "Failure" or session_status == "Not started"
       else ["disabled", "small"] %}
-    {% set home_variants = ["disabled", "small"] if session_status == "Running" or session_status == "Failure" else "small" %}
+    {% set home_variants = ["disabled", "small"] if session_status == "Running" or session_status == "Failure"
+      else "small" %}
 
     {{
         onsButton({
