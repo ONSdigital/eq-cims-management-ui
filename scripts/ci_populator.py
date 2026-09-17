@@ -7,12 +7,14 @@ import string
 import uuid
 
 import requests
+from dotenv import load_dotenv
 from structlog import get_logger
 
 logger = get_logger()
 
 guids = [str(uuid.uuid4()) for _ in range(5)]
 survey_ids = list({secrets.randbelow(900) + 100 for _ in range(50)})[:5]
+load_dotenv()
 
 URL = f"{os.getenv('CIR_API_BASE_URL')}/collection-instruments"
 headers = {"accept": "application/json", "Content-Type": "application/json"}
