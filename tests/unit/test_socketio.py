@@ -1,6 +1,6 @@
 # pylint: disable=missing-function-docstring, missing-class-docstring, missing-module-docstring
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import flask
 import requests
@@ -274,5 +274,13 @@ class TestSocketIO(unittest.TestCase):
 
                 self.assertEqual(mock_update_ci.call_count, 4)
                 self.assertEqual(mock_failed_cis, [])
+                mock_update_ci.assert_has_calls(
+                    [
+                        call("xyz", "Not started"),
+                        call("xyz", "Started"),
+                        call("xyz", "Success"),
+                        call("abc", "Success"),
+                    ],
+                )
 
             client.disconnect()
