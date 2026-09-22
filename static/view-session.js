@@ -9,15 +9,28 @@ socket.on("cell_update", (data) => {
     `<span class='ons-status ons-status--${data.suffix}'>${data.status}</span></a>`;
 });
 
-socket.on("button_disable", () => {
+socket.on("disable_buttons", () => {
   const republishBtn = document.getElementById("republish-btn");
+  const homeBtn = document.getElementById("home-btn");
   if (republishBtn) {
     republishBtn.classList.add("ons-btn--disabled");
     republishBtn.setAttribute("disabled", "");
   }
+  if (homeBtn) {
+    homeBtn.classList.add("ons-btn--disabled");
+    homeBtn.setAttribute("disabled", "");
+  }
 });
 
-socket.on("button_enable", () => {
+socket.on("enable_home_button", () => {
+  const homeBtn = document.getElementById("home-btn");
+  if (homeBtn) {
+    homeBtn.classList.remove("ons-btn--disabled");
+    homeBtn.removeAttribute("disabled");
+  }
+});
+
+socket.on("enable_republish_button", () => {
   const republishBtn = document.getElementById("republish-btn");
   if (republishBtn) {
     republishBtn.classList.remove("ons-btn--disabled");

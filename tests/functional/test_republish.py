@@ -69,7 +69,7 @@ def test_no_cis_present(page: Page):
 
 
 @pytest.mark.usefixtures("setup_cir")
-def test_display_content(page: Page):
+def test_display_content_and_home_navigation(page: Page):
     """
     Verify that clicking the create session button displays the expected content after making a request to CIR. Verify
     that the republish button is disabled until the republish process is complete. Verify that the statuses of the CIs
@@ -93,6 +93,7 @@ def test_display_content(page: Page):
         expect(page.get_by_role("columnheader", name=re.compile(header))).to_be_visible()
 
     republish_button = page.get_by_test_id("republish-btn")
+    home_button = page.get_by_test_id("home-btn")
 
     expect(page.get_by_text("Not started")).to_have_count(3)
 
@@ -100,7 +101,13 @@ def test_display_content(page: Page):
     expect(republish_button).to_be_disabled()
 
     expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
+
     expect(republish_button).to_be_disabled()
+    expect(home_button).to_be_enabled()
+
+    home_button.click()
+
+    expect(page).to_have_title(re.compile(r"Collection Instrument Migration Service \(CIMS\)"))
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -116,6 +123,7 @@ def test_display_content_after_republish_in_progress(page: Page):
     create_session_button.click()
 
     republish_button = page.get_by_test_id("republish-btn")
+    home_button = page.get_by_test_id("home-btn")
     republish_button.click()
 
     expect(republish_button).to_be_visible()
@@ -123,9 +131,13 @@ def test_display_content_after_republish_in_progress(page: Page):
     page.wait_for_timeout(3000)
 
     expect(republish_button).to_be_disabled()
+
     expect(page.get_by_text("Started")).to_have_count(1)
 
     expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
+
+    expect(republish_button).to_be_disabled()
+    expect(home_button).to_be_enabled()
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -141,15 +153,18 @@ def test_display_content_after_republish_complete(page: Page):
     create_session_button.click()
 
     republish_button = page.get_by_test_id("republish-btn")
+    home_button = page.get_by_test_id("home-btn")
+
     republish_button.click()
 
     page.wait_for_timeout(15000)
 
-    page.go_back()
+    home_button.click()
 
     create_session_button.click()
 
     expect(republish_button).to_be_enabled()
+    expect(home_button).to_be_enabled()
     expect(page.get_by_text("Not started")).to_have_count(3)
 
 
@@ -183,8 +198,10 @@ def test_display_content_after_republish_complete_after_closing_page(page: Page)
     second_create_session_button.click()
 
     second_republish_button = new_page.get_by_test_id("republish-btn")
+    second_home_button = new_page.get_by_test_id("home-btn")
 
     expect(second_republish_button).to_be_enabled()
+    expect(second_home_button).to_be_enabled()
     expect(new_page.get_by_text("Not started")).to_have_count(3)
 
 
@@ -198,6 +215,7 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
     create_session_button.click()
 
     republish_button = page.get_by_test_id("republish-btn")
+    home_button = page.get_by_test_id("home-btn")
 
     republish_button.click()
 
@@ -210,6 +228,9 @@ def test_display_content_republish_in_progress_after_navigating_back(page: Page)
     expect(republish_button).to_be_disabled()
 
     expect(page.get_by_text("Success")).to_have_count(3, timeout=15000)
+
+    expect(republish_button).to_be_disabled()
+    expect(home_button).to_be_enabled()
 
 
 @pytest.mark.usefixtures("setup_cir")
@@ -232,7 +253,9 @@ def test_display_content_republish_in_progress_after_closing_page(page: Page):
     new_page.goto("http://localhost:5100/")
 
     second_republish_button = new_page.get_by_test_id("republish-btn")
+    second_home_button = new_page.get_by_test_id("home-btn")
 
     expect(second_republish_button).to_be_disabled()
 
-    new_page.wait_for_timeout(20000)
+    expect(new_page.get_by_text("Success")).to_have_count(3, timeout=15000)
+    expect(second_home_button).to_be_enabled()
