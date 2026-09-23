@@ -1,6 +1,6 @@
 # pylint: disable=missing-function-docstring, missing-class-docstring, missing-module-docstring
 import unittest
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import flask
 import requests
@@ -242,5 +242,45 @@ class TestSocketIO(unittest.TestCase):
 
                 mock_update_session.assert_any_call("Failure")
                 mock_update_ci.assert_any_call("xyz", "Failure")
+
+            client.disconnect()
+
+    def test_reset_failed_instruments(self):
+        app = create_app(DefaultConfig)
+        session_id = "test-session-123"
+
+        with app.app_context():
+            flask.current_app.extensions["socketio"] = socketio
+            client = socketio.test_client(app, auth={"session_id": session_id})
+
+            with (
+                patch("eq_cims_management_ui.main.routes.get_collection_instruments") as mock_get_cis,
+                patch("eq_cims_management_ui.main.routes.update_session_status"),
+                patch(
+                    "eq_cims_management_ui.main.routes.update_ci_status",
+                ) as mock_update_ci,
+                patch(
+                    "eq_cims_management_ui.main.routes.requests.get",
+                ) as mock_requests_get,
+                patch(
+                    "eq_cims_management_ui.main.routes.FAILED_CIS",
+                    [failed_republished_ci_metadata[0]],
+                ) as mock_failed_cis,
+            ):
+                mock_get_cis.return_value = failed_republished_ci_metadata
+                mock_requests_get.return_value.json.return_value = {"success": True}
+
+                client.emit("republish")
+
+                self.assertEqual(mock_update_ci.call_count, 4)
+                self.assertEqual(mock_failed_cis, [])
+                mock_update_ci.assert_has_calls(
+                    [
+                        call("xyz", "Not started"),
+                        call("xyz", "Started"),
+                        call("xyz", "Success"),
+                        call("abc", "Success"),
+                    ],
+                )
 
             client.disconnect()
