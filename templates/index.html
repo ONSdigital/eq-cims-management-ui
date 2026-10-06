@@ -17,4 +17,17 @@
     })
   }}
 
+  {{
+    onsButton({
+      "id": "last-session-btn",
+      "text": "View last session",
+      "variants": "timer",
+      "url": url_for("main.view_last_session"),
+      "attributes": {
+        "data-testid": "last-session-btn",
+        "id": "last-session-btn"
+      }
+    })
+  }}
+
 {%- endblock main -%}

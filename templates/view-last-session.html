@@ -1,0 +1,100 @@
+{%- extends "base.html" -%}
+
+{% from "components/breadcrumbs/_macro.njk" import onsBreadcrumbs %}
+{%- from "components/button/_macro.njk" import onsButton -%}
+{%- from "components/table/_macro.njk" import onsTable -%}
+
+{%- block main -%}
+
+  {{
+      onsBreadcrumbs({
+          "ariaLabel": "Breadcrumbs",
+          "itemsList": [
+              {
+                  "url": "/",
+                  "text": "Back",
+                  "attributes": {
+                      "data-testid": "view-session-back-button"
+                  }
+              }
+          ]
+      })
+  }}
+
+  <h1 class="ons-u-mb-xl">Collection instruments</h1>
+
+    {{
+        onsButton({
+            "type": "submit",
+            "text": "Home",
+            "variants": "small",
+            "classes": "ons-u-mt-m ons-u-mb-m",
+            "url": url_for("main.index"),
+            "attributes": {
+                "data-testid": "home-btn",
+                "id": "home-btn"
+            }
+        })
+    }}
+
+    {% set tds = [] %}
+    {% for metadata in ci_metadata %}
+        {% set suffix = "info" if metadata["status"] == "Started"
+          else "error" if metadata["status"] == "Failure"
+          else "success" if metadata["status"] == "Success"
+          else "dead" %}
+        {% set status_link = '<a href="'
+            ~ url_for('main.get_result', guid=metadata['cir_id'])
+            ~ '" data-testid="ci-status-link-' ~ metadata['cir_id'] ~ '">'
+            ~ '<span class="ons-status ons-status--' ~ suffix ~ '">'
+            ~ metadata['status'] ~ '</span></a>' %}
+
+        {% set item = {
+            "tds": [
+                {"value": metadata["survey_id"]},
+                {"value": metadata["form_type"]},
+                {"value": metadata["cir_id"] | trim, "dataSort": metadata["cir_id"] | uuid_to_int},
+                {"value": metadata["cir_version"]},
+                {"value": metadata["validator_version"]},
+                {
+                  "value": status_link,
+                  "dataSort": metadata["status"] | trim,
+                }
+            ], "id": metadata["cir_id"]
+        } %}
+        {% do tds.append(item) %}
+    {% endfor %}
+    {{
+        onsTable({
+            "variants": "sortable",
+            "sortBy": "Sort by",
+            "ariaAsc": "ascending",
+            "ariaDesc": "descending",
+            "ths": [
+                {
+                    "value": "Survey ID"
+                },
+                {
+                    "value": "Form type"
+                },
+                {
+                    "value": "CIR ID"
+                },
+                {
+                    "value": "CIR version"
+                },
+                {
+                    "value": "Validator version"
+                },
+                {
+                    "value": "Status"
+                }
+            ],
+            "trs": tds,
+        })
+    }}
+
+  <script src="{{ url_for('static', filename='view-session.js') }}" defer></script>
+
+
+{%- endblock main -%}

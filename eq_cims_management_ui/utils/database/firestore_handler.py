@@ -111,7 +111,35 @@ class FirestoreHandler:
             logger.exception("Failed to retrieve latest session from Firestore database.")
             raise RetryError(
                 cause=error,
-                message="Failed to retrieve session in Firestore database.",
+                message="Failed to retrieve latest session in Firestore database.",
+            ) from error  # type: ignore[no-untyped-call]
+
+        return None
+
+    def retrieve_last_session(self) -> BaseDocumentReference | None:
+        """
+        Queries the Firestore database for the last session by sorting all sessions by creation date in descending
+        order and retrieving the second most recent session.
+
+        Returns:
+            BaseDocumentReference: The document reference of the latest session found.
+            None: If no session is found.
+        """
+        try:
+            query_results_list = (
+                self.client.collection("sessions").order_by("created_at", direction=Query.DESCENDING).limit(1).get()
+            )
+
+            # Get the latest session document reference by selecting the first item of the resulting list from the query
+            if len(query_results_list) == 1:
+                return query_results_list[0].reference
+            if len(query_results_list) > 1:
+                return query_results_list[1].reference
+        except RetryError as error:
+            logger.exception("Failed to retrieve last session from Firestore database.")
+            raise RetryError(
+                cause=error,
+                message="Failed to retrieve last session in Firestore database.",
             ) from error  # type: ignore[no-untyped-call]
 
         return None
