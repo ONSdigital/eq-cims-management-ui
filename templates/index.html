@@ -3,6 +3,7 @@
 
 {%- block main -%}
   <h1 class="ons-u-mb-xl">CI migration process</h1>
+  {% set last_session_variants = "timer" if session_present else ["disabled", "timer"] %}
 
   {{
     onsButton({
@@ -21,7 +22,7 @@
     onsButton({
       "id": "last-session-btn",
       "text": "View last session",
-      "variants": "timer",
+      "variants": last_session_variants,
       "url": url_for("main.view_last_session"),
       "attributes": {
         "data-testid": "last-session-btn",

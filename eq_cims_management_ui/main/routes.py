@@ -35,6 +35,7 @@ from eq_cims_management_ui.utils.database.application_logic import (
     get_collection_instruments,
     get_session_status,
     is_latest_session_in_progress,
+    is_session_present,
     update_ci_status,
     update_session_status,
 )
@@ -167,7 +168,7 @@ def index() -> Response | ResponseReturnValue:
     """
     if is_latest_session_in_progress():
         return redirect(url_for("main.get_view_session"))
-    return render_template("index.html")
+    return render_template("index.html", session_present=is_session_present())
 
 
 @main_blueprint.route("/create-session", methods=["GET"])
