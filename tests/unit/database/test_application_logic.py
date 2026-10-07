@@ -6,6 +6,7 @@ from google.api_core.exceptions import RetryError
 from eq_cims_management_ui.utils.database.application_logic import (
     create_new_session,
     get_collection_instruments,
+    get_last_session_status,
     is_latest_session_in_progress,
     update_ci_status,
     update_session_status,
@@ -24,6 +25,39 @@ def test_create_session(mock_create_database_session):
 def test_get_collection_instruments():
     """Test that the get_collection_instruments function returns the expected collection instrument metadata."""
     test_ci_metadata = get_collection_instruments()
+
+    assert test_ci_metadata is not None
+    assert len(test_ci_metadata) == 2
+    assert test_ci_metadata[0] == {
+        "survey_id": "999",
+        "form_type": "1234",
+        "cir_id": "275229fc-9b2e-438d-8a21-4a69b272575a",
+        "cir_version": 1,
+        "publish_date": "2026-05-21T13:59:24.276672Z",
+        "validator_version": "0.0.1",
+        "status": "Not started",
+        "error_message": "None",
+    }
+
+    assert test_ci_metadata[1] == {
+        "survey_id": "999",
+        "form_type": "1234",
+        "cir_id": "64faab81-b4e1-4c3d-9c54-1632ad34af4e",
+        "cir_version": 2,
+        "publish_date": "2026-05-21T13:59:24.276672Z",
+        "validator_version": "0.0.1",
+        "status": "Not started",
+        "error_message": "None",
+    }
+
+
+@pytest.mark.usefixtures("mock_firestore_ci_metadata_stream_with_reference")
+def test_get_collection_instruments_with_reference(mock_firestore_ci_metadata_stream_with_reference):
+    """
+    Test that the get_collection_instruments function returns the expected collection instrument metadata when passed
+    a reference.
+    """
+    test_ci_metadata = get_collection_instruments(reference=mock_firestore_ci_metadata_stream_with_reference)
 
     assert test_ci_metadata is not None
     assert len(test_ci_metadata) == 2
@@ -92,3 +126,27 @@ def test_update_ci_status(mock_firestore_update_ci_status):
     update_ci_status("64faab81-b4e1-4c3d-9c54-1632ad34af4e", "Success")
 
     assert mock_firestore_update_ci_status.call_count == 1
+
+
+@pytest.mark.usefixtures("mock_firestore_get_last_session_success")
+def test_get_last_session_status_success():
+    """Test that get_last_session_status returns 'Success' when a last session with that status exists."""
+    status = get_last_session_status()
+
+    assert status == "Success"
+
+
+@pytest.mark.usefixtures("mock_firestore_get_last_session_failure")
+def test_get_last_session_status_failure():
+    """Test that get_last_session_status returns 'Failure' when a last session with that status exists."""
+    status = get_last_session_status()
+
+    assert status == "Failure"
+
+
+@pytest.mark.usefixtures("mock_firestore_get_last_session_no_session")
+def test_get_last_session_status_no_session():
+    """Test that get_last_session_status returns None when no last session exists."""
+    status = get_last_session_status()
+
+    assert status is None

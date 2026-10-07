@@ -127,14 +127,15 @@ class FirestoreHandler:
         """
         try:
             query_results_list = (
-                self.client.collection("sessions").order_by("created_at", direction=Query.DESCENDING).limit(1).get()
+                self.client.collection("sessions")
+                .where("status", "in", ["Running", "Success", "Failure"])
+                .order_by("created_at", direction=Query.DESCENDING)
+                .get()
             )
 
             # Get the latest session document reference by selecting the first item of the resulting list from the query
-            if len(query_results_list) == 1:
+            if len(query_results_list) >= 1:
                 return query_results_list[0].reference
-            if len(query_results_list) > 1:
-                return query_results_list[1].reference
         except RetryError as error:
             logger.exception("Failed to retrieve last session from Firestore database.")
             raise RetryError(

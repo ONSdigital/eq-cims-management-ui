@@ -1,5 +1,7 @@
 """Module testing a basic flask instance."""
 
+from unittest.mock import patch
+
 import pytest
 
 from app import create_app
@@ -158,6 +160,18 @@ def test_view_session(test_client):
     assert response.data  # Ensure it's not empty
 
 
+@pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_ci_metadata_stream")
+def test_view_last_session(test_client):
+    """
+    GIVEN a call to the view-last-session endpoint when the previous session is existing.
+    THEN 200 is returned.
+    """
+    response = test_client.get("/view-last-session")
+
+    assert response.status_code == 200
+    assert response.data  # Ensure it's not empty
+
+
 def test_erroneous_view_session(test_client):
     """
     GIVEN a direct call to the view-session endpoint where the database instance and ci_metadata have not been set.
@@ -167,6 +181,21 @@ def test_erroneous_view_session(test_client):
 
     assert response.status_code == 500
     assert response.data  # Ensure it's not empty
+
+
+def test_erroneous_view_last_session(test_client):
+    """
+    GIVEN a direct call to the view-last-session endpoint where the database instance and ci_metadata have not been set.
+    THEN 500 is returned.
+    """
+    with patch(
+        "eq_cims_management_ui.utils.database.firestore_handler.FirestoreHandler.retrieve_last_session",
+        return_value=None,
+    ):
+        response = test_client.get("/view-last-session")
+
+        assert response.status_code == 500
+        assert response.data  # Ensure it's not empty
 
 
 @pytest.mark.usefixtures("mock_firestore_session", "mock_firestore_ci_metadata_stream")

@@ -112,7 +112,7 @@ def is_latest_session_in_progress() -> bool:
 
 def is_session_present() -> bool:
     firestore_handler = current_app.config["firestore_handler"]
-    return bool(firestore_handler.retrieve_latest_session())
+    return bool(firestore_handler.retrieve_last_session())
 
 
 def update_ci_status(guid: str, status: str) -> None:
