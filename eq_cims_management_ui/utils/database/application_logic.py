@@ -111,6 +111,10 @@ def is_latest_session_in_progress() -> bool:
 
 
 def is_session_present() -> bool:
+    """
+    Checks if there is a session present in the Firestore database by retrieving the latest session. This is then used
+    to determine if the "View last result" button should be enabled on the home page.
+    """
     firestore_handler = current_app.config["firestore_handler"]
     return bool(firestore_handler.retrieve_last_session())
 
