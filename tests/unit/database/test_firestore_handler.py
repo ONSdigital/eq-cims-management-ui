@@ -105,12 +105,63 @@ def test_retrieve_latest_session():
     assert latest_session == "abc-def-ghi"
 
 
+@pytest.mark.usefixtures("mock_retrieve_last_session")
+def test_retrieve_last_session():
+    """
+    Test that the retrieve_last_session method returns the expected session ID when a previous session document is
+    present.
+    """
+    firestore_handler = FirestoreHandler()
+
+    latest_session = firestore_handler.retrieve_last_session()
+
+    assert latest_session == "jkl-mno-pqr"
+
+
+@pytest.mark.usefixtures("mock_retrieve_latest_session")
+def test_retrieve_last_session_one_session():
+    """
+    Test that the retrieve_latest_session method returns the expected session ID when a latest session document is
+    present and the status is not 'Not started'.
+    """
+    firestore_handler = FirestoreHandler()
+
+    latest_session = firestore_handler.retrieve_last_session()
+
+    assert latest_session is not None
+    assert latest_session == "abc-def-ghi"
+
+
 @pytest.mark.usefixtures("mock_retrieve_latest_session_not_present")
 def test_retrieve_latest_session_no_session():
     """Test that the retrieve_latest_session method returns None when no latest session document is present."""
     firestore_handler = FirestoreHandler()
 
     latest_session = firestore_handler.retrieve_latest_session()
+
+    assert latest_session is None
+
+
+@pytest.mark.usefixtures("mock_retrieve_latest_session_not_present")
+def test_retrieve_last_session_no_session():
+    """Test that the retrieve_latest_session method returns None when no latest session document is present."""
+    firestore_handler = FirestoreHandler()
+
+    last_session = firestore_handler.retrieve_last_session()
+
+    assert last_session is None
+
+
+@pytest.mark.usefixtures("mock_retrieve_latest_session_failure")
+def test_retrieve_last_session_failure():
+    """
+    Test that the retrieve_latest_session method returns None when a RetryError occurs while retrieving the
+    latest session.
+    """
+    firestore_handler = FirestoreHandler()
+    latest_session = None
+    with pytest.raises(RetryError):
+        latest_session = firestore_handler.retrieve_last_session()
 
     assert latest_session is None
 

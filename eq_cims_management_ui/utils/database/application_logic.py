@@ -12,6 +12,7 @@ from typing import Any
 
 from flask import current_app
 from google.api_core.exceptions import RetryError
+from google.cloud.firestore_v1.base_document import BaseDocumentReference
 
 from eq_cims_management_ui.utils.database.status import Status
 
@@ -27,7 +28,7 @@ def create_new_session() -> None:
     firestore_handler.create_database_session()
 
 
-def get_collection_instruments() -> list[dict]:
+def get_collection_instruments(reference: BaseDocumentReference | None = None) -> list[dict]:
     """
     Iterates through the collection instruments in the latest session in the Firestore database, which
     will be used when displaying a list of CIs to the user.
@@ -40,7 +41,11 @@ def get_collection_instruments() -> list[dict]:
     """
     try:
         firestore_handler = current_app.config["firestore_handler"]
-        latest_session = firestore_handler.latest_session_document_ref
+        if reference is None:
+            latest_session = firestore_handler.latest_session_document_ref
+        else:
+            firestore_handler.set_document_reference(reference)
+            latest_session = firestore_handler.latest_session_document_ref
         ci_metadata_documents = latest_session.collection("metadata").stream()
 
         return [metadata_item.to_dict() for metadata_item in ci_metadata_documents]
@@ -68,6 +73,22 @@ def get_session_status() -> Any:
     return None
 
 
+def get_last_session_status() -> Any:
+    """
+    Retrieves the status of the latest session in the Firestore database.
+
+    Returns:
+        str: The status of the latest session.
+    """
+    firestore_handler = current_app.config["firestore_handler"]
+
+    if session_doc_ref := firestore_handler.retrieve_last_session():
+        last_session = session_doc_ref.get().to_dict()
+        return last_session["status"]
+
+    return None
+
+
 def is_latest_session_in_progress() -> bool:
     """
     Checks if there is a session in progress in the Firestore database by retrieving the latest session and checking its
@@ -81,12 +102,21 @@ def is_latest_session_in_progress() -> bool:
     if session_doc_ref := firestore_handler.retrieve_latest_session():
         current_session = session_doc_ref.get().to_dict()
 
-        if current_session["status"] == Status.RUNNING.value or current_session["status"] == Status.FAILURE.value:
+        if current_session["status"] == Status.RUNNING.value:
             firestore_handler.set_document_reference(session_doc_ref)
             return True
         return False
 
     return False
+
+
+def is_session_present() -> bool:
+    """
+    Checks if there is a session present in the Firestore database by retrieving the latest session. This is then used
+    to determine if the "View last result" button should be enabled on the home page.
+    """
+    firestore_handler = current_app.config["firestore_handler"]
+    return bool(firestore_handler.retrieve_last_session())
 
 
 def update_ci_status(guid: str, status: str) -> None:

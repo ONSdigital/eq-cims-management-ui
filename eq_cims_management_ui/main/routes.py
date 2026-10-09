@@ -35,6 +35,7 @@ from eq_cims_management_ui.utils.database.application_logic import (
     get_collection_instruments,
     get_session_status,
     is_latest_session_in_progress,
+    is_session_present,
     update_ci_status,
     update_session_status,
 )
@@ -133,10 +134,10 @@ def handle_republish() -> None:
     updated_ci_metadata = get_collection_instruments()
     if all(ci["status"] == CIStatus.SUCCESS.value for ci in updated_ci_metadata):
         update_session_status(Status.SUCCESS.value)
-        emit("enable_home_button", to=session_id)
     else:
         update_session_status(Status.FAILURE.value)
         emit("enable_republish_button", to=session_id)
+    emit("enable_home_button", to=session_id)
 
 
 def reset_failed_instruments(session_id: str) -> None:
@@ -167,7 +168,7 @@ def index() -> Response | ResponseReturnValue:
     """
     if is_latest_session_in_progress():
         return redirect(url_for("main.get_view_session"))
-    return render_template("index.html")
+    return render_template("index.html", session_present=is_session_present())
 
 
 @main_blueprint.route("/create-session", methods=["GET"])
@@ -190,6 +191,27 @@ def create_session() -> Response | ResponseReturnValue:
         create_new_session()
         return redirect(url_for("main.get_view_session"))
     except (RetryError, requests.exceptions.ConnectionError, ValueError, HTTPError):
+        return render_template("error.html", error_content=error_content_500), 500
+
+
+@main_blueprint.route("/view-last-session", methods=["GET"])
+def view_last_session() -> Response | ResponseReturnValue:
+    """
+    Retrieve the last session from the Firestore database and render the view-last-session page.
+
+    Returns:
+        ResponseReturnValue: The rendered view-last-session page.
+        ResponseReturnValue: An error page with a 500 status code if no ci_metadata or Firestore session is present.
+
+    Raises:
+        AttributeError: As there's no ci_metadata or Firestore session present, an AttributeError is raised if the user
+        tries to access the view-session page directly.
+    """
+    try:
+        last_document_reference = current_app.config["firestore_handler"].retrieve_last_session()
+        ci_metadata = get_collection_instruments(last_document_reference)
+        return render_template("view-last-session.html", ci_metadata=ci_metadata)
+    except AttributeError:
         return render_template("error.html", error_content=error_content_500), 500
 
 

@@ -124,7 +124,9 @@ def setup_firestore_query_mock():
 
     mock_client.collection.return_value = mock_collection
 
+    mock_collection.where.return_value = mock_query_list
     mock_collection.order_by.return_value = mock_query_list
+    mock_query_list.order_by.return_value = mock_query_list
     mock_query_list.limit.return_value = mock_query_list
 
     return mock_client, mock_query_list
@@ -186,6 +188,31 @@ def mock_firestore_session(monkeypatch):
 
 
 @pytest.fixture
+def mock_finished_firestore_session(monkeypatch):
+    """
+    Fixture to mock the Firestore client and all interactions with the database
+    for testing purposes. Sets the value returned by the get method of the document
+    reference to a predefined output of session data.
+
+    Args:
+        monkeypatch: The pytest fixture used to patch the firestore client.
+    """
+    mock_client = MagicMock()
+    mock_collection = MagicMock()
+    mock_document = MagicMock()
+
+    mock_client.collection.return_value = mock_collection
+    mock_collection.document.return_value = mock_document
+
+    mock_document.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Success", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+    )
+    mock_document.reference = "jkl-mno-pqr"
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+
+@pytest.fixture
 def mock_erroneous_firestore_session(monkeypatch):
     """
     Fixture to mock an erroneous/missing Firestore client and all interactions with
@@ -226,6 +253,26 @@ def mock_firestore_ci_metadata_stream(monkeypatch):
 
 
 @pytest.fixture
+def mock_firestore_ci_metadata_stream_with_reference(monkeypatch):
+    """Mock the Firestore client for testing get_collection_instruments with a passed reference."""
+    mock_flask_current_app, mock_firestore_handler = mock_setup_app_with_firestore_handler()
+    mock_reference = MagicMock()
+    mock_collection = MagicMock()
+
+    mock_ci_metadata = [MagicMock(to_dict=lambda d=ci_metadata: d) for ci_metadata in test_firestore_ci_metadata]
+
+    mock_reference.collection.return_value = mock_collection
+    mock_collection.stream.return_value = mock_ci_metadata
+
+    mock_firestore_handler.set_document_reference.return_value = None
+    mock_firestore_handler.latest_session_document_ref = mock_reference
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
+
+    return mock_reference
+
+
+@pytest.fixture
 def mock_invalid_firestore_metadata_stream(monkeypatch):
     """Mock the Firestore client to simulate a RetryError when failing to stream collection instrument metadata."""
     mock_flask_current_app, mock_firestore_handler = mock_setup_app_with_firestore_handler()
@@ -248,6 +295,20 @@ def mock_retrieve_latest_session(monkeypatch):
     mock_client, mock_query_list = setup_firestore_query_mock()
     mock_document_snapshot = MagicMock()
     mock_session_ref = "abc-def-ghi"
+
+    mock_query_list.get.return_value = [mock_document_snapshot]
+
+    mock_document_snapshot.reference = mock_session_ref
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.firestore_handler.Client", lambda: mock_client)
+
+
+@pytest.fixture
+def mock_retrieve_last_session(monkeypatch):
+    """Mock getting the last session document reference from Firestore, simulating a last session being present."""
+    mock_client, mock_query_list = setup_firestore_query_mock()
+    mock_document_snapshot = MagicMock()
+    mock_session_ref = "jkl-mno-pqr"
 
     mock_query_list.get.return_value = [mock_document_snapshot]
 
@@ -352,6 +413,52 @@ def mock_firestore_get_session_no_session(monkeypatch):
     mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
 
     mock_firestore_handler.retrieve_latest_session.return_value = None
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
+
+
+@pytest.fixture
+def mock_firestore_get_last_session_success(monkeypatch):
+    """Mock getting last session doc reference from Firestore, simulating a session with 'Success' status."""
+    mock_flask_current_app = MagicMock()
+    mock_firestore_handler = MagicMock()
+    mock_session_doc_ref = MagicMock()
+
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
+    mock_firestore_handler.retrieve_last_session.return_value = mock_session_doc_ref
+
+    mock_session_doc_ref.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Success", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+    )
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
+
+
+@pytest.fixture
+def mock_firestore_get_last_session_failure(monkeypatch):
+    """Mock getting last session doc reference from Firestore, simulating a session with 'Failure' status."""
+    mock_flask_current_app = MagicMock()
+    mock_firestore_handler = MagicMock()
+    mock_session_doc_ref = MagicMock()
+
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
+    mock_firestore_handler.retrieve_last_session.return_value = mock_session_doc_ref
+
+    mock_session_doc_ref.get.return_value = MagicMock(
+        to_dict=lambda: {"status": "Failure", "created_at": "2026-05-05T15:00:43.198172+01:00"},
+    )
+
+    monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
+
+
+@pytest.fixture
+def mock_firestore_get_last_session_no_session(monkeypatch):
+    """Mock getting last session doc reference from Firestore, simulating no last session being present."""
+    mock_flask_current_app = MagicMock()
+    mock_firestore_handler = MagicMock()
+
+    mock_flask_current_app.config = {"firestore_handler": mock_firestore_handler}
+    mock_firestore_handler.retrieve_last_session.return_value = None
 
     monkeypatch.setattr("eq_cims_management_ui.utils.database.application_logic.current_app", mock_flask_current_app)
 

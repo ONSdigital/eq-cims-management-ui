@@ -3,6 +3,8 @@
 
 {%- block main -%}
   <h1 class="ons-u-mb-xl">CI migration process</h1>
+  {% set last_session_variants = "timer" if session_present else ["disabled", "timer"] %}
+  {% set last_session_url = url_for("main.view_last_session") if session_present else "/" %}
 
   {{
     onsButton({
@@ -13,6 +15,19 @@
       "attributes": {
         "data-testid": "create-session-btn",
         "id": "create-session-btn"
+      }
+    })
+  }}
+
+  {{
+    onsButton({
+      "id": "last-session-btn",
+      "text": "View last session",
+      "variants": last_session_variants,
+      "url": last_session_url,
+      "attributes": {
+        "data-testid": "last-session-btn",
+        "id": "last-session-btn"
       }
     })
   }}

@@ -1,6 +1,8 @@
 const sessionId = localStorage.getItem("session_id") || crypto.randomUUID();
 localStorage.setItem("session_id", sessionId);
 
+const homeBtnHref = document.getElementById("home-btn")?.getAttribute("href") || null;
+
 const socket = io({ transports: ["polling", "websocket"], auth: { session_id: sessionId } });
 
 socket.on("cell_update", (data) => {
@@ -19,6 +21,7 @@ socket.on("disable_buttons", () => {
   if (homeBtn) {
     homeBtn.classList.add("ons-btn--disabled");
     homeBtn.setAttribute("disabled", "");
+    homeBtn.removeAttribute("href");
   }
 });
 
@@ -27,6 +30,7 @@ socket.on("enable_home_button", () => {
   if (homeBtn) {
     homeBtn.classList.remove("ons-btn--disabled");
     homeBtn.removeAttribute("disabled");
+    homeBtn.setAttribute("href", "/");
   }
 });
 
